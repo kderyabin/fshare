@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+   <columnConstraints>
+      <ColumnConstraints />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints />
+   </rowConstraints>
+   <children>
+      <BorderPane prefHeight="406.0" prefWidth="580.0">
+         <top>
+            <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="57.0" prefWidth="580.0" text="Hello, my first FX app" textFill="#070707" textOverrun="WORD_ELLIPSIS" BorderPane.alignment="CENTER">
+               <font>
+                  <Font name="Segoe UI Light" size="35.0" />
+               </font>
+            </Label>
+         </top>
+         <left>
+            <ColorPicker BorderPane.alignment="CENTER" />
+         </left>
+         <center>
+            <DatePicker BorderPane.alignment="CENTER" />
+         </center>
+         <right>
+            <Button mnemonicParsing="false" text="Button" BorderPane.alignment="CENTER" />
+         </right>
+         <bottom>
+            <Label text="You!!!" BorderPane.alignment="CENTER" />
+         </bottom>
+      </BorderPane>
+   </children>
+</GridPane>
