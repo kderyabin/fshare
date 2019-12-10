@@ -5,3 +5,5 @@
 /out
 /.settings/
 /fshare.iml
+/target/
+partagefx.iml

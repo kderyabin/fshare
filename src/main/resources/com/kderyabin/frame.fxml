@@ -5,9 +5,9 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.input.* ?>
 
-<VBox fx:controller="com.kderyabin.Controller" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
+<VBox fx:controller="com.kderyabin.controllers.MenuController" prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
       xmlns:fx="http://javafx.com/fxml/1">
-    <MenuBar VBox.vgrow="NEVER">
+    <MenuBar>
         <menus>
             <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
                 <items>
@@ -20,7 +20,7 @@
                     <SeparatorMenuItem mnemonicParsing="false"/>
                     <MenuItem mnemonicParsing="false" text="Preferences…"/>
                     <SeparatorMenuItem mnemonicParsing="false"/>
-                    <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Exit">
+                    <MenuItem mnemonicParsing="false" text="Exit" onAction="#exit">
                         <accelerator>
                             <KeyCodeCombination alt="DOWN" code="X" control="UP" meta="UP" shift="UP" shortcut="UP"/>
                         </accelerator>
@@ -36,7 +36,7 @@
     </MenuBar>
     <AnchorPane VBox.vgrow="ALWAYS">
         <children>
-            <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="-fx-background-color: #d81b60;"
+            <Label alignment="CENTER" layoutX="155.0" layoutY="177.0"
                    text="Drag components from Library here…" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
                 <font>
                     <Font size="18.0"/>
