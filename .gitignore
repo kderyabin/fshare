@@ -7,3 +7,4 @@
 /fshare.iml
 /target/
 partagefx.iml
+/docs/**/*.vpp.lck
