@@ -14,11 +14,12 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         //FXMLLoader loader = new FXMLLoader();
         //loader.setLocation(getClass().getResource("views/main.fxml"));
+//        Font.loadFont(
+//                this.getClass().getResource("assets/fonts/Roboto-Light.ttf").toExternalForm(), 24
+//        );
         Parent root = FXMLLoader.load(Main.class.getResource("main.fxml"));
         Scene scene = new Scene(root);
-        Font.loadFont(
-                this.getClass().getResource("assets/fonts/Roboto-Light.ttf").toExternalForm(), 24
-        );
+
         scene.getStylesheets().add(
                 this.getClass().getResource("assets/style.css").toExternalForm()
         );
