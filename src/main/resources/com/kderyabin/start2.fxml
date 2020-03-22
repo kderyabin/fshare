@@ -9,11 +9,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kderyabin.controllers.StartController">
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kderyabin.controllers.StartController">
     <center>
         <!--      <VBox alignment="TOP_CENTER">-->
         <!--         <children>-->
-        <Button contentDisplay="CENTER" mnemonicParsing="false" style="-fx-border-radius: 30; -fx-background-radius: 30;" text="Add board" textAlignment="CENTER" BorderPane.alignment="CENTER">
+        <Button contentDisplay="CENTER" mnemonicParsing="false" style="-fx-border-radius: 30; -fx-background-radius: 30;" text="Add board" textAlignment="CENTER">
             <font>
                 <Font size="26.0" />
             </font>
@@ -44,4 +45,4 @@
             </viewport>
         </ImageView>
     </bottom>
-</BorderPane>
+</Anch>
