@@ -2,7 +2,11 @@
 
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefHeight="1024" prefWidth="786" stylesheets="@assets/style.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1">
     <fx:include source="menu.fxml"  VBox.vgrow="NEVER"/>
-    <fx:include source="start.fxml" VBox.vgrow="ALWAYS" />
+    <VBox fx:id="content">
+        <fx:include source="start.fxml" VBox.vgrow="ALWAYS" />
+    </VBox>
 </VBox>
