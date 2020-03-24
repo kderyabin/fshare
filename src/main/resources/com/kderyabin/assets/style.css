@@ -56,6 +56,7 @@
     -fx-font-size: 42px;
     -fx-text-fill: #ffffff;
     -fx-max-width: 100px;
+    -fx-alignment: center;
 }
 .header__title {
     -fx-text-fill: #ffffff;

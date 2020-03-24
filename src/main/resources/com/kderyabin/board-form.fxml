@@ -15,12 +15,17 @@
             fx:controller="com.kderyabin.controllers.BoardFormController">
     <top>
         <HBox styleClass="header">
-            <AnchorPane>
-                <Label text="&#xe5c4;" styleClass="header__back" AnchorPane.leftAnchor="100">
-                </Label>
-                <Label text="New board" styleClass="header__title" />
-                <Label text="&#xe5ca;"  styleClass="header__back" AnchorPane.rightAnchor="100" />
-            </AnchorPane>
+            <BorderPane HBox.hgrow="ALWAYS">
+                <left>
+                    <Label text="&#xe5c4;" styleClass="header__back" BorderPane.alignment="CENTER"/>
+                </left>
+                <center>
+                    <Label text="New board" styleClass="header__title"/>
+                </center>
+                <right>
+                    <Label text="&#xe5ca;"  styleClass="header__back" BorderPane.alignment="CENTER" />
+                </right>
+            </BorderPane>
         </HBox>
     </top>
     <center>
