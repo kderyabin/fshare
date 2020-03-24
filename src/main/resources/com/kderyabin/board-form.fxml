@@ -6,17 +6,32 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.controllers.BoardFormController">
     <top>
-        <HBox styleClass="header-panel">
-            <Label text="&#xe5c4;" styleClass="icon"/>
-            <Label text="New board"/>
+        <HBox styleClass="header">
+            <AnchorPane>
+                <Label text="&#xe5c4;" styleClass="header__back" AnchorPane.leftAnchor="100">
+                </Label>
+                <Label text="New board" styleClass="header__title" />
+                <Label text="&#xe5ca;"  styleClass="header__back" AnchorPane.rightAnchor="100" />
+            </AnchorPane>
         </HBox>
     </top>
     <center>
-        <Label text="Hello"/>
-    </center>
+        <VBox styleClass="form-panel">
 
+            <Label text="Name"/>
+            <TextField />
+
+            <Label text="Description"/>
+            <TextArea maxHeight="100" />
+
+        </VBox>
+    </center>
 </BorderPane>

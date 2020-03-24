@@ -8,7 +8,8 @@
 }
 .root {
     -fx-background-color: #F2F2F2;
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
+    bgr-hightlight:  rgb(77,102,204);;
 }
 .roboto {
      -fx-font-family: "Roboto Light";
@@ -27,21 +28,41 @@
     -fx-padding: 0.7em 0.57em;
     -fx-font-size: 14px;
     -jfx-button-type: RAISED;
-    -fx-background-color: rgb(77,102,204);
+    -fx-background-color: bgr-hightlight;
     -fx-pref-width: 200;
     -fx-text-fill: WHITE;
 }
 .button-raised-large {
     -fx-padding: 0.7em 0.57em;
     -jfx-button-type: RAISED;
-    -fx-background-color: rgb(77,102,204);
+    -fx-background-color: bgr-hightlight;
     -fx-pref-width: 250;
     -fx-text-fill: WHITE;
     -fx-font-size: 20px;
     -fx-border-radius: 50;
     -fx-background-radius: 50
 }
-.header-panel {
-    -fx-background-color: rgb(77,102,204);
+.content-area{
+    -fx-font-size: 16px;
+}
+.header {
+    -fx-background-color: bgr-hightlight;
     -fx-min-height: 100;
+    -fx-text-fill: #ffffff;
+    -fx-padding: 0 100 0 100;
+}
+.header__back {
+    -fx-font-family: "Material Icons";
+    -fx-font-size: 42px;
+    -fx-text-fill: #ffffff;
+    -fx-max-width: 100px;
+}
+.header__title {
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 42px;
+    -fx-padding: 20px;
+}
+.form-panel{
+    -fx-spacing: 20px;
+    -fx-padding: 50 100 0 100;
 }

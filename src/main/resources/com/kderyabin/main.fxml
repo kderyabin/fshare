@@ -6,7 +6,7 @@
       xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1">
     <fx:include source="menu.fxml"  VBox.vgrow="NEVER"/>
-    <VBox fx:id="content">
+    <VBox fx:id="content" styleClass="content-area">
         <fx:include source="start.fxml" VBox.vgrow="ALWAYS" />
     </VBox>
 </VBox>
