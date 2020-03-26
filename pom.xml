@@ -18,5 +18,15 @@
             <artifactId>jfoenix</artifactId>
             <version>8.0.8</version>
         </dependency>
+        <dependency>
+            <groupId>de.saxsys</groupId>
+            <artifactId>mvvmfx</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>de.saxsys</groupId>
+            <artifactId>mvvmfx-cdi</artifactId>
+            <version>1.8.0</version>
+        </dependency>
     </dependencies>
 </project>

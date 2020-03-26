@@ -9,7 +9,8 @@
 .root {
     -fx-background-color: #F2F2F2;
     -fx-font-size: 12px;
-    bgr-hightlight:  rgb(77,102,204);;
+    primary:  rgb(77,102,204);
+    text-on-primary: WHITE;
 }
 .roboto {
      -fx-font-family: "Roboto Light";
@@ -17,7 +18,11 @@
 }
 .icon {
     -fx-font-family: "Material Icons";
-    -fx-font-size: 32px;
+    -fx-font-size: 18px;
+    -fx-min-height: 36px;
+    -fx-min-width: 50px;
+    -fx-background-color: primary;
+    -fx-text-fill: text-on-primary;
 }
 
 .invite {
@@ -25,44 +30,45 @@
     -fx-font-size: 42px;
 }
 .button-raised{
-    -fx-padding: 0.7em 0.57em;
+    -fx-padding: 0.7em 0.5em;
     -fx-font-size: 14px;
     -jfx-button-type: RAISED;
-    -fx-background-color: bgr-hightlight;
+    -fx-background-color: primary;
     -fx-pref-width: 200;
     -fx-text-fill: WHITE;
 }
 .button-raised-large {
     -fx-padding: 0.7em 0.57em;
     -jfx-button-type: RAISED;
-    -fx-background-color: bgr-hightlight;
+    -fx-background-color: primary;
     -fx-pref-width: 250;
-    -fx-text-fill: WHITE;
+    -fx-text-fill: text-on-primary;
     -fx-font-size: 20px;
     -fx-border-radius: 50;
-    -fx-background-radius: 50
+    -fx-background-radius: 50;
 }
 .content-area{
     -fx-font-size: 16px;
 }
 .header {
-    -fx-background-color: bgr-hightlight;
+    -fx-background-color: primary;
     -fx-min-height: 100;
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: text-on-primary;
     -fx-padding: 0 100 0 100;
 }
-.header__back {
+.header__btn-icon {
     -fx-font-family: "Material Icons";
     -fx-font-size: 42px;
-    -fx-text-fill: #ffffff;
-    -fx-max-width: 100px;
+    -fx-text-fill: text-on-primary;
+    -fx-pref-width: 100px;
     -fx-alignment: center;
 }
 .header__title {
-    -fx-text-fill: #ffffff;
+    -fx-text-fill: text-on-primary;
     -fx-font-size: 42px;
     -fx-padding: 20px;
 }
+
 .form-panel{
     -fx-spacing: 20px;
     -fx-padding: 50 100 0 100;

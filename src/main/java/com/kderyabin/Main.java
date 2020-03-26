@@ -6,18 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Main extends Application {
     private static Scene scene;
-    private static VBox content;
+    private static Pane content;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         scene = new Scene(loadFXML("main"));
-        content = (VBox)scene.lookup("#content");
+        content = (Pane)scene.lookup("#content");
         scene.getStylesheets().add(
                 this.getClass().getResource("assets/style.css").toExternalForm()
         );
@@ -32,16 +32,17 @@ public class Main extends Application {
         launch(args);
     }
 
-    /**
-     * Method used to navigate between pages.
+    /*
+     * Method used to navigate between pages resets the root component.
      * @param fxml  Fxml file name.
      * @throws IOException See loadFXML.
-     */
-    public static void setRoot(String fxml) throws IOException {
+
+     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
+    */
     /**
-     * Method used to navigate between pages.
+     * Method used to navigate between pages resets components of the content area.
      * @param fxml  Fxml file name.
      * @throws IOException See loadFXML.
      */
