@@ -8,12 +8,12 @@
 <?import javafx.scene.layout.BorderPane?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.kderyabin.controllers.StartController">
+            fx:controller="com.kderyabin.views.StartView">
     <top>
         <Label text="Let's start" BorderPane.alignment="CENTER" styleClass="invite"/>
     </top>
     <center>
-        <JFXButton fx:id="btnStart" text="Add board" contentDisplay="CENTER" onMouseClicked="#btnClick"
+        <JFXButton text="Add board" contentDisplay="CENTER" onMouseClicked="#btnClick"
                    styleClass="button-raised-large"/>
     </center>
     <bottom>
@@ -21,7 +21,7 @@
             <viewport>
                 <Rectangle2D/>
             </viewport>
-            <Image url="@assets/team-1721x1160.png"/>
+            <Image url="@../assets/team-1721x1160.png"/>
         </ImageView>
     </bottom>
 </BorderPane>

@@ -1,5 +1,9 @@
 package com.kderyabin;
 
+import com.kderyabin.viewmodels.MainViewModel;
+import com.kderyabin.views.MainView;
+import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -8,16 +12,22 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 
 public class Main extends Application {
     private static Scene scene;
     private static Pane content;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        scene = new Scene(loadFXML("main"));
-        content = (Pane)scene.lookup("#content");
+
+   public void start(Stage primaryStage) throws Exception {
+        final ViewTuple<MainView, MainViewModel> tuple
+                = FluentViewLoader.fxmlView(MainView.class).load();
+        Parent view = tuple.getView();
+
+        scene = new Scene(view);
+
+       content = (Pane)scene.lookup("#content");
         scene.getStylesheets().add(
                 this.getClass().getResource("assets/style.css").toExternalForm()
         );
@@ -28,19 +38,11 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
+
     public static void main(String[] args) {
         launch(args);
     }
 
-    /*
-     * Method used to navigate between pages resets the root component.
-     * @param fxml  Fxml file name.
-     * @throws IOException See loadFXML.
-
-     static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-    */
     /**
      * Method used to navigate between pages resets components of the content area.
      * @param fxml  Fxml file name.
@@ -51,6 +53,7 @@ public class Main extends Application {
         children.remove(0, children.size());
         children.add(loadFXML(fxml));
     }
+
     /**
      *  Load fxml file.
      * @param fxml  Fxml file name without the extension.
@@ -61,4 +64,5 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
+
 }

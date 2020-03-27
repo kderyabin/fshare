@@ -6,7 +6,7 @@
 <?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.kderyabin.controllers.BoardFormController">
+            fx:controller="com.kderyabin.views.BoardFormView">
     <top>
         <HBox styleClass="header">
             <BorderPane HBox.hgrow="ALWAYS">
