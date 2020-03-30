@@ -1,11 +1,12 @@
 package com.kderyabin.views;
 
-import com.kderyabin.Main;
 import com.kderyabin.viewmodels.BoardViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BoardFormView implements FxmlView<BoardViewModel> {
 
     @InjectViewModel
@@ -16,6 +17,6 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     }
 
     public void goBack(ActionEvent actionEvent) throws Exception {
-        Main.setContent("main");
+        viewModel.goBack();
     }
 }

@@ -1,69 +1,72 @@
 package com.kderyabin;
 
+import com.kderyabin.services.AppContextService;
+import com.kderyabin.services.NavigateService;
 import com.kderyabin.viewmodels.MainViewModel;
 import com.kderyabin.views.BoardFormView;
 import com.kderyabin.views.MainView;
 import com.kderyabin.views.StartView;
 import de.saxsys.mvvmfx.FluentViewLoader;
+import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
-import javafx.application.Application;
+import de.saxsys.mvvmfx.spring.MvvmfxSpringApplication;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-public class Main extends Application {
+import java.util.Locale;
+import java.util.ResourceBundle;
 
-    private static Scene scene;
-    private static Pane content;
-    private static MainView appView;
+@SpringBootApplication
+public class Main extends MvvmfxSpringApplication {
 
-
-    public void start(Stage primaryStage) throws Exception {
-        final ViewTuple<MainView, MainViewModel> tuple
-                = FluentViewLoader.fxmlView(MainView.class).load();
-
-        appView = tuple.getCodeBehind();
-        Parent root = tuple.getView();
-        // set dimension
-        root.prefHeight(1024);
-        root.prefWidth(786);
-        scene = new Scene(root);
-        scene.getStylesheets().add(
-                this.getClass().getResource("assets/style.css").toExternalForm()
-        );
-
-        primaryStage.setTitle("Share");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
+    private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    /**
-     * Loads UI components into content area.
-     *
-     * @param viewClass View class to load into content area, something like StartView.class
-     */
-    public static void setContent(String viewClass) throws Exception {
+    @Override
+    public void startMvvmfx(Stage primaryStage) throws Exception {
+        Locale.setDefault(Locale.ENGLISH);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
+        MvvmFX.setGlobalResourceBundle(resourceBundle);
 
-        String clazz = viewClass.substring(0, 1).toUpperCase() + viewClass.substring(1) + "View";
-        Parent parent;
-        switch (clazz) {
-            case "MainView":
-                parent = FluentViewLoader.fxmlView(MainView.class).load().getView();
-                break;
-            case "BoardFormView":
-                parent =FluentViewLoader.fxmlView(BoardFormView.class).load().getView();
-                break;
-            case "StartView":
-                parent =FluentViewLoader.fxmlView(StartView.class).load().getView();
-                break;
-            default:
-                throw new Exception("Undefined view with name " + clazz);
-        }
-        appView.setContent(parent);
+        final ViewTuple<MainView, MainViewModel> tuple
+                = FluentViewLoader.fxmlView(MainView.class).load();
+
+        registerNavigation(tuple.getCodeBehind().getContent());
+
+        Parent root = tuple.getView();
+        // set dimension
+        root.prefHeight(1024);
+        root.prefWidth(786);
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(
+                this.getClass().getResource("assets/style.css").toExternalForm()
+        );
+
+        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("assets/appIcon.png")));
+        primaryStage.setTitle(resourceBundle.getString("window.title"));
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+    }
+
+    /**
+     * Initialize views for navigation.
+     * @param contentArea Pane in which the content is displayed.
+     */
+    private void registerNavigation(Pane contentArea) {
+        NavigateService navigateService = AppContextService.getBean(NavigateService.class);
+        navigateService.register("main", MainView.class);
+        navigateService.register("start", StartView.class);
+        navigateService.register("board-form", BoardFormView.class);
+        navigateService.setContent(contentArea);
     }
 }

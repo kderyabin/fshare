@@ -10,10 +10,10 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.kderyabin.views.StartView">
     <top>
-        <Label text="Let's start" BorderPane.alignment="CENTER" styleClass="invite"/>
+        <Label text="%start" BorderPane.alignment="CENTER" styleClass="invite"/>
     </top>
     <center>
-        <JFXButton text="Add board" contentDisplay="CENTER" onMouseClicked="#btnClick"
+        <JFXButton text="%add_board" contentDisplay="CENTER" onMouseClicked="#addBoard"
                    styleClass="button-raised-large"/>
     </center>
     <bottom>

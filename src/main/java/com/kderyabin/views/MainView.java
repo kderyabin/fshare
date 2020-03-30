@@ -8,7 +8,9 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import org.springframework.stereotype.Component;
 
+@Component
 public class MainView implements FxmlView<MainViewModel> {
 
     @FXML
@@ -22,13 +24,22 @@ public class MainView implements FxmlView<MainViewModel> {
 
     }
 
-    /**
-     * Method used to navigate between pages resets components of the content area.
-     * @param parent Panel with UI components.
-     */
-    public void setContent(Parent parent) {
+    public Pane getContent() {
+        return content;
+    }
+
+    //    /**
+//     * Method used to navigate between pages resets components of the content area.
+//     * @param parent Panel with UI components.
+//     */
+    public void goTo(Parent parent) {
         ObservableList<Node> children = content.getChildren();
-        children.remove(0, children.size());
-        children.add(parent);
+        System.out.println(children.size());
+        System.out.println(parent);
+        children.clear();
+        System.out.println(children.size());
+        if(parent != null) {
+            children.add(parent);
+        }
     }
 }

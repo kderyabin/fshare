@@ -1,11 +1,12 @@
 package com.kderyabin.views;
 
-import com.kderyabin.Main;
 import com.kderyabin.viewmodels.StartViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StartView implements FxmlView<StartViewModel> {
 
     @InjectViewModel
@@ -16,7 +17,7 @@ public class StartView implements FxmlView<StartViewModel> {
     }
 
     @FXML
-    public void btnClick() throws Exception {
-        Main.setContent("boardForm");
+    public void addBoard(){
+        viewModel.editBoard();
     }
 }
