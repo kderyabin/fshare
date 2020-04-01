@@ -3,11 +3,9 @@ package com.kderyabin.viewmodels;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.services.NavigateServiceInterface;
-import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.mapping.ModelWrapper;
 import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,9 +21,7 @@ public class BoardViewModel implements ViewModel {
     private BoardModel model;
     private ModelWrapper<BoardModel> wrapper = new ModelWrapper<>();
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
-    private ListProperty<PersonListItemViewModel> attendee = new SimpleListProperty<>();
 
-    @Initialize
     public void initialize() {
         model = new BoardModel();
         model.setName("Board title");
@@ -37,7 +33,6 @@ public class BoardViewModel implements ViewModel {
         p2.setName("Jack");
         model.getParticipants().add(p2);
         participants.addAll(model.getParticipants().stream().map(PersonListItemViewModel::new).collect(Collectors.toList()));
-        attendee.set(participants);
         wrapper.set(model);
         wrapper.reload();
     }
@@ -71,16 +66,15 @@ public class BoardViewModel implements ViewModel {
         return participants;
     }
 
-
-    public ObservableList<PersonListItemViewModel> getAttendee() {
-        return attendee.get();
-    }
-
-    public ListProperty<PersonListItemViewModel> attendeeProperty() {
-        return attendee;
-    }
-
-    public void setAttendee(ObservableList<PersonListItemViewModel> attendee) {
-        this.attendee.set(attendee);
+    /**
+     * Add new participant to the list.
+     * @param name Participant name.
+     * @return  TRUE on success False en failure.
+     */
+    public boolean addParticipant(String name) {
+        PersonModel model = new PersonModel();
+        model.setName(name);
+        PersonListItemViewModel viewModel = new PersonListItemViewModel(model);
+        return participants.add(viewModel);
     }
 }

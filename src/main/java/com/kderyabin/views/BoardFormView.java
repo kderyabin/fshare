@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.kderyabin.models.BoardModel;
 import com.kderyabin.viewmodels.BoardViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -20,6 +21,8 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     public TextArea description;
     @FXML
     public ListView<PersonListItemViewModel> participantsList;
+    @FXML
+    public TextField person;
 
     @InjectViewModel
     private BoardViewModel viewModel;
@@ -28,12 +31,21 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     public void initialize() {
         name.textProperty().bindBidirectional(viewModel.nameProperty());
         description.textProperty().bindBidirectional(viewModel.descriptionProperty());
+
         participantsList.setItems(viewModel.participantsProperty());
         participantsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
-
     }
 
     public void goBack(ActionEvent actionEvent) throws Exception {
         viewModel.goBack();
+    }
+
+    /**
+     * Add participant.
+     */
+    public void addParticipant() {
+        if( viewModel.addParticipant(person.getText())){
+            person.setText("");
+        }
     }
 }

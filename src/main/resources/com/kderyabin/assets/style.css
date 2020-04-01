@@ -74,6 +74,9 @@
     -fx-padding: 50 100 0 100;
 }
 
+.list-cell:empty {
+    -fx-opacity: 0;
+}
 .mylistview .scroll-bar:horizontal .track,
 .mylistview .scroll-bar:vertical .track{
     -fx-background-color:transparent;

@@ -33,15 +33,16 @@
             <TextArea fx:id="description" maxHeight="100" />
 
             <Label text="Participants"/>
+
             <StackPane>
-                <ListView fx:id="participantsList"></ListView>
+                <ListView  VBox.vgrow="NEVER"   fx:id="participantsList"></ListView>
             </StackPane>
             <HBox>
-                <TextField HBox.hgrow="ALWAYS" promptText="name">
+                <TextField HBox.hgrow="ALWAYS" promptText="name" fx:id="person">
                     <HBox.margin>
                         <Insets right="50"/>
                     </HBox.margin>
-                </TextField><JFXButton text="&#xe145;" styleClass="icon"/>
+                </TextField><JFXButton text="&#xe145;" styleClass="icon" onAction="#addParticipant"/>
             </HBox>
 
         </VBox>
