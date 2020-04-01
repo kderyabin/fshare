@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.JFXListView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.views.BoardFormView">
@@ -25,13 +26,16 @@
     <center>
         <VBox styleClass="form-panel">
 
-            <Label text="Name"/>
-            <TextField />
+            <Label  text="Name"/>
+            <TextField fx:id="name" />
 
             <Label text="Description"/>
-            <TextArea maxHeight="100" />
+            <TextArea fx:id="description" maxHeight="100" />
 
             <Label text="Participants"/>
+            <StackPane>
+                <ListView fx:id="participantsList"></ListView>
+            </StackPane>
             <HBox>
                 <TextField HBox.hgrow="ALWAYS" promptText="name">
                     <HBox.margin>

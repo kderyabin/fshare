@@ -64,7 +64,6 @@ public class Main extends MvvmfxSpringApplication {
      */
     private void registerNavigation(Pane contentArea) {
         NavigateService navigateService = AppContextService.getBean(NavigateService.class);
-        navigateService.register("main", MainView.class);
         navigateService.register("start", StartView.class);
         navigateService.register("board-form", BoardFormView.class);
         navigateService.setContent(contentArea);
