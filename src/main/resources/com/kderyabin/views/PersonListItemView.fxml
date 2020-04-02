@@ -10,5 +10,5 @@
     <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
         <Label  fx:id="name" text="Name" />
     </StackPane>
-    <JFXButton defaultButton="true" text="&#xe15b;" styleClass="icon" HBox.hgrow="NEVER"/>
+    <JFXButton defaultButton="true" text="&#xe15b;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeButton"/>
 </HBox>

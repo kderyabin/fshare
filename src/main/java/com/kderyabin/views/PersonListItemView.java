@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXButton;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -14,11 +15,14 @@ public class PersonListItemView implements FxmlView<PersonListItemViewModel> {
 
     @FXML
     public Label name;
+    @FXML
+    public JFXButton removeButton;
 
     @InjectViewModel
     private PersonListItemViewModel viewModel;
 
     public void initialize() {
         name.textProperty().bind(viewModel.nameProperty());
+        removeButton.setUserData(viewModel);
     }
 }

@@ -77,4 +77,8 @@ public class BoardViewModel implements ViewModel {
         PersonListItemViewModel viewModel = new PersonListItemViewModel(model);
         return participants.add(viewModel);
     }
+
+    public boolean removeParticipant(PersonListItemViewModel personListItemViewModel){
+        return participants.remove(personListItemViewModel);
+    }
 }
