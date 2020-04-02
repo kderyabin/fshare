@@ -6,35 +6,42 @@ import com.kderyabin.services.NavigateServiceInterface;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.mapping.ModelWrapper;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
+@Scope("prototype")
 public class BoardViewModel implements ViewModel {
 
     private NavigateServiceInterface navigation;
     private BoardModel model;
-    private ModelWrapper<BoardModel> wrapper = new ModelWrapper<>();
+    private StringProperty name = new SimpleStringProperty("");
+    private StringProperty description = new SimpleStringProperty("");
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
 
     public void initialize() {
-        model = new BoardModel();
-        model.setName("Board title");
-        model.setDescription("Board description");
-        PersonModel p1 = new PersonModel();
-        p1.setName("Sam");
-        model.getParticipants().add(p1);
-        PersonModel p2 = new PersonModel();
-        p2.setName("Jack");
-        model.getParticipants().add(p2);
-        participants.addAll(model.getParticipants().stream().map(PersonListItemViewModel::new).collect(Collectors.toList()));
-        wrapper.set(model);
-        wrapper.reload();
+        if(model != null) {
+            setName(model.getName());
+            setDescription(model.getDescription());
+            if(!model.getParticipants().isEmpty()){
+                participants.addAll(
+                        model.getParticipants()
+                                .stream()
+                                .map(PersonListItemViewModel::new)
+                                .collect(Collectors.toList())
+                );
+            }
+        } else {
+            model = new BoardModel();
+        }
     }
 
     public void goBack() {
@@ -45,26 +52,39 @@ public class BoardViewModel implements ViewModel {
         }
     }
 
-    public NavigateServiceInterface getNavigation() {
-        return navigation;
-    }
-
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
     }
 
+    public String getName() {
+        return name.get();
+    }
+
     public StringProperty nameProperty() {
-        return wrapper.field("name", BoardModel::getName, BoardModel::setName, "");
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public String getDescription() {
+        return description.get();
     }
 
     public StringProperty descriptionProperty() {
-        return wrapper.field("description", BoardModel::getDescription, BoardModel::setDescription, "");
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description.set(description);
     }
 
     public ObservableList<PersonListItemViewModel> participantsProperty() {
         return participants;
     }
+
 
     /**
      * Add new participant to the list.
@@ -78,7 +98,17 @@ public class BoardViewModel implements ViewModel {
         return participants.add(viewModel);
     }
 
-    public boolean removeParticipant(PersonListItemViewModel personListItemViewModel){
-        return participants.remove(personListItemViewModel);
+    public void removeParticipant(PersonListItemViewModel personListItemViewModel){
+        participants.remove(personListItemViewModel);
+    }
+
+    /**
+     * Save board data.
+     * @return TRUE if saved with success  FALSE on failure.
+     */
+    public boolean save(){
+        model.setName(getName());
+        model.setDescription(getDescription());
+        return true;
     }
 }

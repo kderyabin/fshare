@@ -1,22 +1,41 @@
 package com.kderyabin.models;
 
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@Entity
+@Table(name = "board")
 public class BoardModel {
-    private Long id;
+    @Id
+    @Column(name = "id", nullable = false)
+    private Integer id;
+    
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @Column(name = "description")
     private String description;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "creation", nullable = false)
     private LocalDateTime creation;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "update", nullable = false)
     private LocalDateTime update;
+
+    @OneToMany(cascade = CascadeType.ALL)
     private List<PersonModel> participants = new ArrayList<>();
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -59,4 +78,22 @@ public class BoardModel {
     public void setParticipants(List<PersonModel> participants) {
         this.participants = participants;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardModel that = (BoardModel) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(creation, that.creation) &&
+                Objects.equals(update, that.update);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, creation, update);
+    }
+
 }

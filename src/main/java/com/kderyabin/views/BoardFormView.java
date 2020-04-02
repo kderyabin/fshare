@@ -41,7 +41,7 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
         participantsList.addEventHandler(ActionEvent.ACTION, this::removeParticipant);
     }
 
-    public void goBack(ActionEvent actionEvent) throws Exception {
+    public void goBack() {
         viewModel.goBack();
     }
 
