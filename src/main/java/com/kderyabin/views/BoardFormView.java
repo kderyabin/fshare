@@ -8,6 +8,7 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -34,6 +35,8 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
 
         participantsList.setItems(viewModel.participantsProperty());
         participantsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
+
+        participantsList.addEventHandler(ButtonEve);
     }
 
     public void goBack(ActionEvent actionEvent) throws Exception {
