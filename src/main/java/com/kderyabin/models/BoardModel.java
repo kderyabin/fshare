@@ -1,11 +1,8 @@
 package com.kderyabin.models;
 
-
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Entity
 @Table(name = "board")
@@ -20,16 +17,17 @@ public class BoardModel {
     @Column(name = "description")
     private String description;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "creation", nullable = false)
-    private LocalDateTime creation;
+    private Timestamp creation;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update", nullable = false)
-    private LocalDateTime update;
+    private Timestamp update;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<PersonModel> participants = new ArrayList<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable( name="board_person",
+                joinColumns = { @JoinColumn( name = "boardId")},
+                inverseJoinColumns = { @JoinColumn( name = "personId")})
+    private Set<PersonModel> participants = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -55,28 +53,37 @@ public class BoardModel {
         this.description = description;
     }
 
-    public LocalDateTime getCreation() {
+    public Timestamp getCreation() {
         return creation;
     }
 
-    public void setCreation(LocalDateTime creation) {
+    public void setCreation(Timestamp creation) {
         this.creation = creation;
     }
 
-    public LocalDateTime getUpdate() {
+    public Timestamp getUpdate() {
         return update;
     }
 
-    public void setUpdate(LocalDateTime update) {
+    public void setUpdate(Timestamp update) {
         this.update = update;
     }
 
-    public List<PersonModel> getParticipants() {
+    public Set<PersonModel> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(List<PersonModel> participants) {
+    public void setParticipants(Set<PersonModel> participants) {
         this.participants = participants;
+    }
+
+    public boolean addParticipant(PersonModel participant){
+        participant.addBoard(this);
+        return participants.add(participant);
+    }
+    public boolean removeParticipant(PersonModel participant){
+        participant.removeBoard(this);
+        return participants.remove(participant);
     }
 
     @Override

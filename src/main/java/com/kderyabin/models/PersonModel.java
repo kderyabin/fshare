@@ -1,7 +1,9 @@
 package com.kderyabin.models;
 
 import javax.persistence.*;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "person")
@@ -10,9 +12,11 @@ public class PersonModel {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Basic
     @Column(name = "name", nullable = false, length = 50)
     private String name;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<BoardModel> boards = new LinkedHashSet<>();
 
     public Integer getId() {
         return id;
@@ -28,6 +32,24 @@ public class PersonModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<BoardModel> getBoards() {
+        return boards;
+    }
+
+    public void setBoards(Set<BoardModel> boards) {
+        this.boards = boards;
+    }
+
+    public boolean addBoard(BoardModel boardModel) {
+        boardModel.addParticipant(this);
+        return boards.add(boardModel);
+    }
+
+    public boolean removeBoard(BoardModel boardModel) {
+        boardModel.removeParticipant(this);
+        return boards.remove(boardModel);
     }
 
     @Override

@@ -48,5 +48,10 @@
             <artifactId>hibernate-core</artifactId>
             <version>5.4.13.Final</version>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 </project>
