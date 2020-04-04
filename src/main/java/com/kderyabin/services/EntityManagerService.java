@@ -6,7 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-//@Service
+@Service
 public class EntityManagerService {
 
     private static EntityManagerFactory emf = Persistence.createEntityManagerFactory("default");
