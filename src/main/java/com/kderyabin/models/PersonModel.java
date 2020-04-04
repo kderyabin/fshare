@@ -9,6 +9,7 @@ import java.util.Set;
 @Table(name = "person")
 public class PersonModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 

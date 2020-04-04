@@ -8,6 +8,7 @@ import java.util.*;
 @Table(name = "board")
 public class BoardModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
     
