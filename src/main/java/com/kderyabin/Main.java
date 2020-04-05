@@ -1,6 +1,6 @@
 package com.kderyabin;
 
-import com.kderyabin.services.AppContextService;
+import com.kderyabin.dao.PersonRepository;
 import com.kderyabin.services.NavigateService;
 import com.kderyabin.viewmodels.MainViewModel;
 import com.kderyabin.views.BoardFormView;
@@ -17,7 +17,9 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -27,12 +29,20 @@ public class Main extends MvvmfxSpringApplication {
 
     private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
+    private  ApplicationContext context;
+
     public static void main(String[] args) {
         launch(args);
     }
 
+    @Autowired
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
+
     @Override
-    public void startMvvmfx(Stage primaryStage) throws Exception {
+    public void startMvvmfx(Stage primaryStage) {
+
         Locale.setDefault(Locale.ENGLISH);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
@@ -56,6 +66,7 @@ public class Main extends MvvmfxSpringApplication {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        PersonRepository personRepo = context.getBean(PersonRepository.class);
     }
 
     /**
@@ -63,7 +74,7 @@ public class Main extends MvvmfxSpringApplication {
      * @param contentArea Pane in which the content is displayed.
      */
     private void registerNavigation(Pane contentArea) {
-        NavigateService navigateService = AppContextService.getBean(NavigateService.class);
+        NavigateService navigateService = context.getBean(NavigateService.class);
         navigateService.register("start", StartView.class);
         navigateService.register("board-form", BoardFormView.class);
         navigateService.setContent(contentArea);
