@@ -49,6 +49,10 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
      * Event handler adds participant to the board.
      */
     public void addParticipant() {
+        if(person.getText().isEmpty()) {
+            System.out.println("Provide a name for participant");
+            return;
+        }
         if( viewModel.addParticipant(person.getText())){
             person.setText("");
         }
@@ -63,6 +67,14 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
             Button btn = (Button) event.getTarget();
             PersonListItemViewModel vm = (PersonListItemViewModel) btn.getUserData();
             viewModel.removeParticipant(vm);
+        }
+    }
+
+    public void save() {
+        try{
+            viewModel.save();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

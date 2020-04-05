@@ -1,9 +1,13 @@
 package com.kderyabin.models;
 
+import lombok.ToString;
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
+@ToString
 @Entity
 @Table(name = "board")
 public class BoardModel {
@@ -19,10 +23,10 @@ public class BoardModel {
     private String description;
 
     @Column(name = "creation", nullable = false)
-    private Timestamp creation;
+    private Timestamp creation = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "update", nullable = false)
-    private Timestamp update;
+    private Timestamp update = new Timestamp(System.currentTimeMillis());;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable( name="board_person",
@@ -85,6 +89,21 @@ public class BoardModel {
     public boolean removeParticipant(PersonModel participant){
         participant.removeBoard(this);
         return participants.remove(participant);
+    }
+
+    /**
+     *
+     * @return Current timestamp.
+     */
+    private Timestamp getTimestamp(){
+        return new Timestamp(System.currentTimeMillis());
+    }
+
+    /**
+     * Reset update field to current timestamp.
+     */
+    public void initUpdateTime(){
+        update = getTimestamp();
     }
 
     @Override

@@ -18,7 +18,7 @@
                     <Label text="New board" styleClass="header__title"/>
                 </center>
                 <right>
-                    <JFXButton text="&#xe5ca;"  styleClass="header__btn-icon" BorderPane.alignment="CENTER" />
+                    <JFXButton text="&#xe5ca;"  styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#save" />
                 </right>
             </BorderPane>
         </HBox>

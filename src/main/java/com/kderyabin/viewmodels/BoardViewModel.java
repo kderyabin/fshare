@@ -1,12 +1,10 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.dao.BoardRepository;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.services.NavigateServiceInterface;
 import de.saxsys.mvvmfx.ViewModel;
-import de.saxsys.mvvmfx.utils.mapping.ModelWrapper;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -14,10 +12,6 @@ import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,6 +23,8 @@ public class BoardViewModel implements ViewModel {
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
+    private BoardRepository repository;
+
 
     public void initialize() {
         if(model != null) {
@@ -47,17 +43,14 @@ public class BoardViewModel implements ViewModel {
         }
     }
 
-    public void goBack() {
-        try {
-            navigation.navigate("start");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
+    }
+
+    @Autowired
+    public void setRepository(BoardRepository repository) {
+        this.repository = repository;
     }
 
     public String getName() {
@@ -95,23 +88,57 @@ public class BoardViewModel implements ViewModel {
      * @return  TRUE on success False en failure.
      */
     public boolean addParticipant(String name) {
-        PersonModel model = new PersonModel();
-        model.setName(name);
-        PersonListItemViewModel viewModel = new PersonListItemViewModel(model);
+        PersonModel personModel = new PersonModel();
+        personModel.setName(name);
+        model.addParticipant(personModel);
+
+        PersonListItemViewModel viewModel = new PersonListItemViewModel(personModel);
         return participants.add(viewModel);
     }
 
     public void removeParticipant(PersonListItemViewModel personListItemViewModel){
+        PersonModel personModel = personListItemViewModel.getModel();
+        model.removeParticipant(personModel);
         participants.remove(personListItemViewModel);
     }
 
     /**
-     * Save board data.
-     * @return TRUE if saved with success  FALSE on failure.
+     * Validate data integrity.
+     *
+     * @throws Exception
      */
-    public boolean save(){
+    public void validate() throws Exception{
+        if(getName().isEmpty()) {
+            throw new Exception("Board name is required!");
+        }
+
+        if(participants.size() == 0) {
+            throw new Exception("Add participants!");
+        }
+
+    }
+
+
+    public void goBack() {
+        try {
+            navigation.navigate("start");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Save board data.
+     */
+    public void save() throws Exception{
+        validate();
+
         model.setName(getName());
         model.setDescription(getDescription());
-        return true;
+        model.initUpdateTime();
+
+        model = repository.save(model);
+        navigation.navigate("start");
     }
 }

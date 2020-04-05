@@ -1,10 +1,12 @@
 package com.kderyabin.models;
 
+import lombok.ToString;
 import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@ToString
 @Entity
 @Table(name = "person")
 public class PersonModel {
@@ -44,12 +46,10 @@ public class PersonModel {
     }
 
     public boolean addBoard(BoardModel boardModel) {
-        boardModel.addParticipant(this);
         return boards.add(boardModel);
     }
 
     public boolean removeBoard(BoardModel boardModel) {
-        boardModel.removeParticipant(this);
         return boards.remove(boardModel);
     }
 
