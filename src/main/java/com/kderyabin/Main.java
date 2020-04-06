@@ -35,6 +35,8 @@ public class Main extends MvvmfxSpringApplication {
         launch(args);
     }
 
+    public static Stage stage ;
+
     @Autowired
     public void setContext(ApplicationContext context) {
         this.context = context;
@@ -42,7 +44,7 @@ public class Main extends MvvmfxSpringApplication {
 
     @Override
     public void startMvvmfx(Stage primaryStage) {
-
+        stage = primaryStage;
         Locale.setDefault(Locale.ENGLISH);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
@@ -65,8 +67,6 @@ public class Main extends MvvmfxSpringApplication {
         primaryStage.setTitle(resourceBundle.getString("window.title"));
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        PersonRepository personRepo = context.getBean(PersonRepository.class);
     }
 
     /**

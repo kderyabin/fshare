@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import com.jfoenix.controls.JFXListView?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.views.BoardFormView">
@@ -12,13 +11,13 @@
         <HBox styleClass="header">
             <BorderPane HBox.hgrow="ALWAYS">
                 <left>
-                    <JFXButton text="&#xe5c4;" styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#goBack"/>
+                    <JFXButton fx:id="backBtn" text="&#xe5c4;" styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#goBack"/>
                 </left>
                 <center>
                     <Label text="New board" styleClass="header__title"/>
                 </center>
                 <right>
-                    <JFXButton text="&#xe5ca;"  styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#save" />
+                    <JFXButton fx:id="saveBtn" text="&#xe5ca;"  styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#save" />
                 </right>
             </BorderPane>
         </HBox>

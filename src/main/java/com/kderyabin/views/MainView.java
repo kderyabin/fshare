@@ -1,45 +1,87 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXSnackbar;
+import com.jfoenix.controls.JFXSnackbarLayout;
+import com.kderyabin.util.Notification;
 import com.kderyabin.viewmodels.MainViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
-import javafx.collections.ObservableList;
+import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 @Component
-public class MainView implements FxmlView<MainViewModel> {
+public class MainView implements FxmlView<MainViewModel>, Initializable {
 
     @FXML
     public Pane content;
+    @FXML
+    public Pane root;
 
     @InjectViewModel
     private MainViewModel viewModel;
 
-    public void initialize() {
+    NotificationCenter notificationCenter;
+
+    /**
+     * Snackbar provides brief messages about app processes at the bottom of the screen.
+     */
+    JFXSnackbar info;
+    /**
+     * Snackbar with action button provides brief messages about app processes at the bottom of the screen.
+     */
+    JFXSnackbar infoDismiss;
 
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        info = new JFXSnackbar(root);
+        infoDismiss = new JFXSnackbar(root);
+        info.setPrefWidth(300);
+        infoDismiss.setPrefWidth(300);
+        notificationCenter.subscribe(Notification.INFO, ((key, payload) -> {
+            String message = (String) payload[0];
+            displayInfo(message);
+        }));
+        notificationCenter.subscribe(Notification.INFO_DISMISS, (key, payload) -> {
+            String message = (String) payload[0];
+            displayDismissInfo(message);
+        });
+    }
+
+    @Autowired
+    public void setNotificationCenter(NotificationCenter notificationCenter) {
+        this.notificationCenter = notificationCenter;
     }
 
     public Pane getContent() {
         return content;
     }
 
-    //    /**
-//     * Method used to navigate between pages resets components of the content area.
-//     * @param parent Panel with UI components.
-//     */
-    public void goTo(Parent parent) {
-        ObservableList<Node> children = content.getChildren();
-        System.out.println(children.size());
-        System.out.println(parent);
-        children.clear();
-        System.out.println(children.size());
-        if(parent != null) {
-            children.add(parent);
+    public void displayInfo(String message) {
+        if(info.isVisible()) {
+            info.close();
         }
+        info.fireEvent(new JFXSnackbar.SnackbarEvent(
+                new JFXSnackbarLayout(message),
+                Duration.millis(1500), null)
+        );
+    }
+
+    public void displayDismissInfo(String message) {
+        if( infoDismiss.isVisible()){
+            infoDismiss.close();
+        }
+        infoDismiss.fireEvent(new JFXSnackbar.SnackbarEvent(
+                new JFXSnackbarLayout(message, "OK", action -> infoDismiss.close()),
+                Duration.INDEFINITE, null)
+        );
     }
 }

@@ -1,10 +1,14 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.dao.BoardRepository;
+import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.util.Notification;
+import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -12,6 +16,8 @@ import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,18 +25,22 @@ import java.util.stream.Collectors;
 public class BoardViewModel implements ViewModel {
 
     private NavigateServiceInterface navigation;
+    @InjectResourceBundle
+    ResourceBundle resources;
+    NotificationCenter notificationCenter;
+    private BoardRepository repository;
+
     private BoardModel model;
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
-    private BoardRepository repository;
-
+    private boolean personListUpdated = false;
 
     public void initialize() {
-        if(model != null) {
+        if (model != null) {
             setName(model.getName());
             setDescription(model.getDescription());
-            if(!model.getParticipants().isEmpty()){
+            if (!model.getParticipants().isEmpty()) {
                 participants.addAll(
                         model.getParticipants()
                                 .stream()
@@ -51,6 +61,11 @@ public class BoardViewModel implements ViewModel {
     @Autowired
     public void setRepository(BoardRepository repository) {
         this.repository = repository;
+    }
+
+    @Autowired
+    public void setNotificationCenter(NotificationCenter notificationCenter) {
+        this.notificationCenter = notificationCenter;
     }
 
     public String getName() {
@@ -84,61 +99,97 @@ public class BoardViewModel implements ViewModel {
 
     /**
      * Add new participant to the list.
+     *
      * @param name Participant name.
-     * @return  TRUE on success False en failure.
+     * @return TRUE on success False en failure.
      */
     public boolean addParticipant(String name) {
+        if (name.isEmpty()) {
+            notificationCenter.publish(
+                    Notification.INFO_DISMISS, resources.getString("msg.partipant_name_required")
+            );
+            return false;
+        }
         PersonModel personModel = new PersonModel();
         personModel.setName(name);
-        model.addParticipant(personModel);
 
         PersonListItemViewModel viewModel = new PersonListItemViewModel(personModel);
+        personListUpdated = true;
         return participants.add(viewModel);
     }
 
-    public void removeParticipant(PersonListItemViewModel personListItemViewModel){
-        PersonModel personModel = personListItemViewModel.getModel();
-        model.removeParticipant(personModel);
+    public void removeParticipant(PersonListItemViewModel personListItemViewModel) {
+        personListUpdated = true;
         participants.remove(personListItemViewModel);
+    }
+
+    /**
+     * Check if model data has been updated.
+     *
+     * @return
+     */
+    private boolean isUpdated() {
+        boolean status = getName().equals(model.getName()) &&
+                getDescription().equals(model.getDescription()) &&
+                !personListUpdated;
+
+        return !status;
     }
 
     /**
      * Validate data integrity.
      *
-     * @throws Exception
+     * @throws ValidationException
      */
-    public void validate() throws Exception{
-        if(getName().isEmpty()) {
-            throw new Exception("Board name is required!");
+    public void validate() throws ValidationException {
+        if (getName().isEmpty()) {
+            throw new ValidationException(
+                    resources.getString("msg.board_name_required")
+            );
         }
 
-        if(participants.size() == 0) {
-            throw new Exception("Add participants!");
+        if (participants.size() == 0) {
+            throw new ValidationException(
+                    resources.getString("msg.provide_participant")
+            );
         }
-
     }
 
-
-    public void goBack() {
+    public boolean goBack() {
         try {
+            if (isUpdated()) {
+                return false;
+            }
+
             navigation.navigate("start");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return true;
     }
 
 
     /**
      * Save board data.
      */
-    public void save() throws Exception{
-        validate();
+    public void save() {
+        try {
+            validate();
 
-        model.setName(getName());
-        model.setDescription(getDescription());
-        model.initUpdateTime();
+            model.setName(getName());
+            model.setDescription(getDescription());
+            model.initUpdateTime();
+            model.getParticipants().clear();
+            participants.forEach(person -> model.addParticipant(person.getModel()));
 
-        model = repository.save(model);
-        navigation.navigate("start");
+            model = repository.save(model);
+            notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
+            navigation.navigate("start");
+        } catch (ValidationException e) {
+            notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
+        }
     }
 }
