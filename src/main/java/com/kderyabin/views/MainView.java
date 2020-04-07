@@ -5,6 +5,7 @@ import com.jfoenix.controls.JFXSnackbarLayout;
 import com.kderyabin.util.Notification;
 import com.kderyabin.viewmodels.MainViewModel;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.fxml.FXML;
@@ -29,6 +30,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     private MainViewModel viewModel;
 
     NotificationCenter notificationCenter;
+
+    @InjectResourceBundle
+    ResourceBundle resources;
 
     /**
      * Snackbar provides brief messages about app processes at the bottom of the screen.
@@ -65,20 +69,22 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
         return content;
     }
 
-    public void displayInfo(String message) {
+    public void displayInfo(String resourceKey) {
         if(info.isVisible()) {
             info.close();
         }
+        String message = resources.getString(resourceKey);
         info.fireEvent(new JFXSnackbar.SnackbarEvent(
                 new JFXSnackbarLayout(message),
                 Duration.millis(1500), null)
         );
     }
 
-    public void displayDismissInfo(String message) {
+    public void displayDismissInfo(String resourceKey) {
         if( infoDismiss.isVisible()){
             infoDismiss.close();
         }
+        String message = resources.getString(resourceKey);
         infoDismiss.fireEvent(new JFXSnackbar.SnackbarEvent(
                 new JFXSnackbarLayout(message, "OK", action -> infoDismiss.close()),
                 Duration.INDEFINITE, null)

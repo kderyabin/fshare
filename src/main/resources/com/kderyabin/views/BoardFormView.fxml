@@ -4,46 +4,52 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.kderyabin.views.BoardFormView">
-    <top>
-        <HBox styleClass="header">
-            <BorderPane HBox.hgrow="ALWAYS">
-                <left>
-                    <JFXButton fx:id="backBtn" text="&#xe5c4;" styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#goBack"/>
-                </left>
-                <center>
-                    <Label text="New board" styleClass="header__title"/>
-                </center>
-                <right>
-                    <JFXButton fx:id="saveBtn" text="&#xe5ca;"  styleClass="header__btn-icon" BorderPane.alignment="CENTER" onAction="#save" />
-                </right>
-            </BorderPane>
-        </HBox>
-    </top>
-    <center>
-        <VBox styleClass="form-panel">
-
-            <Label  text="Name"/>
-            <TextField fx:id="name" />
-
-            <Label text="Description"/>
-            <TextArea fx:id="description" maxHeight="100" />
-
-            <Label text="Participants"/>
-
-            <StackPane>
-                <ListView  VBox.vgrow="NEVER"   fx:id="participantsList"></ListView>
-            </StackPane>
-            <HBox>
-                <TextField HBox.hgrow="ALWAYS" promptText="name" fx:id="person">
-                    <HBox.margin>
-                        <Insets right="50"/>
-                    </HBox.margin>
-                </TextField><JFXButton text="&#xe145;" styleClass="icon" onAction="#addParticipant"/>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.kderyabin.views.BoardFormView"
+            fx:id="root">
+    <BorderPane>
+        <top>
+            <HBox styleClass="header">
+                <BorderPane HBox.hgrow="ALWAYS">
+                    <left>
+                        <JFXButton fx:id="backBtn" text="&#xe5c4;" styleClass="header__btn-icon"
+                                   BorderPane.alignment="CENTER" onAction="#goBack"/>
+                    </left>
+                    <center>
+                        <Label text="New board" styleClass="header__title"/>
+                    </center>
+                    <right>
+                        <JFXButton fx:id="saveBtn" text="&#xe5ca;" styleClass="header__btn-icon"
+                                   BorderPane.alignment="CENTER" onAction="#save"/>
+                    </right>
+                </BorderPane>
             </HBox>
+        </top>
+        <center>
+            <VBox styleClass="form-panel">
 
-        </VBox>
-    </center>
-</BorderPane>
+                <Label text="Name"/>
+                <TextField fx:id="name"/>
+
+                <Label text="Description"/>
+                <TextArea fx:id="description" maxHeight="100"/>
+
+                <Label text="Participants"/>
+
+                <StackPane>
+                    <ListView VBox.vgrow="NEVER" fx:id="participantsList"></ListView>
+                </StackPane>
+                <HBox>
+                    <TextField HBox.hgrow="ALWAYS" promptText="name" fx:id="person">
+                        <HBox.margin>
+                            <Insets right="50"/>
+                        </HBox.margin>
+                    </TextField>
+                    <JFXButton text="&#xe145;" styleClass="icon" onAction="#addParticipant"/>
+                </HBox>
+
+            </VBox>
+        </center>
+    </BorderPane>
+</StackPane>

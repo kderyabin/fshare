@@ -1,10 +1,5 @@
 package com.kderyabin.views;
 
-import com.jfoenix.controls.JFXAlert;
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXDialog;
-import com.jfoenix.controls.JFXDialogLayout;
-import com.kderyabin.Main;
 import com.kderyabin.viewmodels.BoardViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -13,9 +8,8 @@ import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.StackPane;
+import javafx.stage.StageStyle;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -23,7 +17,7 @@ import java.util.Optional;
 @Component
 public class BoardFormView implements FxmlView<BoardViewModel> {
     @FXML
-    public BorderPane root;
+    public StackPane root;
     @FXML
     public TextField name;
     @FXML
@@ -51,22 +45,18 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     }
 
     public void goBack() {
-
-        if(!viewModel.goBack()){
-//            JFXDialog dialog = new JFXDialog();
-//            dialog.setContent(new Label("Content"));
-//            button.setOnAction((action)->dialog.show(rootStackPane));
-
+        if(!viewModel.canGoBack()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Delete File");
-            //alert.setHeaderText("Are you sure want to move this file to the Recycle Bin?");
-            alert.setContentText("Lorem ipsum dolor sit amet, consectetur adipiscing elit,"
-                    + " sed do eiusmod tempor incididunt ut labore et dolore magna"
-                    + " aliqua. Utenim ad minim veniam, quis nostrud exercitation"
-                    + " ullamco laboris nisi ut aliquip ex ea commodo consequat.");
+            alert.initStyle(StageStyle.UTILITY);
+            //alert.setTitle("Not saved");
+            alert.setHeaderText(null);
+            alert.setContentText("Modification will be lost. Are you sure?");
             Optional<ButtonType> option = alert.showAndWait();
-
+            if( option.get() != ButtonType.OK){
+                return;
+            }
         }
+        viewModel.goBack();
     }
 
     /**

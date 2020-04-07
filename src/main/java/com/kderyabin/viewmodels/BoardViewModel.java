@@ -6,7 +6,6 @@ import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
-import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 @Component
@@ -25,8 +23,7 @@ import java.util.stream.Collectors;
 public class BoardViewModel implements ViewModel {
 
     private NavigateServiceInterface navigation;
-    @InjectResourceBundle
-    ResourceBundle resources;
+
     NotificationCenter notificationCenter;
     private BoardRepository repository;
 
@@ -106,7 +103,7 @@ public class BoardViewModel implements ViewModel {
     public boolean addParticipant(String name) {
         if (name.isEmpty()) {
             notificationCenter.publish(
-                    Notification.INFO_DISMISS, resources.getString("msg.partipant_name_required")
+                    Notification.INFO_DISMISS, "msg.partipant_name_required"
             );
             return false;
         }
@@ -124,16 +121,21 @@ public class BoardViewModel implements ViewModel {
     }
 
     /**
-     * Check if model data has been updated.
+     * Checks if model data has been updated.
      *
-     * @return
+     * @return TRUE if we can safely quit the scene FALSE if there are modifications to be saved.
      */
-    private boolean isUpdated() {
-        boolean status = getName().equals(model.getName()) &&
+    public boolean canGoBack() {
+        // Is it a new board?
+        if(model.getId() == null) {
+            return  getName().trim().equals("") &&
+                    getDescription().trim().equals("") &&
+                    participants.size() == 0;
+        }
+        // For existing model check if data match
+        return getName().equals(model.getName()) &&
                 getDescription().equals(model.getDescription()) &&
                 !personListUpdated;
-
-        return !status;
     }
 
     /**
@@ -142,25 +144,17 @@ public class BoardViewModel implements ViewModel {
      * @throws ValidationException
      */
     public void validate() throws ValidationException {
-        if (getName().isEmpty()) {
-            throw new ValidationException(
-                    resources.getString("msg.board_name_required")
-            );
+        if (getName().trim().isEmpty()) {
+            throw new ValidationException("msg.board_name_required");
         }
 
         if (participants.size() == 0) {
-            throw new ValidationException(
-                    resources.getString("msg.provide_participant")
-            );
+            throw new ValidationException("msg.provide_participant");
         }
     }
 
     public boolean goBack() {
         try {
-            if (isUpdated()) {
-                return false;
-            }
-
             navigation.navigate("start");
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,7 +166,7 @@ public class BoardViewModel implements ViewModel {
     /**
      * Save board data.
      */
-    public void save() {
+    public void save() throws Exception {
         try {
             validate();
 
@@ -186,9 +180,6 @@ public class BoardViewModel implements ViewModel {
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             navigation.navigate("start");
         } catch (ValidationException e) {
-            notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
         }
     }
