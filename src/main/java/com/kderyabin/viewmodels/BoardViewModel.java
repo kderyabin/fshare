@@ -22,15 +22,23 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 public class BoardViewModel implements ViewModel {
 
+    /*
+     * Dependencies
+     */
     private NavigateServiceInterface navigation;
-
-    NotificationCenter notificationCenter;
+    private NotificationCenter notificationCenter;
     private BoardRepository repository;
-
     private BoardModel model;
+    /*
+     * ViewModel properties for binding.
+     */
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
+    /**
+     * Helper field.
+     * Updated whenever participants list is updated.
+     */
     private boolean personListUpdated = false;
 
     public void initialize() {
@@ -93,6 +101,9 @@ public class BoardViewModel implements ViewModel {
         return participants;
     }
 
+    public ObservableList<PersonListItemViewModel> getParticipants() {
+        return participants;
+    }
 
     /**
      * Add new participant to the list.
@@ -101,23 +112,27 @@ public class BoardViewModel implements ViewModel {
      * @return TRUE on success False en failure.
      */
     public boolean addParticipant(String name) {
-        if (name.isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             notificationCenter.publish(
                     Notification.INFO_DISMISS, "msg.partipant_name_required"
             );
             return false;
         }
         PersonModel personModel = new PersonModel();
-        personModel.setName(name);
+        personModel.setName(name.trim());
 
         PersonListItemViewModel viewModel = new PersonListItemViewModel(personModel);
         personListUpdated = true;
         return participants.add(viewModel);
     }
 
-    public void removeParticipant(PersonListItemViewModel personListItemViewModel) {
+    /**
+     * @param personListItemViewModel View model passed from the View.
+     * @return TRUE if removed FALSE if not or not found in the list.
+     */
+    public boolean removeParticipant(PersonListItemViewModel personListItemViewModel) {
         personListUpdated = true;
-        participants.remove(personListItemViewModel);
+        return participants.remove(personListItemViewModel);
     }
 
     /**
@@ -141,7 +156,8 @@ public class BoardViewModel implements ViewModel {
     /**
      * Validate data integrity.
      *
-     * @throws ValidationException
+     * @throws ValidationException  Validation exception with resource id as a message.
+     *                              The human message will be retrieved during GUI display.
      */
     public void validate() throws ValidationException {
         if (getName().trim().isEmpty()) {
@@ -153,18 +169,16 @@ public class BoardViewModel implements ViewModel {
         }
     }
 
-    public boolean goBack() {
-        try {
-            navigation.navigate("start");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
+    /**
+     * Load previous view.
+     * @throws Exception See NavigationService.navigate()
+     */
+    public void goBack() throws Exception {
+        navigation.navigate("start");
     }
 
-
     /**
-     * Save board data.
+     * Save board data and load next view.
      */
     public void save() throws Exception {
         try {
@@ -178,9 +192,16 @@ public class BoardViewModel implements ViewModel {
 
             model = repository.save(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
-            navigation.navigate("start");
+            // Can be null in unit tests.
+            if(null != navigation) {
+                navigation.navigate("start");
+            }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
         }
+    }
+
+    public void setModel(BoardModel model) {
+        this.model = model;
     }
 }

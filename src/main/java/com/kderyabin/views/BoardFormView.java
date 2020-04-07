@@ -16,8 +16,7 @@ import java.util.Optional;
 
 @Component
 public class BoardFormView implements FxmlView<BoardViewModel> {
-    @FXML
-    public StackPane root;
+
     @FXML
     public TextField name;
     @FXML
@@ -44,7 +43,7 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
         participantsList.addEventHandler(ActionEvent.ACTION, this::removeParticipant);
     }
 
-    public void goBack() {
+    public void goBack() throws Exception {
         if(!viewModel.canGoBack()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initStyle(StageStyle.UTILITY);
