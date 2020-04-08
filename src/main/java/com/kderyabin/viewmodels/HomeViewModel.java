@@ -2,13 +2,14 @@ package com.kderyabin.viewmodels;
 
 import com.kderyabin.dao.BoardRepository;
 import com.kderyabin.models.BoardModel;
+import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
+@ScopeProvider(scopes= BoardScope.class)
 public class HomeViewModel implements ViewModel {
     /*
      *  Dependencies
@@ -26,6 +28,8 @@ public class HomeViewModel implements ViewModel {
     private NotificationCenter notificationCenter;
     private BoardRepository repository;
     private NavigateServiceInterface navigation;
+    @InjectScope
+    BoardScope scope;
 
     List<BoardModel> models = new LinkedList<>();
     private ObservableList<BoardListItemViewModel> boardItems = FXCollections.observableArrayList();
@@ -83,5 +87,12 @@ public class HomeViewModel implements ViewModel {
 
     public void setBoardItems(ObservableList<BoardListItemViewModel> boardItems) {
         this.boardItems = boardItems;
+    }
+
+    public void edit(BoardListItemViewModel boardItemVM) throws Exception {
+        scope.setModel(boardItemVM.getModel());
+        if(navigation != null){
+            navigation.navigate("board-form");
+        }
     }
 }

@@ -26,4 +26,5 @@ public class BoardListItemView implements FxmlView<BoardListItemViewModel> {
         editBtn.setUserData(viewModel);
         removeBtn.setUserData(viewModel);
     }
+
 }

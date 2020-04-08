@@ -60,7 +60,7 @@ public class NavigateService implements NavigateServiceInterface {
     public void navigate(String viewName) throws Exception {
         final Parent parent = loadContent(viewName);
         ObservableList<Node> children = content.getChildren();
-        children.remove(0, children.size());
+        children.clear();
         children.add(parent);
     }
 

@@ -4,8 +4,11 @@ import com.kderyabin.dao.BoardRepository;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
+import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
+import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
@@ -20,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
+@ScopeProvider(scopes= BoardScope.class)
 public class BoardViewModel implements ViewModel {
 
     /*
@@ -29,6 +33,8 @@ public class BoardViewModel implements ViewModel {
     private NotificationCenter notificationCenter;
     private BoardRepository repository;
     private BoardModel model;
+    @InjectScope
+    BoardScope scope;
     /*
      * ViewModel properties for binding.
      */
@@ -41,7 +47,14 @@ public class BoardViewModel implements ViewModel {
      */
     private boolean personListUpdated = false;
 
+    protected void initModel() {
+        if(scope != null && scope.getModel() != null) {
+            setModel(scope.getModel());
+        }
+    }
+
     public void initialize() {
+        initModel();
         if (model != null) {
             setName(model.getName());
             setDescription(model.getDescription());

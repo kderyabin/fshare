@@ -32,7 +32,7 @@ public class HomeView implements FxmlView<HomeViewModel> {
      *
      * @param event
      */
-    public void edit(ActionEvent event) {
+    public void edit(ActionEvent event) throws Exception {
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
         viewModel.edit(vm);
