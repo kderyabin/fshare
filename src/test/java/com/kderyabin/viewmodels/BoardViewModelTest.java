@@ -91,7 +91,9 @@ class BoardViewModelTest {
         notificationCenter.subscribe(Notification.INFO_DISMISS, helper);
         viewModel.setNotificationCenter(notificationCenter);
         viewModel.initialize();
+        // Should return false and publish error message key
         assertFalse(viewModel.addParticipant("  "));
+        // Is error is sent and received ?
         assertEquals(1, helper.numberOfReceivedNotifications());
     }
 

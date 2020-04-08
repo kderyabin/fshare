@@ -4,6 +4,7 @@ import com.kderyabin.dao.PersonRepository;
 import com.kderyabin.services.NavigateService;
 import com.kderyabin.viewmodels.MainViewModel;
 import com.kderyabin.views.BoardFormView;
+import com.kderyabin.views.HomeView;
 import com.kderyabin.views.MainView;
 import com.kderyabin.views.StartView;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -75,6 +76,7 @@ public class Main extends MvvmfxSpringApplication {
      */
     private void registerNavigation(Pane contentArea) {
         NavigateService navigateService = context.getBean(NavigateService.class);
+        navigateService.register("home", HomeView.class);
         navigateService.register("start", StartView.class);
         navigateService.register("board-form", BoardFormView.class);
         navigateService.setContent(contentArea);

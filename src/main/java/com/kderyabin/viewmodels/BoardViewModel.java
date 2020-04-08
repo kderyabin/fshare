@@ -107,9 +107,9 @@ public class BoardViewModel implements ViewModel {
 
     /**
      * Add new participant to the list.
-     *
+     * Error from here is dispatch through notification center.
      * @param name Participant name.
-     * @return TRUE on success False en failure.
+     * @return TRUE on success False if participant exists already.
      */
     public boolean addParticipant(String name) {
         if (name == null || name.trim().isEmpty()) {

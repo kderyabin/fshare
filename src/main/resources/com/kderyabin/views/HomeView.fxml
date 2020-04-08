@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.kderyabin.views.HomeView">
+    <top>
+        <HBox styleClass="header">
+            <BorderPane HBox.hgrow="ALWAYS">
+                <center>
+                    <Label text="Your boards" styleClass="header__title"/>
+                </center>
+                <right>
+                    <JFXButton  text="&#xe5ca;" styleClass="header__btn-icon" BorderPane.alignment="CENTER"/>
+                </right>
+            </BorderPane>
+        </HBox>
+    </top>
+    <center>
+        <JFXListView fx:id="boardsList" styleClass="form-panel"/>
+    </center>
+</BorderPane>

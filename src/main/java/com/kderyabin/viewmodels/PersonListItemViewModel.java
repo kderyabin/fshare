@@ -10,6 +10,8 @@ public class PersonListItemViewModel implements ViewModel {
     private StringProperty name = new SimpleStringProperty();
     private PersonModel model;
 
+    public PersonListItemViewModel() {
+    }
 
     public PersonListItemViewModel(PersonModel model) {
         this.model = model;
@@ -34,12 +36,5 @@ public class PersonListItemViewModel implements ViewModel {
 
     public void setName(String name) {
         this.name.set(name);
-    }
-
-    /**
-     * Updates model with view model data in returns a model.
-     */
-    public void updateModel(){
-        model.setName(getName());
     }
 }

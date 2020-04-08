@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.kderyabin.views.BoardListItemView">
+    <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+        <Label fx:id="name" />
+    </HBox>
+    <HBox HBox.hgrow="NEVER" alignment="CENTER_RIGHT">
+        <JFXButton defaultButton="true" text="&#xe3c9;" styleClass="icon" HBox.hgrow="NEVER" fx:id="editBtn"/>
+        <JFXButton defaultButton="true" text="&#xe15b;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeBtn"/>
+    </HBox>
+</HBox>

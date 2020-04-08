@@ -10,11 +10,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@Scope("prototype")
 public class BoardFormView implements FxmlView<BoardViewModel> {
 
     @FXML
@@ -25,7 +27,6 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     public ListView<PersonListItemViewModel> participantsList;
     @FXML
     public TextField person;
-
     @FXML
     public Button saveBtn;
 
@@ -47,9 +48,8 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
         if(!viewModel.canGoBack()){
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initStyle(StageStyle.UTILITY);
-            //alert.setTitle("Not saved");
             alert.setHeaderText(null);
-            alert.setContentText("Modification will be lost. Are you sure?");
+            alert.setContentText("Modifications will be lost. Are you sure to continue?");
             Optional<ButtonType> option = alert.showAndWait();
             if( option.get() != ButtonType.OK){
                 return;
