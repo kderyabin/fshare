@@ -17,24 +17,25 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class HomeView implements FxmlView<HomeViewModel> {
     @FXML
-    public JFXListView boardsList;
+    public JFXListView<BoardListItemViewModel> boardsList;
     @InjectViewModel
     private HomeViewModel viewModel;
 
     public void initialize() {
         boardsList.setItems(viewModel.getBoardItems());
         boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
+        boardsList.addEventHandler(ActionEvent.ACTION, this::handleAction);
     }
 
-
-    /**
-     * Event handler removes a participant from the board.
-     *
-     * @param event
-     */
-    public void edit(ActionEvent event) throws Exception {
+    public void handleAction(ActionEvent event)  {
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
-        viewModel.edit(vm);
+        if(btn.getId().equals("editBtn")) {
+            try {
+                viewModel.edit(vm);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

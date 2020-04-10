@@ -18,8 +18,19 @@ public class PersonModel {
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @ManyToMany(mappedBy = "participants")
+    @ToString.Exclude
+    @ManyToMany(
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST},
+            mappedBy = "participants")
     private Set<BoardModel> boards = new LinkedHashSet<>();
+
+    public PersonModel() {
+    }
+
+    public PersonModel(String name) {
+        this.name = name;
+    }
 
     public Integer getId() {
         return id;

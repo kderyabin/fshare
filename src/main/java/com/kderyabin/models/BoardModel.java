@@ -34,6 +34,13 @@ public class BoardModel {
                 inverseJoinColumns = { @JoinColumn( name = "personId")})
     private Set<PersonModel> participants = new LinkedHashSet<>();
 
+    public BoardModel() {
+    }
+
+    public BoardModel(String name) {
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }

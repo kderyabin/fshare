@@ -7,8 +7,6 @@ import com.kderyabin.models.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
-import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,12 +16,15 @@ import javafx.collections.ObservableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
+
 
 @Component
 @Scope("prototype")
-@ScopeProvider(scopes= BoardScope.class)
+@Transactional
 public class BoardViewModel implements ViewModel {
 
     /*
@@ -33,8 +34,7 @@ public class BoardViewModel implements ViewModel {
     private NotificationCenter notificationCenter;
     private BoardRepository repository;
     private BoardModel model;
-    @InjectScope
-    BoardScope scope;
+    private BoardScope scope;
     /*
      * ViewModel properties for binding.
      */
@@ -49,7 +49,10 @@ public class BoardViewModel implements ViewModel {
 
     protected void initModel() {
         if(scope != null && scope.getModel() != null) {
-            setModel(scope.getModel());
+            Optional<BoardModel> found = repository.findById(scope.getModel().getId());
+            if(found.isPresent()) {
+                setModel(found.get());
+            }
         }
     }
 
@@ -84,6 +87,14 @@ public class BoardViewModel implements ViewModel {
     @Autowired
     public void setNotificationCenter(NotificationCenter notificationCenter) {
         this.notificationCenter = notificationCenter;
+    }
+
+    public BoardScope getScope() {
+        return scope;
+    }
+    @Autowired
+    public void setScope(BoardScope scope) {
+        this.scope = scope;
     }
 
     public String getName() {
