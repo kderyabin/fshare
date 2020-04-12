@@ -5,17 +5,16 @@
 <MenuBar xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          fx:controller="com.kderyabin.views.MenuView">
-    <Menu fx:id="fileMenu" mnemonicParsing="false" text="File">
-        <MenuItem mnemonicParsing="false" text="New"/>
+    <Menu mnemonicParsing="false" text="File">
+        <MenuItem mnemonicParsing="false" text="New" onAction="#createNewBoard"/>
         <MenuItem mnemonicParsing="false" text="Open…"/>
         <Menu mnemonicParsing="false" text="Open Recent"/>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Close"/>
         <MenuItem mnemonicParsing="false" text="Save"/>
         <SeparatorMenuItem mnemonicParsing="false"/>
         <MenuItem mnemonicParsing="false" text="Preferences…"/>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Exit" fx:id="exitAppButton">
+        <MenuItem mnemonicParsing="false" text="Exit" onAction="#exit">
             <accelerator>
                 <KeyCodeCombination alt="DOWN" code="X" control="UP" meta="UP" shift="UP" shortcut="UP"/>
             </accelerator>
