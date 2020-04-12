@@ -18,13 +18,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@Transactional
 @Component
 @Scope("prototype")
-@Transactional
 public class BoardViewModel implements ViewModel {
 
     /*
@@ -41,16 +43,17 @@ public class BoardViewModel implements ViewModel {
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
-    /**
-     * Helper field.
-     * Updated whenever participants list is updated.
-     */
-    private boolean personListUpdated = false;
+
+    private List<PersonModel> addedPersons = new ArrayList<>();
+    private List<PersonModel> removedPersons = new ArrayList<>();
+
+    @Autowired
+    EntityManager entityManager;
 
     protected void initModel() {
-        if(scope != null && scope.getModel() != null) {
+        if (scope != null && scope.getModel() != null) {
             Optional<BoardModel> found = repository.findById(scope.getModel().getId());
-            if(found.isPresent()) {
+            if (found.isPresent()) {
                 setModel(found.get());
             }
         }
@@ -92,6 +95,7 @@ public class BoardViewModel implements ViewModel {
     public BoardScope getScope() {
         return scope;
     }
+
     @Autowired
     public void setScope(BoardScope scope) {
         this.scope = scope;
@@ -132,6 +136,7 @@ public class BoardViewModel implements ViewModel {
     /**
      * Add new participant to the list.
      * Error from here is dispatch through notification center.
+     *
      * @param name Participant name.
      * @return TRUE on success False if participant exists already.
      */
@@ -146,7 +151,7 @@ public class BoardViewModel implements ViewModel {
         personModel.setName(name.trim());
 
         PersonListItemViewModel viewModel = new PersonListItemViewModel(personModel);
-        personListUpdated = true;
+        addedPersons.add(personModel);
         return participants.add(viewModel);
     }
 
@@ -155,8 +160,12 @@ public class BoardViewModel implements ViewModel {
      * @return TRUE if removed FALSE if not or not found in the list.
      */
     public boolean removeParticipant(PersonListItemViewModel personListItemViewModel) {
-        personListUpdated = true;
+        removedPersons.add(personListItemViewModel.getModel());
         return participants.remove(personListItemViewModel);
+    }
+
+    private boolean isPersonsListUpdated() {
+        return !addedPersons.isEmpty() || !removedPersons.isEmpty();
     }
 
     /**
@@ -166,22 +175,22 @@ public class BoardViewModel implements ViewModel {
      */
     public boolean canGoBack() {
         // Is it a new board?
-        if(model.getId() == null) {
-            return  getName().trim().equals("") &&
+        if (model.getId() == null) {
+            return getName().trim().equals("") &&
                     getDescription().trim().equals("") &&
                     participants.size() == 0;
         }
         // For existing model check if data match
         return getName().equals(model.getName()) &&
                 getDescription().equals(model.getDescription()) &&
-                !personListUpdated;
+                !isPersonsListUpdated();
     }
 
     /**
      * Validate data integrity.
      *
-     * @throws ValidationException  Validation exception with resource id as a message.
-     *                              The human message will be retrieved during GUI display.
+     * @throws ValidationException Validation exception with resource id as a message.
+     *                             The human message will be retrieved during GUI display.
      */
     public void validate() throws ValidationException {
         if (getName().trim().isEmpty()) {
@@ -195,10 +204,14 @@ public class BoardViewModel implements ViewModel {
 
     /**
      * Load previous view.
+     *
      * @throws Exception See NavigationService.navigate()
      */
     public void goBack() throws Exception {
-        navigation.navigate("start");
+        navigation.navigate("home");
+//        if(navigation.hasPrevious()){
+//            navigation.goToPrevious();
+//        }
     }
 
     /**
@@ -211,14 +224,20 @@ public class BoardViewModel implements ViewModel {
             model.setName(getName());
             model.setDescription(getDescription());
             model.initUpdateTime();
-            model.getParticipants().clear();
-            participants.forEach(person -> model.addParticipant(person.getModel()));
+            if (!removedPersons.isEmpty()) {
+                model.getParticipants().removeAll(removedPersons);
+                removedPersons.clear();
+            }
+            if (!addedPersons.isEmpty()) {
+                model.getParticipants().addAll(addedPersons);
+                addedPersons.clear();
+            }
 
             model = repository.save(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
-            if(null != navigation) {
-                navigation.navigate("start");
+            if (null != navigation) {
+                navigation.navigate("home");
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());

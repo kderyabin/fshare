@@ -90,11 +90,11 @@ public class BoardModel {
     }
 
     public boolean addParticipant(PersonModel participant){
-        participant.addBoard(this);
+//        participant.addBoard(this);
         return participants.add(participant);
     }
     public boolean removeParticipant(PersonModel participant){
-        participant.removeBoard(this);
+//        participant.removeBoard(this);
         return participants.remove(participant);
     }
 

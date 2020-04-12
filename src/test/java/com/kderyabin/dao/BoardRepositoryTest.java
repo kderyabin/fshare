@@ -12,14 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureTestEntityManager
-@Transactional
 class BoardRepositoryTest {
 
     @Autowired
@@ -40,6 +38,7 @@ class BoardRepositoryTest {
         repository.save(board);
     }
 
+    @Transactional
     @Test
     public void save(){
         List<BoardModel> list =  (List<BoardModel>) repository.findAll();
@@ -51,7 +50,5 @@ class BoardRepositoryTest {
 
         assertEquals(2, persons.size());
         System.out.println(persons);
-
-
     }
 }

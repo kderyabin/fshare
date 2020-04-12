@@ -29,6 +29,11 @@ public class NavigateService implements NavigateServiceInterface {
     private Pane content;
 
     /**
+     * Previous view's name.
+     */
+    private String previous;
+
+    /**
      * Add view class to the map of navigable classes this making it available for navigation.
      *
      * @param name  Some name to associate with the View.
@@ -59,9 +64,23 @@ public class NavigateService implements NavigateServiceInterface {
     @Override
     public void navigate(String viewName) throws Exception {
         final Parent parent = loadContent(viewName);
+        previous = viewName;
         ObservableList<Node> children = content.getChildren();
         children.clear();
         children.add(parent);
+    }
+
+    @Override
+    public boolean hasPrevious(){
+        return previous != null;
+    }
+
+    @Override
+    public void goToPrevious() throws Exception{
+        if(previous != null) {
+            navigate(previous);
+            previous = null;
+        }
     }
 
     public Pane getContent() {
