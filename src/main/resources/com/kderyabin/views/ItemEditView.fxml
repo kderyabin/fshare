@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.JFXListView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.kderyabin.views.ItemEditView">
+    <top>
+        <HBox styleClass="header">
+            <BorderPane HBox.hgrow="ALWAYS">
+                <left>
+                    <JFXButton fx:id="backBtn" text="&#xe5c4;" styleClass="header__btn-icon"
+                               BorderPane.alignment="CENTER" onAction="#goBack"/>
+                </left>
+                <center>
+                    <Label text="New board" styleClass="header__title"/>
+                </center>
+                <right>
+                    <JFXButton fx:id="saveBtn" text="&#xe5ca;" styleClass="header__btn-icon"
+                               BorderPane.alignment="CENTER" onAction="#save"/>
+                </right>
+            </BorderPane>
+        </HBox>
+    </top>
+    <center>
+        <VBox styleClass="form-panel">
+
+            <Label text="Title"/>
+            <TextField fx:id="title"/>
+
+            <Label text="Amount"/>
+            <TextField  fx:id="amount"/>
+
+            <Label text="Date"/>
+            <DatePicker fx:id="date" showWeekNumbers="true" >
+
+            </DatePicker>
+            <VBox>
+                <Label text="Payed by"/>
+                <JFXListView VBox.vgrow="NEVER" fx:id="person"/>
+            </VBox>
+
+        </VBox>
+    </center>
+</BorderPane>
