@@ -1,9 +1,10 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.dao.BoardRepository;
+import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
@@ -93,6 +94,20 @@ public class HomeViewModel implements ViewModel {
         scope.setModel(boardItemVM.getModel());
         if(navigation != null){
             navigation.navigate("board-form");
+        }
+    }
+
+    public void remove(BoardListItemViewModel boardItemVM) {
+        BoardModel boardModel = boardItemVM.getModel();
+        repository.delete(boardModel);
+        boardItems.remove(boardItemVM);
+        notificationCenter.publish(Notification.INFO, "msg.board_deleted_success");
+    }
+
+    public void viewList(BoardListItemViewModel boardItemVM) throws Exception{
+        scope.setModel(boardItemVM.getModel());
+        if(navigation != null){
+            navigation.navigate("board-items");
         }
     }
 }

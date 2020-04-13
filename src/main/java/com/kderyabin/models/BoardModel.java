@@ -28,7 +28,7 @@ public class BoardModel {
     @Column(name = "update", nullable = false)
     private Timestamp update = new Timestamp(System.currentTimeMillis());;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable( name="board_person",
                 joinColumns = { @JoinColumn( name = "boardId")},
                 inverseJoinColumns = { @JoinColumn( name = "personId")})

@@ -10,32 +10,51 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
 public class HomeView implements FxmlView<HomeViewModel> {
+
+    final private static Logger LOG = LoggerFactory.getLogger(HomeView.class);
+
     @FXML
     public JFXListView<BoardListItemViewModel> boardsList;
     @InjectViewModel
     private HomeViewModel viewModel;
 
     public void initialize() {
+        LOG.info(">>> Started initialisation");
         boardsList.setItems(viewModel.getBoardItems());
         boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
         boardsList.addEventHandler(ActionEvent.ACTION, this::handleAction);
+        LOG.info(">>> Ended initialisation");
     }
 
-    public void handleAction(ActionEvent event)  {
+    public void handleAction(ActionEvent event) {
+        LOG.info(">>> handleAction started");
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
-        if(btn.getId().equals("editBtn")) {
-            try {
-                viewModel.edit(vm);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            switch (btn.getId()) {
+                case "editBtn":
+                    viewModel.edit(vm);
+                    break;
+                case "removeBtn":
+                    viewModel.remove(vm);
+                    break;
+                case "listBtn":
+                    viewModel.viewList(vm);
+                    break;
+                default:
+                    break;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        LOG.info(">>> handleAction ended");
     }
 }

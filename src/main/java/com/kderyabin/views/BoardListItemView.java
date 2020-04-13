@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXButton;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("prototype")
 public class BoardListItemView implements FxmlView<BoardListItemViewModel> {
+
     @InjectViewModel
     private BoardListItemViewModel viewModel;
     @FXML
@@ -20,11 +22,13 @@ public class BoardListItemView implements FxmlView<BoardListItemViewModel> {
     public Button editBtn;
     @FXML
     public Button removeBtn;
+    @FXML
+    public JFXButton listBtn;
 
     public void initialize() {
         name.textProperty().bind(viewModel.nameProperty());
         editBtn.setUserData(viewModel);
         removeBtn.setUserData(viewModel);
+        listBtn.setUserData(viewModel);
     }
-
 }

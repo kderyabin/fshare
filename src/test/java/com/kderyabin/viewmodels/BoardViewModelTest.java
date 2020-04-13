@@ -1,21 +1,16 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.dao.BoardRepository;
+import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.util.Notification;
-import com.kderyabin.views.PersonListItemView;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
-import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 import de.saxsys.mvvmfx.utils.notifications.NotificationTestHelper;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 

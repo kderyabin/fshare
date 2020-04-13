@@ -1,4 +1,4 @@
-package com.kderyabin.dao;
+package com.kderyabin.repository;
 
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
@@ -40,15 +40,14 @@ class BoardRepositoryTest {
 
     @Transactional
     @Test
-    public void save(){
+    public void findAll(){
         List<BoardModel> list =  (List<BoardModel>) repository.findAll();
         assertEquals(1, list.size());
 
         BoardModel found = list.get(0);
 
-        List<PersonModel> persons =  new ArrayList<PersonModel>(found.getParticipants());
+        List<PersonModel> persons =  new ArrayList<>(found.getParticipants());
 
         assertEquals(2, persons.size());
-        System.out.println(persons);
     }
 }

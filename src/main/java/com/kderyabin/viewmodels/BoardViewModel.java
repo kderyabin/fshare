@@ -1,6 +1,6 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.dao.BoardRepository;
+import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;

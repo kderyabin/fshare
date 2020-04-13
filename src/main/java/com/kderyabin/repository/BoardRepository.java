@@ -1,4 +1,4 @@
-package com.kderyabin.dao;
+package com.kderyabin.repository;
 
 import com.kderyabin.models.BoardModel;
 import org.springframework.data.repository.CrudRepository;
