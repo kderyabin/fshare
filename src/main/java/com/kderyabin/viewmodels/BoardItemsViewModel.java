@@ -1,30 +1,28 @@
 package com.kderyabin.viewmodels;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.repository.BoardItemRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
-import com.kderyabin.views.LinesListItemView;
-import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.ScopeProvider;
-import de.saxsys.mvvmfx.ViewModel;
-import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import lombok.Getter;
-import lombok.Setter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ScopeProvider;
+import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 @Component
 @Scope("prototype")
@@ -36,7 +34,6 @@ public class BoardItemsViewModel implements ViewModel {
      * Dependencies
      */
     private NavigateServiceInterface navigation;
-    private NotificationCenter notificationCenter;
     private BoardItemRepository itemRepository;
     private BoardModel model;
     @InjectScope
@@ -57,22 +54,9 @@ public class BoardItemsViewModel implements ViewModel {
         }
     }
 
-    public NavigateServiceInterface getNavigation() {
-        return navigation;
-    }
-
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
-    }
-
-    public NotificationCenter getNotificationCenter() {
-        return notificationCenter;
-    }
-
-    @Autowired
-    public void setNotificationCenter(NotificationCenter notificationCenter) {
-        this.notificationCenter = notificationCenter;
     }
 
     public BoardItemRepository getItemRepository() {
@@ -112,9 +96,12 @@ public class BoardItemsViewModel implements ViewModel {
         this.lines = lines;
     }
 
-    public void addItem() {
+    public void addItem() throws Exception{
+        scope.setModel(model);
+        navigation.navigate("board-item");
     }
 
-    public void goBack() {
+    public void goBack() throws Exception {
+        navigation.navigate("home");
     }
 }

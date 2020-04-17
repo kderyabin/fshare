@@ -29,11 +29,11 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
         items.setCellFactory(CachedViewModelCellFactory.createForFxmlView(LinesListItemView.class));
     }
 
-    public void addItem(ActionEvent actionEvent) {
+    public void addItem(ActionEvent actionEvent) throws Exception {
         viewModel.addItem();
     }
 
-    public void goBack(ActionEvent actionEvent) {
+    public void goBack(ActionEvent actionEvent) throws Exception {
         viewModel.goBack();
     }
 }

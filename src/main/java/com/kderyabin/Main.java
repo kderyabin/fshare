@@ -80,6 +80,7 @@ public class Main extends MvvmfxSpringApplication {
         navigateService.register("start", StartView.class);
         navigateService.register("board-form", BoardFormView.class);
         navigateService.register("board-items", BoardItemsView.class);
+        navigateService.register("board-item", ItemEditView.class);
         navigateService.setContent(contentArea);
     }
 }
