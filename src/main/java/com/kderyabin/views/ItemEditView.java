@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXButton;
 import com.kderyabin.viewmodels.ItemEditViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -26,6 +27,10 @@ public class ItemEditView implements FxmlView<ItemEditViewModel> {
     public DatePicker date;
     @FXML
     public ComboBox<PersonListItemViewModel> participants;
+    @FXML
+    public JFXButton saveBtn;
+    @FXML
+    public JFXButton backBtn;
 
     public void initialize() {
         title.textProperty().bindBidirectional(viewModel.titleProperty());
@@ -45,6 +50,10 @@ public class ItemEditView implements FxmlView<ItemEditViewModel> {
     }
 
     public void save() {
-        viewModel.save();
+        try {
+            viewModel.save();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

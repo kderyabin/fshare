@@ -40,7 +40,7 @@
             <TextField  fx:id="amount"/>
 
             <Label text="Date"/>
-            <DatePicker fx:id="date" showWeekNumbers="true" >
+            <DatePicker fx:id="date" showWeekNumbers="false" >
 
             </DatePicker>
             <VBox>

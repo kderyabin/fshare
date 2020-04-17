@@ -70,19 +70,6 @@ public class NavigateService implements NavigateServiceInterface {
         children.add(parent);
     }
 
-    @Override
-    public boolean hasPrevious(){
-        return previous != null;
-    }
-
-    @Override
-    public void goToPrevious() throws Exception{
-        if(previous != null) {
-            navigate(previous);
-            previous = null;
-        }
-    }
-
     public Pane getContent() {
         return content;
     }

@@ -1,11 +1,15 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.PersonModel;
+import com.kderyabin.repository.BoardItemRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,17 +22,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-@ScopeProvider(BoardScope.class)
 public class ItemEditViewModel implements ViewModel {
     private static Logger LOG = LoggerFactory.getLogger(ItemEditViewModel.class);
 
+    private NotificationCenter notificationCenter;
     private NavigateServiceInterface navigation;
+    private BoardItemRepository repository;
     private BoardItemModel model;
     private BoardScope scope;
 
@@ -40,7 +46,7 @@ public class ItemEditViewModel implements ViewModel {
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
 
     public void initialize(){
-        LOG.info(">> In initialize() method");
+        LOG.debug(">> In initialize() method");
         model = new BoardItemModel();
         model.setBoard(scope.getModel());
         Set<PersonModel> persons = scope.getModel().getParticipants();
@@ -52,14 +58,58 @@ public class ItemEditViewModel implements ViewModel {
     }
 
     public void goBack() throws Exception {
-        navigation.navigate("board-items");
+        if(navigation != null) {
+            navigation.navigate("board-items");
+        }
+
     }
 
-
+    /**
+     * Checks if properties has been updated.
+     *
+     * @return  TRUE if no changes were made otherwise FALSE
+     */
     public boolean canGoBack() {
+        if(model.getId() == null) {
+            return  getTitle().trim().isEmpty() &&
+                    getAmount().trim().isEmpty() &&
+                    getPerson() == null;
+        }
         return true;
     }
-    public void save() {
+
+    public void validate() throws ValidationException {
+        if(getTitle().trim().isEmpty()){
+            throw new ValidationException("msg.title_is_required");
+        }
+        if(getAmount().trim().isEmpty()) {
+            throw new ValidationException("msg.amount_is_required");
+        }
+        if(getPerson() == null) {
+            throw new ValidationException("msg.person_is_required");
+        }
+    }
+
+    /**
+     * Save board item and load next view.
+     */
+    public void save() throws Exception {
+        try {
+            validate();
+
+            model.setTitle(getTitle());
+            model.setAmount(getAmount());
+            model.setPerson(person.getValue().getModel());
+
+            model = repository.save(model);
+            notificationCenter.publish(Notification.INFO, "msg.item_saved_success");
+            // Can be null in unit tests.
+            if(null != navigation) {
+                navigation.navigate("board-items");
+            }
+        } catch (ValidationException e) {
+            notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
+        }
     }
 
     @Autowired
@@ -121,5 +171,18 @@ public class ItemEditViewModel implements ViewModel {
 
     public void setPerson(PersonListItemViewModel person) {
         this.person.set(person);
+    }
+
+    @Autowired
+    public void setNavigation(NavigateServiceInterface navigation) {
+        this.navigation = navigation;
+    }
+    @Autowired
+    public void setRepository(BoardItemRepository repository) {
+        this.repository = repository;
+    }
+    @Autowired
+    public void setNotificationCenter(NotificationCenter notificationCenter) {
+        this.notificationCenter = notificationCenter;
     }
 }

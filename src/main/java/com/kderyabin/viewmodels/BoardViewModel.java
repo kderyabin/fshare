@@ -189,7 +189,7 @@ public class BoardViewModel implements ViewModel {
         }
 
         if (participants.size() == 0) {
-            throw new ValidationException("msg.provide_participant");
+            throw new ValidationException("msg.provide_participants");
         }
     }
 

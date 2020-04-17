@@ -75,7 +75,7 @@ class BoardViewModelTest {
         viewModel.setName(" \t\n");
         assertThrows(ValidationException.class, viewModel::validate, "msg.board_name_required");
         viewModel.setName("John");
-        assertThrows(ValidationException.class, viewModel::validate, "msg.provide_participant");
+        assertThrows(ValidationException.class, viewModel::validate, "msg.provide_participants");
     }
 
     @Test

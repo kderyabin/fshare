@@ -102,10 +102,10 @@ public class BoardItemModel {
         if (this == o) return true;
         if (!(o instanceof BoardItemModel)) return false;
         BoardItemModel that = (BoardItemModel) o;
-        return id.equals(that.id) &&
-                title.equals(that.title) &&
-                amount.equals(that.amount) &&
-                date.equals(that.date);
+        return  Objects.equals(id, that.id) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(date, that.date);
     }
 
     @Override
