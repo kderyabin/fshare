@@ -27,7 +27,15 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
         boardName.textProperty().bind(viewModel.boardNameProperty());
         items.setItems(viewModel.getLines());
         items.setCellFactory(CachedViewModelCellFactory.createForFxmlView(LinesListItemView.class));
+        items.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                viewModel.editItem(newValue);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
+
 
     public void addItem(ActionEvent actionEvent) throws Exception {
         viewModel.addItem();

@@ -40,6 +40,9 @@ public class HomeViewModel implements ViewModel {
     }
 
     public void initialize() {
+        // reset every time we get back to home
+        scope.setBoardModel(null);
+        scope.setHasBoards(!models.isEmpty());
         initModels();
         boardItems.addAll(
                 getModels().stream().map(BoardListItemViewModel::new)
@@ -91,7 +94,7 @@ public class HomeViewModel implements ViewModel {
     }
 
     public void edit(BoardListItemViewModel boardItemVM) throws Exception {
-        scope.setModel(boardItemVM.getModel());
+        scope.setBoardModel(boardItemVM.getModel());
         if(navigation != null){
             navigation.navigate("board-form");
         }
@@ -105,7 +108,7 @@ public class HomeViewModel implements ViewModel {
     }
 
     public void viewList(BoardListItemViewModel boardItemVM) throws Exception{
-        scope.setModel(boardItemVM.getModel());
+        scope.setBoardModel(boardItemVM.getModel());
         if(navigation != null){
             navigation.navigate("board-items");
         }

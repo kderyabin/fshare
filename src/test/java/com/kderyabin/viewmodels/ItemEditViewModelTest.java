@@ -15,6 +15,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Currency;
+import java.util.Locale;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -35,7 +42,7 @@ class ItemEditViewModelTest {
 
         board.addParticipant(person1);
         board.addParticipant(person2);
-        scope.setModel(board);
+        scope.setBoardModel(board);
     }
 
     @Test
@@ -75,7 +82,7 @@ class ItemEditViewModelTest {
         NotificationTestHelper helper = new NotificationTestHelper();
         notificationCenter.subscribe(Notification.INFO, helper);
 
-        BoardModel boardModel = scope.getModel();
+        BoardModel boardModel = scope.getBoardModel();
         BoardItemModel model = new BoardItemModel();
         model.setTitle("Title");
         model.setAmount("10.50");
@@ -98,5 +105,32 @@ class ItemEditViewModelTest {
         viewModel.save();
 
         assertEquals(1, helper.numberOfReceivedNotifications());
+    }
+    @Test
+    void bigDecimalConversion(){
+        Locale currentLocale = Locale.FRANCE;
+        String  currencyAmount = "9,876,543.21";
+        BigDecimal num = null;
+        try {
+            num = parse(currencyAmount, currentLocale);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Currency currentCurrency = Currency.getInstance(currentLocale);
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(currentLocale);
+
+        System.out.println(
+                currentLocale.getDisplayName() + ", " +
+                        currentCurrency.getDisplayName() + ": " +
+                        currencyFormatter.format(num));
+
+    }
+
+    public static BigDecimal parse(final String amount, final Locale locale) throws ParseException, ParseException {
+        final NumberFormat format = NumberFormat.getNumberInstance(locale);
+        if (format instanceof DecimalFormat) {
+            ((DecimalFormat) format).setParseBigDecimal(true);
+        }
+        return (BigDecimal) format.parse(amount.replaceAll("[^\\d.,]",""));
     }
 }

@@ -18,7 +18,7 @@ class BoardViewModelTest {
 
     @Test
     void goBack() {
-        BoardViewModel model = new BoardViewModel();
+        BoardFormViewModel model = new BoardFormViewModel();
         model.initialize();
 
         assertTrue(model.canGoBack(), "Must be TRUE if there were no changes in model data");
@@ -32,7 +32,7 @@ class BoardViewModelTest {
 
     @Test
     void saveWithError() throws Exception {
-        BoardViewModel viewModel = new BoardViewModel();
+        BoardFormViewModel viewModel = new BoardFormViewModel();
         viewModel.initialize();
         NotificationCenter notificationCenter = MvvmFX.getNotificationCenter();
         NotificationTestHelper helper = new NotificationTestHelper();
@@ -56,7 +56,7 @@ class BoardViewModelTest {
         BoardRepository repository = Mockito.mock(BoardRepository.class);
         Mockito.when(repository.save(model)).thenReturn(model);
 
-        BoardViewModel viewModel = new BoardViewModel();
+        BoardFormViewModel viewModel = new BoardFormViewModel();
         viewModel.setNotificationCenter(notificationCenter);
         viewModel.setRepository(repository);
         viewModel.setModel(model);
@@ -70,7 +70,7 @@ class BoardViewModelTest {
 
     @Test
     void validate() {
-        BoardViewModel viewModel = new BoardViewModel();
+        BoardFormViewModel viewModel = new BoardFormViewModel();
         viewModel.initialize();
         viewModel.setName(" \t\n");
         assertThrows(ValidationException.class, viewModel::validate, "msg.board_name_required");
@@ -80,7 +80,7 @@ class BoardViewModelTest {
 
     @Test
     void addParticipantWithError() {
-        BoardViewModel viewModel = new BoardViewModel();
+        BoardFormViewModel viewModel = new BoardFormViewModel();
         NotificationCenter notificationCenter = MvvmFX.getNotificationCenter();
         NotificationTestHelper helper = new NotificationTestHelper();
         notificationCenter.subscribe(Notification.INFO_DISMISS, helper);
@@ -104,7 +104,7 @@ class BoardViewModelTest {
         model.setId(1);
         model.addParticipant(person);
 
-        BoardViewModel viewModel = new BoardViewModel();
+        BoardFormViewModel viewModel = new BoardFormViewModel();
         viewModel.setModel(model);
         viewModel.initialize();
 

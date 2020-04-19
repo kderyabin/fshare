@@ -1,23 +1,24 @@
 package com.kderyabin.views;
 
-import com.kderyabin.viewmodels.BoardViewModel;
+import com.kderyabin.viewmodels.BoardFormViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.stage.StageStyle;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 @Component
 @Scope("prototype")
-public class BoardFormView implements FxmlView<BoardViewModel> {
+public class BoardFormView implements FxmlView<BoardFormViewModel> {
 
     @FXML
     public TextField name;
@@ -31,8 +32,9 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
     public Button saveBtn;
 
     @InjectViewModel
-    private BoardViewModel viewModel;
-
+    private BoardFormViewModel viewModel;
+    @InjectResourceBundle
+    private ResourceBundle resources;
 
     public void initialize() {
 
@@ -49,9 +51,9 @@ public class BoardFormView implements FxmlView<BoardViewModel> {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.initStyle(StageStyle.UTILITY);
             alert.setHeaderText(null);
-            alert.setContentText("Modifications will be lost. Are you sure to continue?");
+            alert.setContentText( resources.getString("msg.confirm_form_exit"));
             Optional<ButtonType> option = alert.showAndWait();
-            if( option.get() != ButtonType.OK){
+            if( !option.isPresent() || option.get() != ButtonType.OK){
                 return;
             }
         }

@@ -7,7 +7,6 @@ import com.kderyabin.repository.BoardItemRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
-import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.ObjectProperty;
@@ -23,7 +22,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,11 +49,21 @@ public class ItemEditViewModel implements ViewModel {
     private ObjectProperty<PersonListItemViewModel> person = new SimpleObjectProperty<>();
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
 
-    public void initialize(){
+    public void initialize() {
         LOG.debug(">> In initialize() method");
-        model = new BoardItemModel();
-        model.setBoard(scope.getModel());
-        Set<PersonModel> persons = scope.getModel().getParticipants();
+        if (scope.getItemModel() != null) {
+            LOG.debug("Item model found in scope");
+            model = scope.getItemModel();
+            setTitle(model.getTitle());
+            setAmount(model.getAmount().toString());
+            setDate(model.getDate().toLocalDate());
+            setPerson(new PersonListItemViewModel(model.getPerson()));
+        } else {
+            model = new BoardItemModel();
+            model.setBoard(scope.getBoardModel());
+        }
+
+        Set<PersonModel> persons = scope.getBoardModel().getParticipants();
         participants.addAll(
                 persons.stream()
                         .map(PersonListItemViewModel::new)
@@ -58,7 +72,7 @@ public class ItemEditViewModel implements ViewModel {
     }
 
     public void goBack() throws Exception {
-        if(navigation != null) {
+        if (navigation != null) {
             navigation.navigate("board-items");
         }
 
@@ -67,25 +81,29 @@ public class ItemEditViewModel implements ViewModel {
     /**
      * Checks if properties has been updated.
      *
-     * @return  TRUE if no changes were made otherwise FALSE
+     * @return TRUE if no changes were made otherwise FALSE
      */
     public boolean canGoBack() {
-        if(model.getId() == null) {
-            return  getTitle().trim().isEmpty() &&
+        if (model.getId() == null) {
+            return getTitle().trim().isEmpty() &&
                     getAmount().trim().isEmpty() &&
                     getPerson() == null;
         }
-        return true;
+        return getTitle().equals(model.getTitle()) &&
+                getAmount().equals(model.getAmount().toString()) &&
+                getDate().equals(model.getDate().toLocalDate()) &&
+                getPerson().getModel().equals(model.getPerson()
+        );
     }
 
     public void validate() throws ValidationException {
-        if(getTitle().trim().isEmpty()){
+        if (getTitle().trim().isEmpty()) {
             throw new ValidationException("msg.title_is_required");
         }
-        if(getAmount().trim().isEmpty()) {
+        if (getAmount().trim().isEmpty()) {
             throw new ValidationException("msg.amount_is_required");
         }
-        if(getPerson() == null) {
+        if (getPerson() == null) {
             throw new ValidationException("msg.person_is_required");
         }
     }
@@ -104,13 +122,33 @@ public class ItemEditViewModel implements ViewModel {
             model = repository.save(model);
             notificationCenter.publish(Notification.INFO, "msg.item_saved_success");
             // Can be null in unit tests.
-            if(null != navigation) {
+            if (null != navigation) {
                 navigation.navigate("board-items");
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
         }
     }
+
+    /**
+     * Converts string into BigDecimal according to current locale.
+     *
+     * @param amount Amount.
+     * @param locale Current locale.
+     * @return
+     * @throws ParseException
+     */
+    public static BigDecimal parse(final String amount, final Locale locale) throws ParseException {
+        final NumberFormat format = NumberFormat.getNumberInstance(locale);
+        if (format instanceof DecimalFormat) {
+            ((DecimalFormat) format).setParseBigDecimal(true);
+        }
+        return (BigDecimal) format.parse(amount.replaceAll("[^\\d.,]", ""));
+    }
+
+    /*
+     * Getters/ Setters
+     */
 
     @Autowired
     public void setScope(BoardScope scope) {
@@ -177,10 +215,12 @@ public class ItemEditViewModel implements ViewModel {
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
     }
+
     @Autowired
     public void setRepository(BoardItemRepository repository) {
         this.repository = repository;
     }
+
     @Autowired
     public void setNotificationCenter(NotificationCenter notificationCenter) {
         this.notificationCenter = notificationCenter;

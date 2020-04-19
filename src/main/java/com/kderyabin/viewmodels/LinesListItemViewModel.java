@@ -7,7 +7,7 @@ import javafx.beans.property.StringProperty;
 
 public class LinesListItemViewModel implements ViewModel {
 
-    BoardItemModel model;
+    private BoardItemModel model;
 
     private StringProperty title = new SimpleStringProperty("");
     private StringProperty person = new SimpleStringProperty("");

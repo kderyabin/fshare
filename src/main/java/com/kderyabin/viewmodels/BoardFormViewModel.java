@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Component
 @Scope("prototype")
 @Transactional
-public class BoardViewModel implements ViewModel {
+public class BoardFormViewModel implements ViewModel {
 
     /*
      * Dependencies
@@ -48,8 +48,8 @@ public class BoardViewModel implements ViewModel {
     private boolean personListUpdated = false;
 
     protected void initModel() {
-        if(scope != null && scope.getModel() != null) {
-            Optional<BoardModel> found = repository.findById(scope.getModel().getId());
+        if(scope != null && scope.getBoardModel() != null) {
+            Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
             if(found.isPresent()) {
                 setModel(found.get());
             }
@@ -198,7 +198,8 @@ public class BoardViewModel implements ViewModel {
      * @throws Exception See NavigationService.navigate()
      */
     public void goBack() throws Exception {
-        navigation.navigate("start");
+        final String view = scope.isHasBoards() ? "home" : "start";
+        navigation.navigate(view);
     }
 
     /**
@@ -215,10 +216,11 @@ public class BoardViewModel implements ViewModel {
             participants.forEach(person -> model.addParticipant(person.getModel()));
 
             model = repository.save(model);
+            scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
             if(null != navigation) {
-                navigation.navigate("start");
+                navigation.navigate("board-item");
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());

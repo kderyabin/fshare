@@ -13,13 +13,10 @@
                 <center>
                     <Label text="Your boards" styleClass="header__title"/>
                 </center>
-                <right>
-                    <JFXButton  text="&#xe5ca;" styleClass="header__btn-icon" BorderPane.alignment="CENTER"/>
-                </right>
             </BorderPane>
         </HBox>
     </top>
     <center>
-        <JFXListView fx:id="boardsList" styleClass="form-panel"/>
+        <JFXListView fx:id="boardsList" depth="1"/>
     </center>
 </BorderPane>

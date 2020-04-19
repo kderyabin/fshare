@@ -27,15 +27,23 @@ public class HomeView implements FxmlView<HomeViewModel> {
     private HomeViewModel viewModel;
 
     public void initialize() {
-        LOG.info(">>> Started initialisation");
+        LOG.debug(">>> Started initialisation");
         boardsList.setItems(viewModel.getBoardItems());
         boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
         boardsList.addEventHandler(ActionEvent.ACTION, this::handleAction);
-        LOG.info(">>> Ended initialisation");
+        boardsList.setExpanded(true);
+        boardsList.depthProperty().set(1);
+        boardsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                viewModel.viewList(newValue);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        LOG.debug(">>> Ended initialisation");
     }
 
     public void handleAction(ActionEvent event) {
-        LOG.info(">>> handleAction started");
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
         try {
@@ -55,6 +63,5 @@ public class HomeView implements FxmlView<HomeViewModel> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LOG.info(">>> handleAction ended");
     }
 }

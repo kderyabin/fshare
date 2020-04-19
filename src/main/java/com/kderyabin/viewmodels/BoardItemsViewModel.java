@@ -1,28 +1,25 @@
 package com.kderyabin.viewmodels;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.repository.BoardItemRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
@@ -36,15 +33,16 @@ public class BoardItemsViewModel implements ViewModel {
     private NavigateServiceInterface navigation;
     private BoardItemRepository itemRepository;
     private BoardModel model;
-    @InjectScope
     private BoardScope scope;
 
     private StringProperty boardName  = new SimpleStringProperty("");
     private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
 
     public void initialize() {
-        model = scope.getModel();
+        model = scope.getBoardModel();
+        scope.setItemModel(null);
         List<BoardItemModel> items = (ArrayList<BoardItemModel>) itemRepository.findAllByBoardId(model.getId());
+        LOG.debug("Board lines found:" + items.size());
         setBoardName(model.getName());
         if(items.size() > 0) {
             lines.addAll(
@@ -96,8 +94,21 @@ public class BoardItemsViewModel implements ViewModel {
         this.lines = lines;
     }
 
+    public BoardScope getScope() {
+        return scope;
+    }
+
+    @Autowired
+    public void setScope(BoardScope scope) {
+        this.scope = scope;
+    }
+
+    public void editItem(LinesListItemViewModel linesListItemViewModel) throws Exception{
+        scope.setItemModel(linesListItemViewModel.getModel());
+        navigation.navigate("board-item");
+    }
+
     public void addItem() throws Exception{
-        scope.setModel(model);
         navigation.navigate("board-item");
     }
 
