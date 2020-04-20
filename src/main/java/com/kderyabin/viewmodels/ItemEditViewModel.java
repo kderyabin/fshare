@@ -51,24 +51,24 @@ public class ItemEditViewModel implements ViewModel {
 
     public void initialize() {
         LOG.debug(">> In initialize() method");
-        if (scope.getItemModel() != null) {
-            LOG.debug("Item model found in scope");
-            model = scope.getItemModel();
-            setTitle(model.getTitle());
-            setAmount(model.getAmount().toString());
-            setDate(model.getDate().toLocalDate());
-            setPerson(new PersonListItemViewModel(model.getPerson()));
-        } else {
-            model = new BoardItemModel();
-            model.setBoard(scope.getBoardModel());
-        }
-
         Set<PersonModel> persons = scope.getBoardModel().getParticipants();
         participants.addAll(
                 persons.stream()
                         .map(PersonListItemViewModel::new)
                         .collect(Collectors.toList())
         );
+        if (scope.getItemModel() != null) {
+            LOG.debug("Item model found in scope");
+            model = scope.getItemModel();
+            setTitle(model.getTitle());
+            setAmount(model.getAmount().toString());
+            setDate(model.getDate().toLocalDate());
+            // Find generated item viewmodel
+            participants.stream().filter(item -> item.getModel().equals(model.getPerson())).findFirst().ifPresent(this::setPerson);
+        } else {
+            model = new BoardItemModel();
+            model.setBoard(scope.getBoardModel());
+        }
     }
 
     public void goBack() throws Exception {

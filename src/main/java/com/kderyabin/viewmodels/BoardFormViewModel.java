@@ -50,9 +50,7 @@ public class BoardFormViewModel implements ViewModel {
     protected void initModel() {
         if(scope != null && scope.getBoardModel() != null) {
             Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
-            if(found.isPresent()) {
-                setModel(found.get());
-            }
+            found.ifPresent(this::setModel);
         }
     }
 
