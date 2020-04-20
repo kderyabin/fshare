@@ -10,10 +10,14 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.awt.event.MouseEvent;
 
 @Component
 @Scope("prototype")
@@ -22,17 +26,18 @@ public class HomeView implements FxmlView<HomeViewModel> {
     final private static Logger LOG = LoggerFactory.getLogger(HomeView.class);
 
     @FXML
-    public JFXListView<BoardListItemViewModel> boardsList;
+    public ListView<BoardListItemViewModel> boardsList;
     @InjectViewModel
     private HomeViewModel viewModel;
+    Long pressDelay = 0L;
 
     public void initialize() {
-        LOG.debug(">>> Started initialisation");
+        LOG.info(">>> Started initialisation");
+
         boardsList.setItems(viewModel.getBoardItems());
         boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
         boardsList.addEventHandler(ActionEvent.ACTION, this::handleAction);
-        boardsList.setExpanded(true);
-        boardsList.depthProperty().set(1);
+
         boardsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 viewModel.viewList(newValue);
@@ -40,7 +45,7 @@ public class HomeView implements FxmlView<HomeViewModel> {
                 e.printStackTrace();
             }
         });
-        LOG.debug(">>> Ended initialisation");
+        LOG.info(">>> Ended initialisation");
     }
 
     public void handleAction(ActionEvent event) {
@@ -54,14 +59,15 @@ public class HomeView implements FxmlView<HomeViewModel> {
                 case "removeBtn":
                     viewModel.remove(vm);
                     break;
-                case "listBtn":
-                    viewModel.viewList(vm);
-                    break;
                 default:
                     break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void addItem(ActionEvent actionEvent) throws Exception {
+        viewModel.addBoard();
     }
 }

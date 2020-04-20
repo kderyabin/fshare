@@ -10,7 +10,7 @@
         <Label fx:id="name" />
     </HBox>
     <HBox HBox.hgrow="NEVER" alignment="CENTER_RIGHT">
-        <JFXButton defaultButton="true" text="&#xe871;" styleClass="icon" HBox.hgrow="NEVER" fx:id="listBtn"/>
+<!--        <JFXButton defaultButton="true" text="&#xe871;" styleClass="icon" HBox.hgrow="NEVER" fx:id="listBtn"/>-->
         <JFXButton defaultButton="true" text="&#xe3c9;" styleClass="icon" HBox.hgrow="NEVER" fx:id="editBtn"/>
         <JFXButton defaultButton="true" text="&#xe14c;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeBtn"/>
     </HBox>

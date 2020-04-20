@@ -7,12 +7,16 @@ import com.kderyabin.models.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
+import de.saxsys.mvvmfx.InjectScope;
+import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,9 +28,11 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-@Transactional
+//@Transactional
+@ScopeProvider(BoardScope.class )
 public class BoardFormViewModel implements ViewModel {
 
+    final private Logger LOG = LoggerFactory.getLogger(BoardFormViewModel.class);
     /*
      * Dependencies
      */
@@ -34,6 +40,7 @@ public class BoardFormViewModel implements ViewModel {
     private NotificationCenter notificationCenter;
     private BoardRepository repository;
     private BoardModel model;
+    @InjectScope
     private BoardScope scope;
     /*
      * ViewModel properties for binding.
@@ -48,6 +55,7 @@ public class BoardFormViewModel implements ViewModel {
     private boolean personListUpdated = false;
 
     protected void initModel() {
+
         if(scope != null && scope.getBoardModel() != null) {
             Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
             found.ifPresent(this::setModel);
@@ -55,6 +63,7 @@ public class BoardFormViewModel implements ViewModel {
     }
 
     public void initialize() {
+        LOG.info(scope.toString());
         initModel();
         if (model != null) {
             setName(model.getName());
@@ -196,6 +205,7 @@ public class BoardFormViewModel implements ViewModel {
      * @throws Exception See NavigationService.navigate()
      */
     public void goBack() throws Exception {
+        System.out.println("Scope has board: " + scope.isHasBoards());
         final String view = scope.isHasBoards() ? "home" : "start";
         navigation.navigate(view);
     }

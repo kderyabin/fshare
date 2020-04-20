@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.views.HomeView">
-    <top>
-        <HBox styleClass="header">
-            <BorderPane HBox.hgrow="ALWAYS">
-                <center>
-                    <Label text="Your boards" styleClass="header__title"/>
-                </center>
-            </BorderPane>
-        </HBox>
-    </top>
-    <center>
-        <JFXListView fx:id="boardsList" depth="1"/>
-    </center>
-</BorderPane>
+    <BorderPane>
+        <top>
+            <HBox styleClass="header">
+                <BorderPane HBox.hgrow="ALWAYS">
+                    <center>
+                        <Label text="Your boards" styleClass="header__title"/>
+                    </center>
+                    <right>
+                        <JFXButton text="&#xe145;" styleClass="header__btn-icon"
+                                   BorderPane.alignment="CENTER" onAction="#addItem"/>
+                    </right>
+                </BorderPane>
+            </HBox>
+        </top>
+        <center>
+            <VBox>
+                <ListView fx:id="boardsList" styleClass="form-panel"/>
+            </VBox>
+        </center>
+    </BorderPane>
+</ScrollPane>

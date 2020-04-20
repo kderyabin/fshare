@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Button?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.kderyabin.demo.ListController">
+    <top>
+       <FlowPane>
+           <Button fx:id="button3D" text="3D"/>
+           <Button fx:id="buttonExpand" text="EXPAND"/>
+           <Button fx:id="buttonCollapse" text="COLLAPSE"/>
+           <Button fx:id="buttonVGap" text="VGap"/>
+       </FlowPane>
+    </top>
+    <center>
+        <JFXListView fx:id="list" depth="1" style="-jfx-expanded: true;"/>
+    </center>
+</BorderPane>

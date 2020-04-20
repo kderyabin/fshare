@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import com.jfoenix.controls.JFXButton?>
-<?import javafx.geometry.Insets?>
-<?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXComboBox?>
-<BorderPane xmlns="http://javafx.com/javafx"
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.views.ItemEditView">
+<BorderPane>
     <top>
         <HBox styleClass="header">
             <BorderPane HBox.hgrow="ALWAYS">
@@ -40,7 +37,7 @@
             <TextField  fx:id="amount"/>
 
             <Label text="Date"/>
-            <DatePicker fx:id="date" showWeekNumbers="false" >
+            <DatePicker fx:id="date">
 
             </DatePicker>
             <VBox>
@@ -51,3 +48,4 @@
         </VBox>
     </center>
 </BorderPane>
+</ScrollPane>

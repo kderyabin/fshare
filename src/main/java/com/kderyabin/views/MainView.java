@@ -48,8 +48,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         info = new JFXSnackbar(root);
         infoDismiss = new JFXSnackbar(root);
-        info.setPrefWidth(300);
-        infoDismiss.setPrefWidth(300);
+        info.setPrefWidth(400);
+        infoDismiss.setPrefWidth(400);
         notificationCenter.subscribe(Notification.INFO, ((key, payload) -> {
             String message = (String) payload[0];
             displayInfo(message);

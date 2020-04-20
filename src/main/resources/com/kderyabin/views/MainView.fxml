@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.*?>
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.kderyabin.views.MainView"
            fx:id="root">
     <VBox>
         <fx:include source="MenuView.fxml" VBox.vgrow="NEVER"/>
-        <VBox fx:id="content" styleClass="content-area">
-<!--            <fx:include source="StartView.fxml" VBox.vgrow="ALWAYS"/>-->
-            <fx:include source="HomeView.fxml" VBox.vgrow="ALWAYS"/>
-        </VBox>
+            <VBox fx:id="content" styleClass="content-area">
+                <fx:include source="HomeView.fxml" VBox.vgrow="ALWAYS"/>
+            </VBox>
     </VBox>
 </StackPane>

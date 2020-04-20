@@ -1,7 +1,7 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.models.BoardModel;
+import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
@@ -11,6 +11,8 @@ import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @Scope("prototype")
 @ScopeProvider(scopes= BoardScope.class)
 public class HomeViewModel implements ViewModel {
+    final private Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
     /*
      *  Dependencies
      */
@@ -42,8 +45,10 @@ public class HomeViewModel implements ViewModel {
     public void initialize() {
         // reset every time we get back to home
         scope.setBoardModel(null);
-        scope.setHasBoards(!models.isEmpty());
         initModels();
+        LOG.info("Loaded boards size: " + models.size());
+        scope.setHasBoards(!models.isEmpty());
+        LOG.info(scope.toString());
         boardItems.addAll(
                 getModels().stream().map(BoardListItemViewModel::new)
                         .collect(Collectors.toList())
@@ -111,6 +116,12 @@ public class HomeViewModel implements ViewModel {
         scope.setBoardModel(boardItemVM.getModel());
         if(navigation != null){
             navigation.navigate("board-items");
+        }
+    }
+
+    public void addBoard() throws Exception {
+        if(navigation != null) {
+            navigation.navigate("board-form");
         }
     }
 }

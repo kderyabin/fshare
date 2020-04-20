@@ -3,10 +3,12 @@ package com.kderyabin.scopes;
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.BoardModel;
 import de.saxsys.mvvmfx.Scope;
+import lombok.ToString;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@ToString
 public class BoardScope implements Scope {
 
     private BoardModel boardModel;
