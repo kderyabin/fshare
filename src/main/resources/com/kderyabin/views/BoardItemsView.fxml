@@ -29,6 +29,7 @@
         </top>
         <center>
             <VBox styleClass="form-panel">
+                <Label text="%board_has_no_items" fx:id="noItemsWarning" managed="false" visible="false"/>
                 <JFXListView VBox.vgrow="NEVER" fx:id="items"/>
             </VBox>
         </center>

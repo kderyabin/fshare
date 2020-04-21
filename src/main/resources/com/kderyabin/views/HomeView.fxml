@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
 <ScrollPane hbarPolicy="NEVER"
@@ -10,8 +10,9 @@
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.views.HomeView">
-    <BorderPane>
-        <top>
+    <VBox>
+<!--    <BorderPane>-->
+<!--        <top>-->
             <HBox styleClass="header">
                 <BorderPane HBox.hgrow="ALWAYS">
                     <center>
@@ -23,11 +24,12 @@
                     </right>
                 </BorderPane>
             </HBox>
-        </top>
-        <center>
-            <VBox>
-                <ListView fx:id="boardsList" styleClass="form-panel"/>
+<!--        </top>-->
+<!--        <center>-->
+            <VBox styleClass="form-panel" VBox.vgrow="ALWAYS">
+                <JFXListView fx:id="boardsList" />
             </VBox>
-        </center>
-    </BorderPane>
+<!--        </center>-->
+<!--    </BorderPane>-->
+    </VBox>
 </ScrollPane>

@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,9 +55,10 @@ public class BoardFormViewModel implements ViewModel {
 
     protected void initModel() {
 
-        if(scope != null && scope.getBoardModel() != null) {
-            Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
-            found.ifPresent(this::setModel);
+        if(scope.getBoardModel() != null) {
+            //Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
+            //found.ifPresent(this::setModel);
+            setModel(scope.getBoardModel());
         }
     }
 
