@@ -7,7 +7,14 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.kderyabin.views.BoardListItemView">
     <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
-        <Label fx:id="name" />
+        <VBox>
+            <Label styleClass="list-item-title" fx:id="name" />
+            <HBox styleClass="list-item-info">
+                <Label text="%updated_on"/>
+                <Label fx:id="dateUpdate" text="24/04/2020"/>
+            </HBox>
+
+        </VBox>
     </HBox>
     <HBox HBox.hgrow="NEVER" alignment="CENTER_RIGHT">
 <!--        <JFXButton defaultButton="true" text="&#xe871;" styleClass="icon" HBox.hgrow="NEVER" fx:id="listBtn"/>-->

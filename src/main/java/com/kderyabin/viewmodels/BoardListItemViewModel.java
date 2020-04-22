@@ -5,9 +5,13 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+
 public class BoardListItemViewModel implements ViewModel {
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
+    private StringProperty dateUpdate = new SimpleStringProperty("");
     private BoardModel model;
 
     public BoardListItemViewModel() {
@@ -17,6 +21,7 @@ public class BoardListItemViewModel implements ViewModel {
         this.model = model;
         setName(model.getName());
         setDescription(model.getDescription());
+        setDateUpdate(model.getUpdate().toLocalDateTime().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)));
     }
 
     public String getName() {
@@ -49,5 +54,17 @@ public class BoardListItemViewModel implements ViewModel {
 
     public void setModel(BoardModel model) {
         this.model = model;
+    }
+
+    public String getDateUpdate() {
+        return dateUpdate.get();
+    }
+
+    public StringProperty dateUpdateProperty() {
+        return dateUpdate;
+    }
+
+    public void setDateUpdate(String dateUpdate) {
+        this.dateUpdate.set(dateUpdate);
     }
 }

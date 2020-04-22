@@ -23,7 +23,7 @@
                 </BorderPane>
             </HBox>
             <VBox styleClass="form-panel" VBox.vgrow="ALWAYS">
-                <JFXListView fx:id="boardsList" />
+                <JFXListView fx:id="boardsList" styleClass="list-present" />
             </VBox>
     </VBox>
 </ScrollPane>

@@ -11,21 +11,12 @@
     src: url('fonts/MaterialIcons-Regular.ttf');
 }
 .root {
-    -fx-font-family: "Roboto Light";
+    /*-fx-font-family: "Roboto Light";*/
     -fx-font-size: 12px;
     primary:  rgb(77,102,204);
     text-on-primary: WHITE;
 }
-.test-vbox {
-    -fx-background-color: yellow;
-}
-.test-scroll{
-    -fx-background-color: red;
-}
-.roboto {
-     /*-fx-font-family: "Roboto Light";*/
-     -fx-font-size: 48px;
-}
+
 .icon {
     -fx-font-family: "Material Icons";
     -fx-font-size: 18px;
@@ -115,4 +106,24 @@
 
 .jfx-snackbar-action {
     -fx-text-fill: #ff4081;
+}
+
+
+.list-present{
+     -fx-background-color:  #f4f4f4; /* same color as the page background */
+
+}
+.list-present .list-cell:odd {
+    -fx-background-color:  white;
+}
+.list-present .list-cell:even{
+    -fx-background-color:  white;
+}
+.list-present .list-cell {
+    -fx-padding: 20px 10px;
+    /* An horizontal space between items*/
+    -fx-background-insets: 0px 0px 5px  0;
+}
+.list-item-title {
+    -fx-font-weight:  bold;
 }

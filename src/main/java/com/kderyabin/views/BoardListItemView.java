@@ -22,11 +22,14 @@ public class BoardListItemView implements FxmlView<BoardListItemViewModel> {
     public Button editBtn;
     @FXML
     public Button removeBtn;
+    @FXML
+    public Label dateUpdate;
 //    @FXML
 //    public JFXButton listBtn;
 
     public void initialize() {
         name.textProperty().bind(viewModel.nameProperty());
+        dateUpdate.textProperty().bind(viewModel.dateUpdateProperty());
         editBtn.setUserData(viewModel);
         removeBtn.setUserData(viewModel);
 //        listBtn.setUserData(viewModel);

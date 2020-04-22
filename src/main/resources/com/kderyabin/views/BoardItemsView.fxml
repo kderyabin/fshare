@@ -30,7 +30,7 @@
         <center>
             <VBox styleClass="form-panel">
                 <Label text="%board_has_no_items" fx:id="noItemsWarning" managed="false" visible="false"/>
-                <JFXListView VBox.vgrow="NEVER" fx:id="items"/>
+                <JFXListView VBox.vgrow="NEVER" fx:id="items"  styleClass="list-present"/>
             </VBox>
         </center>
     </BorderPane>
