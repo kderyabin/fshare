@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.kderyabin.controls.ConfirmAlert;
 import com.kderyabin.viewmodels.BoardFormViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -9,7 +10,6 @@ import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.stage.StageStyle;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,10 +48,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
 
     public void goBack() throws Exception {
         if(!viewModel.canGoBack()){
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.initStyle(StageStyle.UTILITY);
-            alert.setHeaderText(null);
-            alert.setContentText( resources.getString("msg.confirm_form_exit"));
+            Alert alert = new ConfirmAlert("msg.confirm_form_exit");
             Optional<ButtonType> option = alert.showAndWait();
             if( !option.isPresent() || option.get() != ButtonType.OK){
                 return;

@@ -18,7 +18,7 @@
                     </center>
                     <right>
                         <JFXButton text="&#xe145;" styleClass="header__btn-icon"
-                                   BorderPane.alignment="CENTER" onAction="#addItem"/>
+                                   BorderPane.alignment="CENTER" onAction="#addAction"/>
                     </right>
                 </BorderPane>
             </HBox>
