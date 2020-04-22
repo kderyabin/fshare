@@ -9,10 +9,8 @@
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.kderyabin.views.HomeView">
+            fx:controller="com.kderyabin.views.HomeView" >
     <VBox>
-<!--    <BorderPane>-->
-<!--        <top>-->
             <HBox styleClass="header">
                 <BorderPane HBox.hgrow="ALWAYS">
                     <center>
@@ -24,12 +22,8 @@
                     </right>
                 </BorderPane>
             </HBox>
-<!--        </top>-->
-<!--        <center>-->
             <VBox styleClass="form-panel" VBox.vgrow="ALWAYS">
                 <JFXListView fx:id="boardsList" />
             </VBox>
-<!--        </center>-->
-<!--    </BorderPane>-->
     </VBox>
 </ScrollPane>

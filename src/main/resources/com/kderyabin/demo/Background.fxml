@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import com.jfoenix.controls.JFXButton?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:id="root">
+    <VBox>
+        <VBox fx:id="content" styleClass="content-area">
+            <ScrollPane hbarPolicy="NEVER"
+                        fitToWidth="true">
+                <VBox>
+                    <HBox styleClass="header">
+                        <BorderPane HBox.hgrow="ALWAYS">
+                            <center>
+                                <Label text="Your boards" styleClass="header__title"/>
+                            </center>
+                            <right>
+                                <JFXButton text="&#xe145;" styleClass="header__btn-icon"/>
+                            </right>
+                        </BorderPane>
+                    </HBox>
+                    <VBox  styleClass="form-panel" VBox.vgrow="ALWAYS">
+                        <Label text="Label"/>
+                        <TextField promptText="Put some value" />
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </VBox>
+</StackPane>
