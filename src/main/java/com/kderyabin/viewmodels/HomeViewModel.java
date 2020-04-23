@@ -43,7 +43,7 @@ public class HomeViewModel implements ViewModel {
     }
 
     public void initialize() {
-        // reset every time we get back to home
+        // reset every time we load home page
         scope.setBoardModel(null);
         initModels();
         LOG.info("Loaded boards size: " + models.size());

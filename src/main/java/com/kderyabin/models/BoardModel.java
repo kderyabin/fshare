@@ -34,6 +34,10 @@ public class BoardModel {
                 inverseJoinColumns = { @JoinColumn( name = "personId")})
     private Set<PersonModel> participants = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<BoardItemModel> items = new LinkedHashSet<>();
+
     public BoardModel() {
     }
 
@@ -96,6 +100,14 @@ public class BoardModel {
     public boolean removeParticipant(PersonModel participant){
 //        participant.removeBoard(this);
         return participants.remove(participant);
+    }
+
+    public Set<BoardItemModel> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<BoardItemModel> items) {
+        this.items = items;
     }
 
     /**

@@ -25,6 +25,10 @@ public class PersonModel {
             mappedBy = "participants")
     private Set<BoardModel> boards = new LinkedHashSet<>();
 
+    @ToString.Exclude
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<BoardItemModel> items = new LinkedHashSet<>();
+
     public PersonModel() {
     }
 
@@ -62,6 +66,14 @@ public class PersonModel {
 
     public boolean removeBoard(BoardModel boardModel) {
         return boards.remove(boardModel);
+    }
+
+    public Set<BoardItemModel> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<BoardItemModel> items) {
+        this.items = items;
     }
 
     @Override
