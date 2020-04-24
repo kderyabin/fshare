@@ -6,18 +6,17 @@
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.kderyabin.views.BoardListItemView">
-    <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+    <HBox HBox.hgrow="ALWAYS" styleClass="list-item-box">
         <VBox>
             <Label styleClass="list-item-title" fx:id="name" />
             <HBox styleClass="list-item-info">
                 <Label text="%updated_on"/>
-                <Label fx:id="dateUpdate" text="24/04/2020"/>
+                <Label fx:id="dateUpdate"/>
             </HBox>
 
         </VBox>
     </HBox>
-    <HBox HBox.hgrow="NEVER" alignment="CENTER_RIGHT">
-<!--        <JFXButton defaultButton="true" text="&#xe871;" styleClass="icon" HBox.hgrow="NEVER" fx:id="listBtn"/>-->
+    <HBox HBox.hgrow="NEVER" styleClass="box-buttons">
         <JFXButton defaultButton="true" text="&#xe3c9;" styleClass="icon" HBox.hgrow="NEVER" fx:id="editBtn"/>
         <JFXButton defaultButton="true" text="&#xe14c;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeBtn"/>
     </HBox>

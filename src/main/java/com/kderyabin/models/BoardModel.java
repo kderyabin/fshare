@@ -10,6 +10,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "board")
+@NamedNativeQuery(name="BoardModel.loadRecent",  query = "select b.* from board b order by b.update desc limit ?1", resultClass = BoardModel.class)
 public class BoardModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +27,9 @@ public class BoardModel {
     private Timestamp creation = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "update", nullable = false)
-    private Timestamp update = new Timestamp(System.currentTimeMillis());;
+    private Timestamp update = new Timestamp(System.currentTimeMillis());
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.REFRESH, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable( name="board_person",
                 joinColumns = { @JoinColumn( name = "boardId")},
                 inverseJoinColumns = { @JoinColumn( name = "personId")})

@@ -75,6 +75,19 @@
     -fx-spacing: 20px;
     -fx-padding: 50 100 50 100;
 }
+/**
+* HBox container for the item title
+*/
+.list-item-box {
+    -fx-alignment: center-left;
+}
+/**
+* HBox with action buttons displayed in the list
+*/
+.box-buttons {
+    -fx-spacing: 10;
+    -fx-alignment:  center-right;
+}
 /*
 .list-cell:empty {
     visibility:hidden;

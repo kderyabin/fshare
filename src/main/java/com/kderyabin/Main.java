@@ -55,7 +55,6 @@ public class Main extends MvvmfxSpringApplication {
 
         Parent root = tuple.getView();
         Rectangle2D bounds = Screen.getPrimary().getBounds();
-        LOG.info("Bound size:" + bounds.toString());
         // set dimension
         primaryStage.setHeight(bounds.getHeight() - 20);
         primaryStage.setWidth(bounds.getWidth() - 20);

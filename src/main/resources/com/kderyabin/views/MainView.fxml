@@ -8,7 +8,7 @@
     <VBox>
         <fx:include source="MenuView.fxml" VBox.vgrow="NEVER"/>
             <VBox fx:id="content" styleClass="content-area">
-                <fx:include source="HomeView.fxml" VBox.vgrow="ALWAYS"/>
+<!--                <fx:include source="HomeView.fxml" VBox.vgrow="ALWAYS"/>-->
             </VBox>
     </VBox>
 </StackPane>

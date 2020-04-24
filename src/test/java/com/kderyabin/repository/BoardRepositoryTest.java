@@ -13,11 +13,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEnti
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @AutoConfigureTestEntityManager
@@ -59,29 +62,22 @@ class BoardRepositoryTest {
     public void removeBoardWithItems() {
         // Prepare initial data
         PersonModel person = new PersonModel("Jeremy");
-        LOG.info("init person");
+        person = personRepository.save(person);
         BoardModel board = new BoardModel("Board 1");
-        LOG.info("init board");
         board.addParticipant(person);
-        LOG.info("add person to board");
-
         repository.save(board);
-        LOG.info("Saved board");
 
         BoardItemModel model = new BoardItemModel("lunch");
         model.setAmount("10");
         model.setBoard(board);
         model.setPerson(person);
-        LOG.info("Start saving item 1");
         itemRepository.save(model);
-        LOG.info("saved");
+
         BoardItemModel model2 = new BoardItemModel("dinner");
         model2.setBoard(board);
         model2.setAmount("19.90");
         model2.setPerson(person);
-        LOG.info("Start saving item 2");
         itemRepository.save(model2);
-        LOG.info("saved");
 
         // Test start here
         Integer boardId = board.getId();
@@ -89,10 +85,39 @@ class BoardRepositoryTest {
         LOG.info("Load board from the DB");
         BoardModel object = repository.findById(boardId).orElse(null);
         repository.delete(object);
-        LOG.info("Board removed");
-        LOG.info("Start fetching items");
         List<BoardItemModel> items = (List<BoardItemModel>) itemRepository.findAllByBoardId(boardId);
-        LOG.info("End fetching items");
         assertEquals(0, items.size());
+    }
+
+    @Test
+    void loadRecent() {
+        // Prepare data
+        PersonModel person1 = new PersonModel("Jeremy");
+        person1 = personRepository.save(person1);
+        PersonModel person2 = new PersonModel("Sam");
+        person2 = personRepository.save(person2);
+
+        BoardModel board1 = new BoardModel("Board 1");
+        board1.addParticipant(person1);
+        board1.addParticipant(person2);
+        // 01 apr 2020 00:00:01
+        board1.setCreation(new Timestamp(1585692001000L));
+        board1.setUpdate(new Timestamp(1585692001000L));
+        repository.save(board1);
+
+        BoardModel board2 = new BoardModel("Board 2");
+        board2.addParticipant(person1);
+        board2.addParticipant(person2);
+        // 24 apr 2020 00:00:01
+        board2.setCreation(new Timestamp(1587679201000L));
+        board2.setUpdate(new Timestamp(1587679201000L));
+
+        repository.save(board2);
+
+        // Test
+        List<BoardModel> result = repository.loadRecent(1);
+
+        assertEquals(1, result.size());
+        assertTrue(board2.equals(result.get(0)));
     }
 }
