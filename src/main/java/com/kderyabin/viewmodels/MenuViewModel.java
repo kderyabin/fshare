@@ -1,5 +1,6 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.services.NavigateServiceInterface;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
@@ -24,7 +25,7 @@ public class MenuViewModel implements ViewModel {
         Platform.exit();
     }
 
-    public void createNewBoard() throws Exception {
+    public void createNewBoard() throws ViewNotFoundException {
         navigation.navigate("board-form");
     }
 }

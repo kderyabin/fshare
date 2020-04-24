@@ -15,9 +15,10 @@
            <Button fx:id="buttonExpand" text="EXPAND"/>
            <Button fx:id="buttonCollapse" text="COLLAPSE"/>
            <Button fx:id="buttonVGap" text="VGap"/>
+           <Button fx:id="buttonRemove" text="Remove item"/>
        </FlowPane>
     </top>
     <center>
-        <JFXListView fx:id="list" depth="1" style="-jfx-expanded: true;"/>
+        <JFXListView fx:id="list" depth="1" style="-jfx-expanded: true; -fx-background-color: coral;" />
     </center>
 </BorderPane>

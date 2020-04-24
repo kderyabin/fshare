@@ -1,5 +1,6 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.scopes.BoardScope;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-@ScopeProvider(scopes= BoardScope.class)
+@ScopeProvider(scopes = BoardScope.class)
 public class HomeViewModel implements ViewModel {
     final private Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
     /*
@@ -98,29 +99,41 @@ public class HomeViewModel implements ViewModel {
         this.boardItems = boardItems;
     }
 
-    public void edit(BoardListItemViewModel boardItemVM) throws Exception {
+
+    public void edit(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
         scope.setBoardModel(boardItemVM.getModel());
-        if(navigation != null){
+        if (navigation != null) {
             navigation.navigate("board-form");
         }
     }
 
-    public void remove(BoardListItemViewModel boardItemVM) {
+    public boolean remove(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
         BoardModel boardModel = boardItemVM.getModel();
-        repository.delete(boardModel);
+        try {
+            repository.delete(boardModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            notificationCenter.publish(Notification.INFO, "msg.generic_error");
+            return false;
+        }
         boardItems.remove(boardItemVM);
         notificationCenter.publish(Notification.INFO, "msg.board_deleted_success");
+        if (boardItems.size() == 0) {
+            scope.setHasBoards(false);
+            navigation.navigate("start");
+        }
+        return true;
     }
 
-    public void viewList(BoardListItemViewModel boardItemVM) throws Exception{
+    public void viewList(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
         scope.setBoardModel(boardItemVM.getModel());
-        if(navigation != null){
+        if (navigation != null) {
             navigation.navigate("board-items");
         }
     }
 
-    public void addBoard() throws Exception {
-        if(navigation != null) {
+    public void addBoard() throws ViewNotFoundException {
+        if (navigation != null) {
             navigation.navigate("board-form");
         }
     }

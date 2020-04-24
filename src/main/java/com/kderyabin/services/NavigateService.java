@@ -1,5 +1,6 @@
 package com.kderyabin.services;
 
+import com.kderyabin.error.ViewNotFoundException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
@@ -48,9 +49,9 @@ public class NavigateService implements NavigateServiceInterface {
      *
      * @param name Name for the View class, something like "main".
      */
-    public Parent loadContent(String name) throws Exception {
+    public Parent loadContent(String name) throws ViewNotFoundException {
         if (!list.containsKey(name)) {
-            throw new Exception("View is undefined for the name: " + name);
+            throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
         return FluentViewLoader.fxmlView(list.get(name)).load().getView();
     }
@@ -59,10 +60,10 @@ public class NavigateService implements NavigateServiceInterface {
      * Method used to navigate between pages resets components of the content area.
      *
      * @param viewName See loadContent.
-     * @throws Exception
+     * @throws ViewNotFoundException
      */
     @Override
-    public void navigate(String viewName) throws Exception {
+    public void navigate(String viewName) throws ViewNotFoundException {
         final Parent parent = loadContent(viewName);
         previous = viewName;
         ObservableList<Node> children = content.getChildren();

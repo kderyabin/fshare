@@ -1,6 +1,7 @@
 package com.kderyabin.views;
 
 import com.kderyabin.controls.ConfirmAlert;
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
 import com.kderyabin.viewmodels.HomeViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -70,18 +71,21 @@ public class HomeView implements FxmlView<HomeViewModel> {
         }
     }
 
-    public void editAction(BoardListItemViewModel vm) throws Exception {
+    public void editAction(BoardListItemViewModel vm) throws ViewNotFoundException {
         viewModel.edit(vm);
     }
-    public void removeAction(BoardListItemViewModel vm){
+    public void removeAction(BoardListItemViewModel vm) throws ViewNotFoundException {
         Alert alert = new ConfirmAlert(resources.getString("msg.confirm_delete_board"));
         Optional<ButtonType> option = alert.showAndWait();
         if( !option.isPresent() || option.get() != ButtonType.OK){
             return;
         }
-        viewModel.remove(vm);
+        if( viewModel.remove(vm)) {
+            // adjust list layout
+            boardsList.layout();
+        }
     }
-    public void addAction() throws Exception {
+    public void addAction() throws ViewNotFoundException {
         viewModel.addBoard();
     }
 }

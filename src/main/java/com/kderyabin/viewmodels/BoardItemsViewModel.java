@@ -1,5 +1,6 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.repository.BoardItemRepository;
@@ -103,16 +104,16 @@ public class BoardItemsViewModel implements ViewModel {
         this.scope = scope;
     }
 
-    public void editItem(LinesListItemViewModel linesListItemViewModel) throws Exception{
+    public void editItem(LinesListItemViewModel linesListItemViewModel) throws ViewNotFoundException {
         scope.setItemModel(linesListItemViewModel.getModel());
         navigation.navigate("board-item");
     }
 
-    public void addItem() throws Exception{
+    public void addItem() throws ViewNotFoundException{
         navigation.navigate("board-item");
     }
 
-    public void goBack() throws Exception {
+    public void goBack() throws ViewNotFoundException {
         navigation.navigate("home");
     }
 }

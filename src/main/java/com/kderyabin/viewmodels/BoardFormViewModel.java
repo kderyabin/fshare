@@ -1,5 +1,6 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
@@ -202,9 +203,9 @@ public class BoardFormViewModel implements ViewModel {
 
     /**
      * Load previous view.
-     * @throws Exception See NavigationService.navigate()
+     * @throws ViewNotFoundException See NavigationService.navigate()
      */
-    public void goBack() throws Exception {
+    public void goBack() throws ViewNotFoundException {
         System.out.println("Scope has board: " + scope.isHasBoards());
         final String view = scope.isHasBoards() ? "home" : "start";
         navigation.navigate(view);
@@ -213,7 +214,7 @@ public class BoardFormViewModel implements ViewModel {
     /**
      * Save board data and load next view.
      */
-    public void save() throws Exception {
+    public void save() throws ViewNotFoundException {
         try {
             validate();
 

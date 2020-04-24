@@ -1,6 +1,7 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ValidationException;
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.PersonModel;
 import com.kderyabin.repository.BoardItemRepository;
@@ -71,7 +72,7 @@ public class ItemEditViewModel implements ViewModel {
         }
     }
 
-    public void goBack() throws Exception {
+    public void goBack() throws ViewNotFoundException {
         if (navigation != null) {
             navigation.navigate("board-items");
         }
@@ -111,7 +112,7 @@ public class ItemEditViewModel implements ViewModel {
     /**
      * Save board item and load next view.
      */
-    public void save() throws Exception {
+    public void save() throws ViewNotFoundException {
         try {
             validate();
 

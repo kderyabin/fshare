@@ -20,6 +20,7 @@ public class ListController implements Initializable {
     @FXML
     public Button buttonCollapse;
     public Button buttonVGap;
+    public Button buttonRemove;
 
 
     private int counter = 0;
@@ -43,6 +44,11 @@ public class ListController implements Initializable {
         });
         buttonVGap.setOnMouseClicked(e -> {
             System.out.println("Vertical gao value: " + list.getVerticalGap());
+        });
+
+        buttonRemove.setOnMouseClicked( e -> {
+            int size = list.getItems().size();
+            list.getItems().remove(size-1, size);
         });
     }
 }
