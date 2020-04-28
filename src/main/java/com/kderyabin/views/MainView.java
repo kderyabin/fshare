@@ -2,6 +2,8 @@ package com.kderyabin.views;
 
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
+import com.kderyabin.error.ViewNotFoundException;
+import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
 import com.kderyabin.viewmodels.MainViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -34,6 +36,9 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     @InjectResourceBundle
     ResourceBundle resources;
 
+    NavigateServiceInterface navigation;
+
+
     /**
      * Snackbar provides brief messages about app processes at the bottom of the screen.
      */
@@ -43,6 +48,17 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
      */
     JFXSnackbar infoDismiss;
 
+    /**
+     * Initialize views for navigation.
+     */
+    private void registerNavigation() {
+        navigation.setContent(content);
+        navigation.register("home", HomeView.class);
+        navigation.register("start", StartView.class);
+        navigation.register("board-form", BoardFormView.class);
+        navigation.register("board-items", BoardItemsView.class);
+        navigation.register("board-item", ItemEditView.class);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -58,19 +74,20 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
             String message = (String) payload[0];
             displayDismissInfo(message);
         });
-    }
-
-    @Autowired
-    public void setNotificationCenter(NotificationCenter notificationCenter) {
-        this.notificationCenter = notificationCenter;
-    }
-
-    public Pane getContent() {
-        return content;
+        registerNavigation();
+        try {
+            if (viewModel.isHasBoards()) {
+                navigation.navigate("home");
+            } else {
+                navigation.navigate("start");
+            }
+        } catch (ViewNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void displayInfo(String resourceKey) {
-        if(info.isVisible()) {
+        if (info.isVisible()) {
             info.close();
         }
         String message = resources.getString(resourceKey);
@@ -81,7 +98,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     }
 
     public void displayDismissInfo(String resourceKey) {
-        if( infoDismiss.isVisible()){
+        if (infoDismiss.isVisible()) {
             infoDismiss.close();
         }
         String message = resources.getString(resourceKey);
@@ -89,5 +106,22 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 new JFXSnackbarLayout(message, "OK", action -> infoDismiss.close()),
                 Duration.INDEFINITE, null)
         );
+    }
+
+    public NavigateServiceInterface getNavigation() {
+        return navigation;
+    }
+    @Autowired
+    public void setNavigation(NavigateServiceInterface navigation) {
+        this.navigation = navigation;
+    }
+
+    @Autowired
+    public void setNotificationCenter(NotificationCenter notificationCenter) {
+        this.notificationCenter = notificationCenter;
+    }
+
+    public Pane getContent() {
+        return content;
     }
 }
