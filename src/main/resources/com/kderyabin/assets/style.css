@@ -140,3 +140,12 @@
 .list-item-title {
     -fx-font-weight:  bold;
 }
+
+.person-choice-box {
+    -fx-height:100px;
+    -fx-padding: 20px;
+}
+.person-choice-label {
+    -fx-padding: 20px;
+    -fx-font-size: 1.5em;
+}

@@ -5,6 +5,7 @@ import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
+import com.kderyabin.repository.PersonRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
@@ -22,14 +23,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 @Component
 @Scope("prototype")
 //@Transactional
-@ScopeProvider(BoardScope.class )
+//@ScopeProvider(BoardScope.class)
 public class BoardFormViewModel implements ViewModel {
 
     final private Logger LOG = LoggerFactory.getLogger(BoardFormViewModel.class);
@@ -39,15 +47,25 @@ public class BoardFormViewModel implements ViewModel {
     private NavigateServiceInterface navigation;
     private NotificationCenter notificationCenter;
     private BoardRepository repository;
+    private PersonRepository personRepository;
     private BoardModel model;
-    @InjectScope
+
     private BoardScope scope;
     /*
      * ViewModel properties for binding.
      */
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
-    private ObservableList<PersonListItemViewModel> participants = FXCollections.<PersonListItemViewModel>observableArrayList();
+    /**
+     * List of participants attached to the board.
+     */
+    private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
+    /**
+     * The list of all participants created in the application.
+     * Used to populate board's participants list.
+     */
+    private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
+
     /**
      * Helper field.
      * Updated whenever participants list is updated.
@@ -56,15 +74,11 @@ public class BoardFormViewModel implements ViewModel {
 
     protected void initModel() {
 
-        if(scope.getBoardModel() != null) {
-            //Optional<BoardModel> found = repository.findById(scope.getBoardModel().getId());
-            //found.ifPresent(this::setModel);
+        if (scope.getBoardModel() != null) {
             setModel(scope.getBoardModel());
         }
     }
-
     public void initialize() {
-        LOG.info(scope.toString());
         initModel();
         if (model != null) {
             setName(model.getName());
@@ -80,6 +94,19 @@ public class BoardFormViewModel implements ViewModel {
         } else {
             model = new BoardModel();
         }
+        persons.addAll(getPersonsList());
+    }
+
+    /**
+     * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
+     * @return
+     */
+    private List<PersonListItemViewModel> getPersonsList(){
+
+        return StreamSupport
+                .stream(  personRepository.findAll().spliterator(), false)
+                .map(PersonListItemViewModel::new)
+                .collect(Collectors.toList());
     }
 
     @Autowired
@@ -100,6 +127,7 @@ public class BoardFormViewModel implements ViewModel {
     public BoardScope getScope() {
         return scope;
     }
+
     @Autowired
     public void setScope(BoardScope scope) {
         this.scope = scope;
@@ -137,9 +165,27 @@ public class BoardFormViewModel implements ViewModel {
         return participants;
     }
 
+    public PersonRepository getPersonRepository() {
+        return personRepository;
+    }
+
+    @Autowired
+    public void setPersonRepository(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
+
+    public ObservableList<PersonListItemViewModel> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(ObservableList<PersonListItemViewModel> persons) {
+        this.persons = persons;
+    }
+
     /**
      * Add new participant to the list.
      * Error from here is dispatch through notification center.
+     *
      * @param name Participant name.
      * @return TRUE on success False if participant exists already.
      */
@@ -157,7 +203,25 @@ public class BoardFormViewModel implements ViewModel {
         personListUpdated = true;
         return participants.add(viewModel);
     }
+    /**
+     * Add new participant to the list.
+     * Error from here is dispatch through notification center.
+     *
+     * @param name Participant name.
+     * @return TRUE on success False if participant exists already.
+     */
+    public boolean addParticipant(PersonListItemViewModel viewModel) {
+        // Check if already in the list
+        if (participants.contains(viewModel)) {
+            notificationCenter.publish(
+                    Notification.INFO_DISMISS, "msg.participant_already_on_board"
+            );
+            return false;
+        }
 
+        personListUpdated = true;
+        return participants.add(viewModel);
+    }
     /**
      * @param personListItemViewModel View model passed from the View.
      * @return TRUE if removed FALSE if not or not found in the list.
@@ -174,8 +238,8 @@ public class BoardFormViewModel implements ViewModel {
      */
     public boolean canGoBack() {
         // Is it a new board?
-        if(model.getId() == null) {
-            return  getName().trim().equals("") &&
+        if (model.getId() == null) {
+            return getName().trim().equals("") &&
                     getDescription().trim().equals("") &&
                     participants.size() == 0;
         }
@@ -188,8 +252,8 @@ public class BoardFormViewModel implements ViewModel {
     /**
      * Validate data integrity.
      *
-     * @throws ValidationException  Validation exception with resource id as a message.
-     *                              The human message will be retrieved during GUI display.
+     * @throws ValidationException Validation exception with resource id as a message.
+     *                             The human message will be retrieved during GUI display.
      */
     public void validate() throws ValidationException {
         if (getName().trim().isEmpty()) {
@@ -203,6 +267,7 @@ public class BoardFormViewModel implements ViewModel {
 
     /**
      * Load previous view.
+     *
      * @throws ViewNotFoundException See NavigationService.navigate()
      */
     public void goBack() throws ViewNotFoundException {
@@ -214,6 +279,7 @@ public class BoardFormViewModel implements ViewModel {
     /**
      * Save board data and load next view.
      */
+    @Transactional
     public void save() throws ViewNotFoundException {
         try {
             validate();
@@ -228,7 +294,7 @@ public class BoardFormViewModel implements ViewModel {
             scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
-            if(null != navigation) {
+            if (null != navigation) {
                 navigation.navigate("board-item");
             }
         } catch (ValidationException e) {

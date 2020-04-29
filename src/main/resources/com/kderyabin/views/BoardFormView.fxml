@@ -5,6 +5,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
@@ -15,14 +17,14 @@
             <HBox styleClass="header">
                 <BorderPane HBox.hgrow="ALWAYS">
                     <left>
-                        <JFXButton fx:id="backBtn" text="&#xe5c4;" styleClass="header__btn-icon"
+                        <JFXButton text="&#xe5c4;" styleClass="header__btn-icon"
                                    BorderPane.alignment="CENTER" onAction="#goBack"/>
                     </left>
                     <center>
                         <Label text="New board" styleClass="header__title"/>
                     </center>
                     <right>
-                        <JFXButton fx:id="saveBtn" text="&#xe5ca;" styleClass="header__btn-icon"
+                        <JFXButton text="&#xe5ca;" styleClass="header__btn-icon"
                                    BorderPane.alignment="CENTER" onAction="#save"/>
                     </right>
                 </BorderPane>
@@ -39,17 +41,26 @@
                 <TextArea fx:id="description" maxHeight="100"/>
 
                 <Label text="Participants"/>
-                <ListView VBox.vgrow="NEVER" fx:id="participantsList"/>
 
-                <HBox>
-                    <TextField HBox.hgrow="ALWAYS" promptText="name" fx:id="person">
-                        <HBox.margin>
-                            <Insets right="50"/>
-                        </HBox.margin>
-                    </TextField>
-                    <JFXButton text="&#xe145;" styleClass="icon" onAction="#addParticipant"/>
+                <Label text="%board_has_no_participants" fx:id="noParticipantsLabel" managed="false" visible="false"/>
+                <JFXListView VBox.vgrow="NEVER" fx:id="participantsList"/>
+
+                <HBox VBox.vgrow="ALWAYS">
+                    <VBox  HBox.hgrow="ALWAYS" styleClass="person-choice-box">
+                        <Label text="%add_new_participant"/>
+                        <TextField HBox.hgrow="ALWAYS" promptText="%participant_name" fx:id="person"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="person-choice-label" fx:id="choiceLabelContainer">
+                        <Label text="%or"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" styleClass="person-choice-box" fx:id="choiceListContainer">
+                        <Label text="%add_registered_participant"/>
+                        <JFXComboBox promptText="choose" HBox.hgrow="ALWAYS" fx:id="personsChoice"/>
+                    </VBox>
                 </HBox>
-
+                <HBox alignment="CENTER">
+                    <JFXButton text="%button.add_participant" onAction="#addParticipant"/>
+                </HBox>
             </VBox>
 
         </center>

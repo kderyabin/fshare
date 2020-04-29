@@ -3,21 +3,17 @@ package com.kderyabin.repository;
 import com.kderyabin.models.BoardItemModel;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -57,12 +53,11 @@ class BoardRepositoryTest {
         assertEquals(2, persons.size());
     }
 
-    //@Transactional
     @Test
     public void removeBoardWithItems() {
         // Prepare initial data
         PersonModel person = new PersonModel("Jeremy");
-        person = personRepository.save(person);
+        //person = personRepository.save(person);
         BoardModel board = new BoardModel("Board 1");
         board.addParticipant(person);
         repository.save(board);
@@ -88,14 +83,14 @@ class BoardRepositoryTest {
         List<BoardItemModel> items = (List<BoardItemModel>) itemRepository.findAllByBoardId(boardId);
         assertEquals(0, items.size());
     }
-
+    @Transactional
     @Test
     void loadRecent() {
         // Prepare data
         PersonModel person1 = new PersonModel("Jeremy");
-        person1 = personRepository.save(person1);
+        //person1 = personRepository.save(person1);
         PersonModel person2 = new PersonModel("Sam");
-        person2 = personRepository.save(person2);
+        //person2 = personRepository.save(person2);
 
         BoardModel board1 = new BoardModel("Board 1");
         board1.addParticipant(person1);

@@ -2,13 +2,14 @@
 
 <?import com.jfoenix.controls.JFXButton?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.*?>
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.kderyabin.views.PersonListItemView">
-    <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-        <Label  fx:id="name" text="Name" />
-    </StackPane>
-    <JFXButton defaultButton="true" text="&#xe15b;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeButton"/>
+    <HBox HBox.hgrow="ALWAYS"  styleClass="list-item-box">
+        <Label fx:id="name" styleClass="list-item-title" text="Name"/>
+    </HBox>
+    <HBox HBox.hgrow="NEVER" styleClass="box-buttons">
+        <JFXButton text="&#xe15b;" styleClass="icon" HBox.hgrow="NEVER" fx:id="removeButton"/>
+    </HBox>
 </HBox>
