@@ -28,6 +28,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     @FXML
     public Pane root;
 
+
     @InjectViewModel
     private MainViewModel viewModel;
 
@@ -47,6 +48,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
      * Snackbar with action button provides brief messages about app processes at the bottom of the screen.
      */
     JFXSnackbar infoDismiss;
+    JFXSnackbar infoRaw;
+
+    /**
+     * Reference to currently shown snackbar.
+     */
+    private JFXSnackbar openedSnackbar;
 
     /**
      * Initialize views for navigation.
@@ -64,8 +71,10 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         info = new JFXSnackbar(root);
         infoDismiss = new JFXSnackbar(root);
+        infoRaw = new JFXSnackbar(root);
         info.setPrefWidth(400);
         infoDismiss.setPrefWidth(400);
+        infoRaw.setPrefWidth(400);
         notificationCenter.subscribe(Notification.INFO, ((key, payload) -> {
             String message = (String) payload[0];
             displayInfo(message);
@@ -73,6 +82,10 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
         notificationCenter.subscribe(Notification.INFO_DISMISS, (key, payload) -> {
             String message = (String) payload[0];
             displayDismissInfo(message);
+        });
+        notificationCenter.subscribe(Notification.INFO_RAW_DISMISS, (key, payload) -> {
+            String message = (String) payload[0];
+            displayRawInfo(message);
         });
         registerNavigation();
         try {
@@ -87,9 +100,10 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     }
 
     public void displayInfo(String resourceKey) {
-        if (info.isVisible()) {
-            info.close();
+        if (openedSnackbar != null && openedSnackbar.isVisible()) {
+            openedSnackbar.close();
         }
+        openedSnackbar = info;
         String message = resources.getString(resourceKey);
         info.fireEvent(new JFXSnackbar.SnackbarEvent(
                 new JFXSnackbarLayout(message),
@@ -98,12 +112,23 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     }
 
     public void displayDismissInfo(String resourceKey) {
-        if (infoDismiss.isVisible()) {
-            infoDismiss.close();
+        if (openedSnackbar != null && openedSnackbar.isVisible()) {
+            openedSnackbar.close();
         }
+        openedSnackbar = infoDismiss;
         String message = resources.getString(resourceKey);
         infoDismiss.fireEvent(new JFXSnackbar.SnackbarEvent(
                 new JFXSnackbarLayout(message, "OK", action -> infoDismiss.close()),
+                Duration.INDEFINITE, null)
+        );
+    }
+    public void displayRawInfo(String message) {
+        if (openedSnackbar != null && openedSnackbar.isVisible()) {
+            openedSnackbar.close();
+        }
+        openedSnackbar = infoRaw;
+        infoRaw.fireEvent(new JFXSnackbar.SnackbarEvent(
+                new JFXSnackbarLayout(message, "OK", action -> infoRaw.close()),
                 Duration.INDEFINITE, null)
         );
     }

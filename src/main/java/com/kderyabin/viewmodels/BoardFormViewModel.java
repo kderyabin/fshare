@@ -1,16 +1,14 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
-import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.error.ValidationException;
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.models.BoardModel;
 import com.kderyabin.models.PersonModel;
+import com.kderyabin.repository.BoardRepository;
 import com.kderyabin.repository.PersonRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
-import de.saxsys.mvvmfx.InjectScope;
-import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.SimpleStringProperty;
@@ -23,20 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.stylesheets.LinkStyle;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 
 @Component
 @Scope("prototype")
-//@Transactional
+@Transactional
 //@ScopeProvider(BoardScope.class)
 public class BoardFormViewModel implements ViewModel {
 
@@ -99,12 +92,14 @@ public class BoardFormViewModel implements ViewModel {
 
     /**
      * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
+     * Exclude already attached to the board participants.
      * @return
      */
     private List<PersonListItemViewModel> getPersonsList(){
 
         return StreamSupport
                 .stream(  personRepository.findAll().spliterator(), false)
+                .filter( p -> !model.getParticipants().contains(p))
                 .map(PersonListItemViewModel::new)
                 .collect(Collectors.toList());
     }
@@ -207,7 +202,7 @@ public class BoardFormViewModel implements ViewModel {
      * Add new participant to the list.
      * Error from here is dispatch through notification center.
      *
-     * @param name Participant name.
+     * @param viewModel
      * @return TRUE on success False if participant exists already.
      */
     public boolean addParticipant(PersonListItemViewModel viewModel) {
@@ -299,6 +294,8 @@ public class BoardFormViewModel implements ViewModel {
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
+        } catch (IllegalStateException e) {
+            notificationCenter.publish(Notification.INFO_RAW_DISMISS, e.getMessage());
         }
     }
 

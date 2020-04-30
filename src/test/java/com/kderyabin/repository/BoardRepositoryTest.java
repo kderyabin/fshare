@@ -34,10 +34,15 @@ class BoardRepositoryTest {
     @Transactional
     @Test
     public void findAll() {
+
         PersonModel person1 = new PersonModel("John");
+        //personRepository.save(person1);
         PersonModel person2 = new PersonModel("Anna");
+        //personRepository.save(person2);
 
         BoardModel board = new BoardModel("Board 1");
+//        person1.getBoards().add(board);
+//        person2.getBoards().add(board);
         board.addParticipant(person1);
         board.addParticipant(person2);
 
@@ -49,16 +54,21 @@ class BoardRepositoryTest {
         BoardModel found = list.get(0);
 
         List<PersonModel> persons = new ArrayList<>(found.getParticipants());
+        LOG.info(persons.toString());
+        System.out.println(">>>>> persons 0 boards size: " + persons.get(0).getBoards().size());
+        System.out.println(">>>>> persons 1 boards size: " + persons.get(1).getBoards().size());
 
         assertEquals(2, persons.size());
     }
 
+    @Transactional
     @Test
     public void removeBoardWithItems() {
         // Prepare initial data
         PersonModel person = new PersonModel("Jeremy");
         //person = personRepository.save(person);
         BoardModel board = new BoardModel("Board 1");
+        person.getBoards().add(board);
         board.addParticipant(person);
         repository.save(board);
 
@@ -90,7 +100,6 @@ class BoardRepositoryTest {
         PersonModel person1 = new PersonModel("Jeremy");
         //person1 = personRepository.save(person1);
         PersonModel person2 = new PersonModel("Sam");
-        //person2 = personRepository.save(person2);
 
         BoardModel board1 = new BoardModel("Board 1");
         board1.addParticipant(person1);

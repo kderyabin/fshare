@@ -21,7 +21,7 @@ public class PersonModel {
     @ToString.Exclude
     @ManyToMany(
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH},
             mappedBy = "participants")
     private Set<BoardModel> boards = new LinkedHashSet<>();
 

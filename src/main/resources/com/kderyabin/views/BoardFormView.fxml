@@ -59,7 +59,7 @@
                     </VBox>
                 </HBox>
                 <HBox alignment="CENTER">
-                    <JFXButton text="%button.add_participant" onAction="#addParticipant"/>
+                    <JFXButton text="%button.add_participant" styleClass="button-raised-large" onAction="#addParticipant"/>
                 </HBox>
             </VBox>
 

@@ -55,7 +55,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         participantsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
         participantsList.addEventHandler(ActionEvent.ACTION, this::removeParticipant);
         initParticipantsListDisplay();
-        if(false == viewModel.getPersons().size() > 0) {
+        if(viewModel.getPersons().size() > 0) {
             personsChoice.setItems(viewModel.getPersons());
             personsChoice.setConverter(getPersonsComboConverter());
         } else {
