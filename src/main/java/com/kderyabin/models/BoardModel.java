@@ -1,6 +1,9 @@
 package com.kderyabin.models;
 
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.LinkedHashSet;
@@ -29,14 +32,15 @@ public class BoardModel {
     @Column(name = "update", nullable = false)
     private Timestamp update = new Timestamp(System.currentTimeMillis());
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable( name="board_person",
                 joinColumns = { @JoinColumn( name = "boardId")},
                 inverseJoinColumns = { @JoinColumn( name = "personId")})
     private Set<PersonModel> participants = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Set<BoardItemModel> items = new LinkedHashSet<>();
 
     public BoardModel() {
@@ -95,11 +99,11 @@ public class BoardModel {
     }
 
     public boolean addParticipant(PersonModel participant){
-//        participant.addBoard(this);
+        participant.addBoard(this);
         return participants.add(participant);
     }
     public boolean removeParticipant(PersonModel participant){
-//        participant.removeBoard(this);
+        participant.removeBoard(this);
         return participants.remove(participant);
     }
 
@@ -109,6 +113,26 @@ public class BoardModel {
 
     public void setItems(Set<BoardItemModel> items) {
         this.items = items;
+    }
+
+    public void addItem(BoardItemModel item){
+        item.setBoard(this);
+        items.add(item);
+    }
+
+    public void removeItem(BoardItemModel item){
+        item.setBoard(null);
+        items.remove(item);
+    }
+    public void removeAllItems(){
+        if(null == items) {
+            return;
+        }
+        items.forEach(item -> {
+            item.setBoard(null);
+            item.setPerson(null);
+        });
+        items.clear();
     }
 
     /**
