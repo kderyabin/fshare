@@ -1,12 +1,10 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ViewNotFoundException;
-import com.kderyabin.models.BoardItemModel;
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.repository.BoardItemRepository;
+import com.kderyabin.model.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
-import de.saxsys.mvvmfx.ScopeProvider;
+import com.kderyabin.services.StorageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -18,13 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-@ScopeProvider(scopes = BoardScope.class)
 public class BoardItemsViewModel implements ViewModel {
 
     final private static Logger LOG = LoggerFactory.getLogger(BoardItemsViewModel.class);
@@ -32,24 +27,24 @@ public class BoardItemsViewModel implements ViewModel {
      * Dependencies
      */
     private NavigateServiceInterface navigation;
-    private BoardItemRepository itemRepository;
     private BoardModel model;
     private BoardScope scope;
+    private StorageManager storageManager;
 
     private StringProperty boardName  = new SimpleStringProperty("");
     private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
 
     public void initialize() {
-        model = scope.getBoardModel();
         scope.setItemModel(null);
-        List<BoardItemModel> items = (ArrayList<BoardItemModel>) itemRepository.findAllByBoardId(model.getId());
-        LOG.debug("Board lines found:" + items.size());
+        model = storageManager.loadItems(scope.getBoardModel());
+        // Update model in the scope with the one with lines
+        scope.setBoardModel(model);
+        LOG.debug("Board lines found:" + model.getItems().size());
         setBoardName(model.getName());
-        if(items.size() > 0) {
+        if(model.getItems().size() > 0) {
             lines.addAll(
-                    items.stream().map(LinesListItemViewModel::new).collect(Collectors.toList())
+                    model.getItems().stream().map(LinesListItemViewModel::new).collect(Collectors.toList())
             );
-
         }
     }
 
@@ -58,14 +53,6 @@ public class BoardItemsViewModel implements ViewModel {
         this.navigation = navigation;
     }
 
-    public BoardItemRepository getItemRepository() {
-        return itemRepository;
-    }
-
-    @Autowired
-    public void setItemRepository(BoardItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
 
     public BoardModel getModel() {
         return model;
@@ -102,6 +89,14 @@ public class BoardItemsViewModel implements ViewModel {
     @Autowired
     public void setScope(BoardScope scope) {
         this.scope = scope;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 
     public void editItem(LinesListItemViewModel linesListItemViewModel) throws ViewNotFoundException {

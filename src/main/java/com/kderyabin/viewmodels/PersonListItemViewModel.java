@@ -1,6 +1,6 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.models.PersonModel;
+import com.kderyabin.model.PersonModel;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

@@ -1,7 +1,8 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.repository.BoardRepository;
+import com.kderyabin.model.BoardModel;
+import com.kderyabin.services.StorageManager;
+import com.kderyabin.storage.repository.BoardRepository;
 import com.kderyabin.scopes.BoardScope;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
@@ -16,7 +17,7 @@ import java.util.List;
 @ScopeProvider(BoardScope.class)
 public class MainViewModel implements ViewModel {
 
-    BoardRepository boardRepository;
+    StorageManager storageManager;
     @InjectScope
     BoardScope scope;
     private final BooleanProperty hasBoards = new SimpleBooleanProperty(false);
@@ -24,7 +25,7 @@ public class MainViewModel implements ViewModel {
     public void initialize(){
         // init recent boards
         try {
-            List<BoardModel> recent = boardRepository.loadRecent(3);
+            List<BoardModel> recent =storageManager.getRecentBoards(3);
             scope.setHasBoards(recent.size() > 0);
             setHasBoards(recent.size() > 0);
         } catch(Exception e) {
@@ -32,13 +33,12 @@ public class MainViewModel implements ViewModel {
         }
     }
 
-    public BoardRepository getBoardRepository() {
-        return boardRepository;
+    public StorageManager getStorageManager() {
+        return storageManager;
     }
-
     @Autowired
-    public void setBoardRepository(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 
     public BoardScope getScope() {

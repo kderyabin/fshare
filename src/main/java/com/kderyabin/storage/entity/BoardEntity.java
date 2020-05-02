@@ -1,4 +1,4 @@
-package com.kderyabin.models;
+package com.kderyabin.storage.entity;
 
 import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
@@ -13,8 +13,8 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "board")
-@NamedNativeQuery(name="BoardModel.loadRecent",  query = "select b.* from board b order by b.update desc limit ?1", resultClass = BoardModel.class)
-public class BoardModel {
+@NamedNativeQuery(name="BoardEntity.loadRecent",  query = "select b.* from board b order by b.update desc limit ?1", resultClass = BoardEntity.class)
+public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -32,21 +32,21 @@ public class BoardModel {
     @Column(name = "update", nullable = false)
     private Timestamp update = new Timestamp(System.currentTimeMillis());
 
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable( name="board_person",
                 joinColumns = { @JoinColumn( name = "boardId")},
                 inverseJoinColumns = { @JoinColumn( name = "personId")})
-    private Set<PersonModel> participants = new LinkedHashSet<>();
+    private Set<PersonEntity> participants = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "board", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "board", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private Set<BoardItemModel> items = new LinkedHashSet<>();
+    private Set<BoardItemEntity> items = new LinkedHashSet<>();
 
-    public BoardModel() {
+    public BoardEntity() {
     }
 
-    public BoardModel(String name) {
+    public BoardEntity(String name) {
         this.name = name;
     }
 
@@ -90,37 +90,37 @@ public class BoardModel {
         this.update = update;
     }
 
-    public Set<PersonModel> getParticipants() {
+    public Set<PersonEntity> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(Set<PersonModel> participants) {
+    public void setParticipants(Set<PersonEntity> participants) {
         this.participants = participants;
     }
 
-    public boolean addParticipant(PersonModel participant){
-        participant.addBoard(this);
+    public boolean addParticipant(PersonEntity participant){
+        //participant.addBoard(this);
         return participants.add(participant);
     }
-    public boolean removeParticipant(PersonModel participant){
-        participant.removeBoard(this);
+    public boolean removeParticipant(PersonEntity participant){
+        //participant.removeBoard(this);
         return participants.remove(participant);
     }
 
-    public Set<BoardItemModel> getItems() {
+    public Set<BoardItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(Set<BoardItemModel> items) {
+    public void setItems(Set<BoardItemEntity> items) {
         this.items = items;
     }
 
-    public void addItem(BoardItemModel item){
+    public void addItem(BoardItemEntity item){
         item.setBoard(this);
         items.add(item);
     }
 
-    public void removeItem(BoardItemModel item){
+    public void removeItem(BoardItemEntity item){
         item.setBoard(null);
         items.remove(item);
     }
@@ -154,7 +154,7 @@ public class BoardModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        BoardModel that = (BoardModel) o;
+        BoardEntity that = (BoardEntity) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&

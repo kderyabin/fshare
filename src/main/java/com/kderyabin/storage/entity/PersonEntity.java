@@ -1,6 +1,9 @@
-package com.kderyabin.models;
+package com.kderyabin.storage.entity;
 
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Objects;
@@ -9,7 +12,7 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "person")
-public class PersonModel {
+public class PersonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -23,16 +26,17 @@ public class PersonModel {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.MERGE, CascadeType.REFRESH},
             mappedBy = "participants")
-    private Set<BoardModel> boards = new LinkedHashSet<>();
+    private Set<BoardEntity> boards = new LinkedHashSet<>();
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<BoardItemModel> items = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "person", cascade =  {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<BoardItemEntity> items = new LinkedHashSet<>();
 
-    public PersonModel() {
+    public PersonEntity() {
     }
 
-    public PersonModel(String name) {
+    public PersonEntity(String name) {
         this.name = name;
     }
 
@@ -52,35 +56,42 @@ public class PersonModel {
         this.name = name;
     }
 
-    public Set<BoardModel> getBoards() {
+    public Set<BoardEntity> getBoards() {
         return boards;
     }
 
-    public void setBoards(Set<BoardModel> boards) {
+    public void setBoards(Set<BoardEntity> boards) {
         this.boards = boards;
     }
 
-    public boolean addBoard(BoardModel boardModel) {
+    public boolean addBoard(BoardEntity boardModel) {
         return boards.add(boardModel);
     }
 
-    public boolean removeBoard(BoardModel boardModel) {
+    public boolean removeBoard(BoardEntity boardModel) {
         return boards.remove(boardModel);
     }
 
-    public Set<BoardItemModel> getItems() {
+    public Set<BoardItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(Set<BoardItemModel> items) {
+    public void setItems(Set<BoardItemEntity> items) {
         this.items = items;
+    }
+
+    public void addItem(BoardItemEntity item){
+        items.add(item);
+    }
+    public void removeItem(BoardItemEntity item){
+        items.remove(item);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PersonModel that = (PersonModel) o;
+        PersonEntity that = (PersonEntity) o;
         return Objects.equals(id, that.id) &&
                 Objects.equals(name, that.name);
     }

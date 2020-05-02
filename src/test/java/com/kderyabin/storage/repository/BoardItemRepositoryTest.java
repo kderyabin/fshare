@@ -1,8 +1,8 @@
-package com.kderyabin.repository;
+package com.kderyabin.storage.repository;
 
-import com.kderyabin.models.BoardItemModel;
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.models.PersonModel;
+import com.kderyabin.storage.entity.BoardItemEntity;
+import com.kderyabin.storage.entity.BoardEntity;
+import com.kderyabin.storage.entity.PersonEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -22,13 +22,13 @@ class BoardItemRepositoryTest {
     @Transactional
     @Test
     public void save(){
-        PersonModel person = new PersonModel("Konstantin");
-        BoardModel board = new BoardModel("Paris");
+        PersonEntity person = new PersonEntity("Konstantin");
+        BoardEntity board = new BoardEntity("Paris");
         board.addParticipant(person);
 
         boardRepository.save(board);
 
-        BoardItemModel itemModel = new BoardItemModel("Gasoil");
+        BoardItemEntity itemModel = new BoardItemEntity("Gasoil");
         itemModel.setAmount("54.86");
         itemModel.setBoard(board);
         itemModel.setPerson(person);

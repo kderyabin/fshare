@@ -1,4 +1,4 @@
-package com.kderyabin.models;
+package com.kderyabin.storage.entity;
 
 import lombok.ToString;
 
@@ -10,8 +10,8 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "item")
-@NamedQuery(name = "BoardItemModel.findAllByBoardId", query = "select i from BoardItemModel i where board_id = ?1")
-public class BoardItemModel {
+@NamedQuery(name = "BoardItemEntity.findAllByBoardId", query = "select i from BoardItemEntity i where board_id = ?1")
+public class BoardItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -30,18 +30,18 @@ public class BoardItemModel {
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "person_id", foreignKey = @ForeignKey(name = "fk_person_id"))
-    private PersonModel person;
+    private PersonEntity person;
 
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "fk_board_id"))
-    private BoardModel board;
+    private BoardEntity board;
 
 
-    public BoardItemModel() {
+    public BoardItemEntity() {
     }
 
-    public BoardItemModel(String title) {
+    public BoardItemEntity(String title) {
         this.title = title;
     }
 
@@ -81,27 +81,27 @@ public class BoardItemModel {
         this.date = date;
     }
 
-    public PersonModel getPerson() {
+    public PersonEntity getPerson() {
         return person;
     }
 
-    public void setPerson(PersonModel person) {
+    public void setPerson(PersonEntity person) {
         this.person = person;
     }
 
-    public BoardModel getBoard() {
+    public BoardEntity getBoard() {
         return board;
     }
 
-    public void setBoard(BoardModel board) {
+    public void setBoard(BoardEntity board) {
         this.board = board;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BoardItemModel)) return false;
-        BoardItemModel that = (BoardItemModel) o;
+        if (!(o instanceof BoardItemEntity)) return false;
+        BoardItemEntity that = (BoardItemEntity) o;
         return  Objects.equals(id, that.id) &&
                 Objects.equals(title, that.title) &&
                 Objects.equals(amount, that.amount) &&

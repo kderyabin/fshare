@@ -129,7 +129,6 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
             participantsList.layout();
         }
     }
-
     public void save() {
         try {
             viewModel.save();

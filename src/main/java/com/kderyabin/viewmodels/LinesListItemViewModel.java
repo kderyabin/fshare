@@ -1,6 +1,6 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.models.BoardItemModel;
+import com.kderyabin.model.BoardItemModel;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

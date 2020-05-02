@@ -1,10 +1,11 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ViewNotFoundException;
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.repository.BoardRepository;
+import com.kderyabin.model.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.StorageManager;
+import com.kderyabin.storage.repository.BoardRepository;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,22 +31,20 @@ public class HomeViewModel implements ViewModel {
      *  Dependencies
      */
     private NotificationCenter notificationCenter;
-    private BoardRepository repository;
     private NavigateServiceInterface navigation;
+    private StorageManager storageManager;
     @InjectScope
     BoardScope scope;
 
-    List<BoardModel> models = new LinkedList<>();
+    List<BoardModel> models;
     private ObservableList<BoardListItemViewModel> boardItems = FXCollections.observableArrayList();
 
-    private void initModels() {
-        repository.findAll().forEach(item -> models.add(item));
-    }
 
     public void initialize() {
         // reset every time we load home page
         scope.setBoardModel(null);
-        initModels();
+        storageManager.setLazyMode(true);
+        models = storageManager.getBoards();
         LOG.info("Loaded boards size: " + models.size());
         scope.setHasBoards(!models.isEmpty());
         LOG.info(scope.toString());
@@ -54,15 +52,6 @@ public class HomeViewModel implements ViewModel {
                 getModels().stream().map(BoardListItemViewModel::new)
                         .collect(Collectors.toList())
         );
-    }
-
-    public BoardRepository getRepository() {
-        return repository;
-    }
-
-    @Autowired
-    public void setRepository(BoardRepository repository) {
-        this.repository = repository;
     }
 
     public List<BoardModel> getModels() {
@@ -99,6 +88,13 @@ public class HomeViewModel implements ViewModel {
         this.boardItems = boardItems;
     }
 
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
 
     public void edit(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
         scope.setBoardModel(boardItemVM.getModel());
@@ -110,7 +106,7 @@ public class HomeViewModel implements ViewModel {
     public boolean remove(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
         BoardModel boardModel = boardItemVM.getModel();
         try {
-            repository.delete(boardModel);
+            storageManager.removeBoard(boardModel);
         } catch (Exception e) {
             e.printStackTrace();
             notificationCenter.publish(Notification.INFO, "msg.generic_error");

@@ -1,8 +1,8 @@
-package com.kderyabin.repository;
+package com.kderyabin.storage.repository;
 
-import com.kderyabin.models.BoardItemModel;
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.models.PersonModel;
+import com.kderyabin.storage.entity.BoardItemEntity;
+import com.kderyabin.storage.entity.BoardEntity;
+import com.kderyabin.storage.entity.PersonEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -32,13 +32,13 @@ class BoardRepositoryTest {
     @Autowired
     private BoardItemRepository itemRepository;
 
-    PersonModel personJack ;
+    PersonEntity personJack ;
 
     @Transactional
     @BeforeEach
     void setUp() {
 
-        personJack = new PersonModel("Jeremy");
+        personJack = new PersonEntity("Jeremy");
         personJack = personRepository.save(personJack);
         LOG.info(">>>>>>>>>>>> END setUp");
     }
@@ -47,37 +47,37 @@ class BoardRepositoryTest {
     @Test
     public void findAll() {
 
-        PersonModel person1 = new PersonModel("John");
-        PersonModel person2 = new PersonModel("Anna");
+        PersonEntity person1 = new PersonEntity("John");
+        PersonEntity person2 = new PersonEntity("Anna");
 
-        BoardModel board = new BoardModel("Board 1");
+        BoardEntity board = new BoardEntity("Board 1");
         board.addParticipant(person1);
         board.addParticipant(person2);
         repository.save(board);
 
-        List<BoardModel> list = repository.findAll();
+        List<BoardEntity> list = repository.findAll();
         assertEquals(1, list.size());
 
-        List<PersonModel> persons = new ArrayList<>(list.get(0).getParticipants());
+        List<PersonEntity> persons = new ArrayList<>(list.get(0).getParticipants());
         assertEquals(2, persons.size());
     }
 
     private Integer prepareRemovalTestData(){
         // Prepare initial data
-        PersonModel person = new PersonModel("Jeremy");
+        PersonEntity person = new PersonEntity("Jeremy");
         //person = personRepository.save(person);
-        BoardModel board = new BoardModel("Board 1");
+        BoardEntity board = new BoardEntity("Board 1");
         person.getBoards().add(board);
         board.addParticipant(person);
         repository.saveAndFlush(board);
 
-        BoardItemModel model = new BoardItemModel("lunch");
+        BoardItemEntity model = new BoardItemEntity("lunch");
         model.setAmount("10");
         model.setBoard(board);
         model.setPerson(person);
         itemRepository.saveAndFlush(model);
 
-        BoardItemModel model2 = new BoardItemModel("dinner");
+        BoardItemEntity model2 = new BoardItemEntity("dinner");
         model2.setBoard(board);
         model2.setAmount("19.90");
         model2.setPerson(person);
@@ -90,13 +90,13 @@ class BoardRepositoryTest {
     public void removeBoardWithItems() {
         Integer boardId = prepareRemovalTestData();
         // Load board from the DB
-        BoardModel object = repository.findById(boardId).orElse(null);
+        BoardEntity object = repository.findById(boardId).orElse(null);
 
         LOG.info("Deleting");
         repository.delete(object);
 
         LOG.info("Checking rows in DB");
-        List<BoardItemModel> items = itemRepository.findAllByBoardId(boardId);
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(boardId);
         assertEquals(0, items.size());
     }
 
@@ -104,13 +104,13 @@ class BoardRepositoryTest {
      * Prepare test data in separate method
      * @return
      */
-    private BoardModel prepareLoadRecent() {
+    private BoardEntity prepareLoadRecent() {
         // Prepare data
-        PersonModel person1 = new PersonModel("Jeremy");
+        PersonEntity person1 = new PersonEntity("Jeremy");
         person1 = personRepository.save(person1);
-        PersonModel person2 = new PersonModel("Sam");
+        PersonEntity person2 = new PersonEntity("Sam");
 
-        BoardModel board1 = new BoardModel("Board 1");
+        BoardEntity board1 = new BoardEntity("Board 1");
         board1.addParticipant(personJack);
         board1.addParticipant(person1);
         board1.addParticipant(person2);
@@ -119,7 +119,7 @@ class BoardRepositoryTest {
         board1.setUpdate(new Timestamp(1585692001000L));
         repository.save(board1);
 
-        BoardModel board2 = new BoardModel("Board 2");
+        BoardEntity board2 = new BoardEntity("Board 2");
         board2.addParticipant(person1);
         board2.addParticipant(person2);
         // 24 apr 2020 00:00:01
@@ -135,7 +135,7 @@ class BoardRepositoryTest {
      * Fetch test results in separate method
      * @return
      */
-    private List<BoardModel> prepareLoadRecentGetResults() {
+    private List<BoardEntity> prepareLoadRecentGetResults() {
          return repository.loadRecent(1);
     }
 
@@ -145,9 +145,9 @@ class BoardRepositoryTest {
     @Transactional
     @Test
     public void loadRecent() {
-        BoardModel board2 = prepareLoadRecent();
+        BoardEntity board2 = prepareLoadRecent();
         // Test
-        List<BoardModel> result = prepareLoadRecentGetResults();
+        List<BoardEntity> result = prepareLoadRecentGetResults();
 
         assertEquals(1, result.size());
         assertTrue(board2.equals(result.get(0)));

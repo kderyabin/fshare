@@ -2,11 +2,11 @@ package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.error.ViewNotFoundException;
-import com.kderyabin.models.BoardItemModel;
-import com.kderyabin.models.PersonModel;
-import com.kderyabin.repository.BoardItemRepository;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.StorageManager;
+import com.kderyabin.storage.entity.BoardItemEntity;
+import com.kderyabin.storage.repository.BoardItemRepository;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -28,19 +29,17 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
+@Transactional
 public class ItemEditViewModel implements ViewModel {
     private static Logger LOG = LoggerFactory.getLogger(ItemEditViewModel.class);
 
+    private StorageManager storageManager;
     private NotificationCenter notificationCenter;
     private NavigateServiceInterface navigation;
-    private BoardItemRepository repository;
-    private BoardItemModel model;
+    private BoardItemEntity model;
     private BoardScope scope;
 
     // Properties
@@ -50,9 +49,9 @@ public class ItemEditViewModel implements ViewModel {
     private ObjectProperty<PersonListItemViewModel> person = new SimpleObjectProperty<>();
     private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
 
+
     public void initialize() {
-        LOG.debug(">> In initialize() method");
-        Set<PersonModel> persons = scope.getBoardModel().getParticipants();
+        Set<PersonEntity> persons = scope.getBoardModel().getParticipants();
         participants.addAll(
                 persons.stream()
                         .map(PersonListItemViewModel::new)
@@ -67,7 +66,7 @@ public class ItemEditViewModel implements ViewModel {
             // Find generated item viewmodel
             participants.stream().filter(item -> item.getModel().equals(model.getPerson())).findFirst().ifPresent(this::setPerson);
         } else {
-            model = new BoardItemModel();
+            model = new BoardItemEntity();
             model.setBoard(scope.getBoardModel());
         }
     }
@@ -93,8 +92,7 @@ public class ItemEditViewModel implements ViewModel {
         return getTitle().equals(model.getTitle()) &&
                 getAmount().equals(model.getAmount().toString()) &&
                 getDate().equals(model.getDate().toLocalDate()) &&
-                getPerson().getModel().equals(model.getPerson()
-        );
+                getPerson().getModel().equals(model.getPerson());
     }
 
     public void validate() throws ValidationException {
@@ -112,15 +110,16 @@ public class ItemEditViewModel implements ViewModel {
     /**
      * Save board item and load next view.
      */
+    @Transactional
     public void save() throws ViewNotFoundException {
         try {
             validate();
 
-            model.setTitle(getTitle());
-            model.setAmount(getAmount());
-            model.setPerson(person.getValue().getModel());
+//            model.setTitle(getTitle());
+//            model.setAmount(getAmount());
+//            model.setPerson(person.getValue().getModel());
 
-            model = repository.save(model);
+//            model = repository.save(model);
             notificationCenter.publish(Notification.INFO, "msg.item_saved_success");
             // Can be null in unit tests.
             if (null != navigation) {
@@ -225,5 +224,13 @@ public class ItemEditViewModel implements ViewModel {
     @Autowired
     public void setNotificationCenter(NotificationCenter notificationCenter) {
         this.notificationCenter = notificationCenter;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 }

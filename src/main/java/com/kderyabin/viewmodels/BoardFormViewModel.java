@@ -2,12 +2,11 @@ package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.error.ViewNotFoundException;
-import com.kderyabin.models.BoardModel;
-import com.kderyabin.models.PersonModel;
-import com.kderyabin.repository.BoardRepository;
-import com.kderyabin.repository.PersonRepository;
+import com.kderyabin.model.BoardModel;
+import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
@@ -20,17 +19,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 @Component
 @Scope("prototype")
-@Transactional
-//@ScopeProvider(BoardScope.class)
 public class BoardFormViewModel implements ViewModel {
 
     final private Logger LOG = LoggerFactory.getLogger(BoardFormViewModel.class);
@@ -39,11 +34,10 @@ public class BoardFormViewModel implements ViewModel {
      */
     private NavigateServiceInterface navigation;
     private NotificationCenter notificationCenter;
-    private BoardRepository repository;
-    private PersonRepository personRepository;
+    private StorageManager storageManager;
     private BoardModel model;
-
     private BoardScope scope;
+
     /*
      * ViewModel properties for binding.
      */
@@ -65,17 +59,13 @@ public class BoardFormViewModel implements ViewModel {
      */
     private boolean personListUpdated = false;
 
-    protected void initModel() {
-
-        if (scope.getBoardModel() != null) {
-            setModel(scope.getBoardModel());
-        }
-    }
     public void initialize() {
-        initModel();
-        if (model != null) {
+        if (scope.getBoardModel() != null) {
+            model = scope.getBoardModel();
             setName(model.getName());
             setDescription(model.getDescription());
+            LOG.info("Loading participants");
+            storageManager.loadParticipants(model);
             if (!model.getParticipants().isEmpty()) {
                 participants.addAll(
                         model.getParticipants()
@@ -96,9 +86,8 @@ public class BoardFormViewModel implements ViewModel {
      * @return
      */
     private List<PersonListItemViewModel> getPersonsList(){
-
-        return StreamSupport
-                .stream(  personRepository.findAll().spliterator(), false)
+        return storageManager.getPersons()
+                .stream()
                 .filter( p -> !model.getParticipants().contains(p))
                 .map(PersonListItemViewModel::new)
                 .collect(Collectors.toList());
@@ -107,11 +96,6 @@ public class BoardFormViewModel implements ViewModel {
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
-    }
-
-    @Autowired
-    public void setRepository(BoardRepository repository) {
-        this.repository = repository;
     }
 
     @Autowired
@@ -126,6 +110,14 @@ public class BoardFormViewModel implements ViewModel {
     @Autowired
     public void setScope(BoardScope scope) {
         this.scope = scope;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
     }
 
     public String getName() {
@@ -158,15 +150,6 @@ public class BoardFormViewModel implements ViewModel {
 
     public ObservableList<PersonListItemViewModel> getParticipants() {
         return participants;
-    }
-
-    public PersonRepository getPersonRepository() {
-        return personRepository;
-    }
-
-    @Autowired
-    public void setPersonRepository(PersonRepository personRepository) {
-        this.personRepository = personRepository;
     }
 
     public ObservableList<PersonListItemViewModel> getPersons() {
@@ -218,12 +201,13 @@ public class BoardFormViewModel implements ViewModel {
         return participants.add(viewModel);
     }
     /**
-     * @param personListItemViewModel View model passed from the View.
+     * @param viewModel View model passed from the View.
      * @return TRUE if removed FALSE if not or not found in the list.
      */
-    public boolean removeParticipant(PersonListItemViewModel personListItemViewModel) {
+    public boolean removeParticipant(PersonListItemViewModel viewModel) {
+
         personListUpdated = true;
-        return participants.remove(personListItemViewModel);
+        return participants.remove(viewModel);
     }
 
     /**
@@ -274,18 +258,22 @@ public class BoardFormViewModel implements ViewModel {
     /**
      * Save board data and load next view.
      */
-    @Transactional
     public void save() throws ViewNotFoundException {
         try {
             validate();
 
             model.setName(getName());
             model.setDescription(getDescription());
-            model.initUpdateTime();
+            LOG.info("before removing " +  model.getParticipants().size());
             model.getParticipants().clear();
-            participants.forEach(person -> model.addParticipant(person.getModel()));
+            model.getParticipants().addAll(
+                    participants.stream()
+                    .map(PersonListItemViewModel::getModel)
+                    .collect(Collectors.toList())
+            );
+            LOG.info("after updated participants " +  model.getParticipants().size());
 
-            model = repository.save(model);
+            model = storageManager.saveBoard(model, true, false);
             scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
