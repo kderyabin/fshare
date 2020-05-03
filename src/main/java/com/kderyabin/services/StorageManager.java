@@ -49,11 +49,9 @@ public class StorageManager {
     @Transactional
     public BoardModel loadParticipants(BoardModel model) {
         LOG.info("Fetchin participants for: " + model.toString());
-        BoardEntity entity = boardRepository.findById(model.getId()).orElse(null);
-        if (entity != null) {
-            LOG.info("BoardEntity found");
-            entity.getParticipants().forEach(e -> model.addParticipant(getModel(e)));
-        }
+        personRepository.findAllByBoardId(model.getId())
+                .forEach(e -> model.addParticipant(getModel(e)));
+
         return model;
     }
 
@@ -70,7 +68,7 @@ public class StorageManager {
 
         BoardEntity entity = getEntity(model);
         if (participant) {
-            for (PersonModel person: model.getParticipants()) {
+            for (PersonModel person : model.getParticipants()) {
                 // persist new entity
                 PersonEntity pe = getEntity(person);
                 if (pe.getId() == null) {
@@ -82,10 +80,10 @@ public class StorageManager {
         }
 
         if (items) {
-            for (BoardItemModel item: model.getItems()) {
+            for (BoardItemModel item : model.getItems()) {
                 // persist new item
                 BoardItemEntity ie = getEntity(item);
-                if(ie.getId() == null){
+                if (ie.getId() == null) {
                     ie = itemRepository.save(ie);
                 }
                 entity.addItem(ie);
@@ -100,9 +98,17 @@ public class StorageManager {
         return model;
     }
 
+    public void save(BoardItemModel model) {
+        BoardItemEntity entity = getEntity(model);
+        LOG.info(">>> Start BoardItemModel saving ");
+        itemRepository.saveAndFlush(entity);
+        LOG.info(">>> Saved BoardItemModel ");
+    }
+
     public void removeBoard(BoardModel board) {
         boardRepository.deleteById(board.getId());
     }
+
     public BoardRepository getBoardRepository() {
         return boardRepository;
     }
@@ -193,6 +199,7 @@ public class StorageManager {
     public BoardItemEntity getEntity(BoardItemModel source) {
         BoardItemEntity target = new BoardItemEntity();
         target.setId(source.getId());
+        target.setTitle(source.getTitle());
         target.setAmount(source.getAmount());
         target.setDate(source.getDate());
         target.setPerson(getEntity(source.getPerson()));
@@ -203,20 +210,24 @@ public class StorageManager {
     public BoardItemModel getModel(BoardItemEntity source) {
         BoardItemModel target = new BoardItemModel();
         target.setId(source.getId());
+        target.setTitle(source.getTitle());
         target.setAmount(source.getAmount());
         target.setDate(source.getDate());
         target.setPerson(getModel(source.getPerson()));
         target.setBoard(getModel(source.getBoard()));
         return target;
     }
+
     @Transactional
     public BoardModel loadItems(BoardModel model) {
         model.setItems(
                 itemRepository.findAllByBoardId(model.getId())
-                .stream()
-                .map(this::getModel)
-                .collect(Collectors.toList())
+                        .stream()
+                        .map(this::getModel)
+                        .collect(Collectors.toList())
         );
         return model;
     }
+
+
 }

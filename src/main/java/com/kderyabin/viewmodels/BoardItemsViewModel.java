@@ -36,10 +36,13 @@ public class BoardItemsViewModel implements ViewModel {
 
     public void initialize() {
         scope.setItemModel(null);
-        model = storageManager.loadItems(scope.getBoardModel());
+        model = storageManager.loadParticipants(scope.getBoardModel());
+        LOG.info("Participants size:" + model.getParticipants().size());
+        model = storageManager.loadItems(model);
+        LOG.info("Board lines found:" + model.getItems().size());
         // Update model in the scope with the one with lines
         scope.setBoardModel(model);
-        LOG.debug("Board lines found:" + model.getItems().size());
+
         setBoardName(model.getName());
         if(model.getItems().size() > 0) {
             lines.addAll(

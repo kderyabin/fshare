@@ -12,6 +12,10 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "person")
+@NamedNativeQuery(
+        name = "PersonEntity.findAllByBoardId",
+        query = "select p.* from person p inner join board_person bp on bp.personId = p.id where bp.boardId = ?1",
+        resultClass = PersonEntity.class)
 public class PersonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

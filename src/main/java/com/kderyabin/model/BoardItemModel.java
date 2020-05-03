@@ -25,4 +25,13 @@ public class BoardItemModel {
     public BoardItemModel(String title) {
         this.title = title;
     }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = new BigDecimal(amount);
+    }
 }
+
