@@ -7,6 +7,7 @@ import lombok.ToString;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @ToString
 @Getter
@@ -49,4 +50,22 @@ public class BoardModel {
     public void removeItem(BoardItemModel item){
         items.remove(item);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoardModel that = (BoardModel) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(creation, that.creation) &&
+                Objects.equals(update, that.update);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, creation, update);
+    }
+
 }

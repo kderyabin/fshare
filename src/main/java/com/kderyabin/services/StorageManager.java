@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ public class StorageManager {
     @Transactional
     public BoardModel loadParticipants(BoardModel model) {
         LOG.info("Fetchin participants for: " + model.toString());
+        model.getParticipants().clear();
         personRepository.findAllByBoardId(model.getId())
                 .forEach(e -> model.addParticipant(getModel(e)));
 

@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.Objects;
 
 
 @ToString
@@ -32,6 +33,22 @@ public class BoardItemModel {
 
     public void setAmount(String amount) {
         this.amount = new BigDecimal(amount);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof BoardItemModel)) return false;
+        BoardItemModel that = (BoardItemModel) o;
+        return  Objects.equals(id, that.id) &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(amount, that.amount) &&
+                Objects.equals(date, that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, title, amount, date);
     }
 }
 

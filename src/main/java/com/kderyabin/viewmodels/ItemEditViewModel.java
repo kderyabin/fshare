@@ -64,7 +64,7 @@ public class ItemEditViewModel implements ViewModel {
             setTitle(model.getTitle());
             setAmount(model.getAmount().toString());
             setDate(model.getDate().toLocalDate());
-            // Set item participant property.
+            // Set selected participant property.
             // Must be equal to the element of the participants observable list
             // in order to be automatically selected in the view.
             participants.stream()
