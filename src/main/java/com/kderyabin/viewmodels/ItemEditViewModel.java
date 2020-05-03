@@ -91,10 +91,12 @@ public class ItemEditViewModel implements ViewModel {
      */
     public boolean canGoBack() {
         if (model.getId() == null) {
+            LOG.debug("Checking canGoBack for a new model");
             return getTitle().trim().isEmpty() &&
                     getAmount().trim().isEmpty() &&
                     getPerson() == null;
         }
+        LOG.debug("Checking canGoBack for a existing model");
         return getTitle().equals(model.getTitle()) &&
                 getAmount().equals(model.getAmount().toString()) &&
                 getDate().equals(model.getDate().toLocalDate()) &&

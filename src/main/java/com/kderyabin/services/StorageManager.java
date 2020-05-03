@@ -63,7 +63,7 @@ public class StorageManager {
     }
 
     @Transactional
-    public BoardModel saveBoard(BoardModel model, boolean participant, boolean items) {
+    public BoardModel save(BoardModel model, boolean participant, boolean items) {
         LOG.info("Start board saving ");
         boolean before = isLazyMode();
         setLazyMode(true);
@@ -105,6 +105,7 @@ public class StorageManager {
         LOG.info(">>> Start BoardItemModel saving ");
         itemRepository.saveAndFlush(entity);
         LOG.info(">>> Saved BoardItemModel ");
+        //return model;
     }
 
     public void removeBoard(BoardModel board) {

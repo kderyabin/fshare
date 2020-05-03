@@ -60,7 +60,7 @@ public class BoardFormViewModel implements ViewModel {
     private boolean personListUpdated = false;
 
     public void initialize() {
-        if (scope.getBoardModel() != null) {
+        if (scope != null && scope.getBoardModel() != null) {
             model = scope.getBoardModel();
             setName(model.getName());
             setDescription(model.getDescription());
@@ -77,7 +77,9 @@ public class BoardFormViewModel implements ViewModel {
         } else {
             model = new BoardModel();
         }
-        persons.addAll(getPersonsList());
+        if(storageManager != null) {
+            persons.addAll(getPersonsList());
+        }
     }
 
     /**
@@ -265,15 +267,14 @@ public class BoardFormViewModel implements ViewModel {
             model.setName(getName());
             model.setDescription(getDescription());
             LOG.info("before removing " +  model.getParticipants().size());
-            model.getParticipants().clear();
-            model.getParticipants().addAll(
+            model.setParticipants(
                     participants.stream()
                     .map(PersonListItemViewModel::getModel)
                     .collect(Collectors.toList())
             );
             LOG.info("after updated participants " +  model.getParticipants().size());
 
-            model = storageManager.saveBoard(model, true, false);
+            model = storageManager.save(model, true, false);
             scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
