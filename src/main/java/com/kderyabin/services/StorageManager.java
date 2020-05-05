@@ -39,7 +39,6 @@ public class StorageManager {
 
     @Transactional
     public List<BoardModel> getBoards() {
-        LOG.info("Fetching board in " + lazyMode + " mode");
         List<BoardModel> result = new LinkedList<>();
         boardRepository.findAll().forEach(
                 entity -> result.add(getModel(entity))
@@ -49,7 +48,6 @@ public class StorageManager {
 
     @Transactional
     public BoardModel loadParticipants(BoardModel model) {
-        LOG.info("Fetchin participants for: " + model.toString());
         model.getParticipants().clear();
         personRepository.findAllByBoardId(model.getId())
                 .forEach(e -> model.addParticipant(getModel(e)));
@@ -58,50 +56,67 @@ public class StorageManager {
     }
 
     @Transactional
+    public List<PersonModel> getParticipants(BoardModel model) {
+        List<PersonModel> result = new ArrayList<>();
+        personRepository.findAllByBoardId(model.getId())
+                .forEach(e -> result.add(getModel(e)));
+
+        return result;
+    }
+
+    @Transactional
     public List<PersonModel> getPersons() {
         return personRepository.findAll().stream().map(this::getModel).collect(Collectors.toList());
     }
 
     @Transactional
-    public BoardModel save(BoardModel model, boolean participant, boolean items) {
+    public PersonModel save(PersonModel model){
+        LOG.info("Start PersonModel saving ");
+        PersonEntity entity = getEntity(model);
+        entity = personRepository.saveAndFlush(entity);
+        model = getModel(entity);
+        LOG.info("End PersonModel saving");
+        return model;
+    }
+
+    @Transactional
+    public BoardModel save(BoardModel model, boolean participants) {
         LOG.info("Start board saving ");
         boolean before = isLazyMode();
         setLazyMode(true);
 
         BoardEntity entity = getEntity(model);
-        if (participant) {
+        if (participants) {
             for (PersonModel person : model.getParticipants()) {
                 // persist new entity
                 PersonEntity pe = getEntity(person);
                 if (pe.getId() == null) {
                     pe = personRepository.save(pe);
+                    person.setId(pe.getId());
                 }
                 // add to the board
                 entity.addParticipant(pe);
             }
         }
 
-        if (items) {
-            for (BoardItemModel item : model.getItems()) {
-                // persist new item
-                BoardItemEntity ie = getEntity(item);
-                if (ie.getId() == null) {
-                    ie = itemRepository.save(ie);
-                }
-                entity.addItem(ie);
-            }
-
-        }
         entity.initUpdateTime();
         LOG.info("Entity: " + entity.toString());
         entity = boardRepository.saveAndFlush(entity);
+        BoardModel result = getModel(entity);
+        if(participants) {
+            result.setParticipants(model.getParticipants());
+        }
         LOG.info("Entity saved ");
         setLazyMode(before);
-        return model;
+        return result;
     }
 
     public void save(BoardItemModel model) {
         BoardItemEntity entity = getEntity(model);
+        BoardEntity board =  entity.getBoard();
+        board.initUpdateTime();
+        board = boardRepository.save(board);
+        entity.setBoard(board);
         LOG.info(">>> Start BoardItemModel saving ");
         itemRepository.saveAndFlush(entity);
         LOG.info(">>> Saved BoardItemModel ");
@@ -154,10 +169,10 @@ public class StorageManager {
         entity.setDescription(model.getDescription());
         entity.setCreation(model.getCreation());
         entity.setUpdate(model.getUpdate());
-        if (!lazyMode) {
-            model.getParticipants().forEach(p -> entity.addParticipant(getEntity(p)));
-            model.getItems().forEach(i -> entity.addItem(getEntity(i)));
-        }
+//        if (!lazyMode) {
+//            model.getParticipants().forEach(p -> entity.addParticipant(getEntity(p)));
+//            model.getItems().forEach(i -> entity.addItem(getEntity(i)));
+//        }
 
         return entity;
     }
@@ -169,10 +184,10 @@ public class StorageManager {
         model.setDescription(entity.getDescription());
         model.setCreation(entity.getCreation());
         model.setUpdate(entity.getUpdate());
-        if (!lazyMode) {
-            entity.getParticipants().forEach(p -> model.addParticipant(getModel(p)));
-            entity.getItems().forEach(i -> model.addItem(getModel(i)));
-        }
+//        if (!lazyMode) {
+//            entity.getParticipants().forEach(p -> model.addParticipant(getModel(p)));
+//            entity.getItems().forEach(i -> model.addItem(getModel(i)));
+//        }
         return model;
     }
 
@@ -181,10 +196,14 @@ public class StorageManager {
         PersonEntity entity = new PersonEntity();
         entity.setId(model.getId());
         entity.setName(model.getName());
-        if (!lazyMode) {
+        if(model.getBoards().size() > 0) {
+            LOG.info("Boards found");
             model.getBoards().forEach(board -> entity.addBoard(getEntity(board)));
-            model.getItems().forEach(item -> entity.addItem(getEntity(item)));
         }
+//        if (!lazyMode) {
+//            model.getBoards().forEach(board -> entity.addBoard(getEntity(board)));
+//            model.getItems().forEach(item -> entity.addItem(getEntity(item)));
+//        }
         return entity;
     }
 
@@ -192,10 +211,7 @@ public class StorageManager {
         PersonModel target = new PersonModel();
         target.setId(source.getId());
         target.setName(source.getName());
-        if (!lazyMode) {
-            source.getBoards().forEach(board -> target.addBoard(getModel(board)));
-            source.getItems().forEach(item -> target.addItem(getModel(item)));
-        }
+
         return target;
     }
 

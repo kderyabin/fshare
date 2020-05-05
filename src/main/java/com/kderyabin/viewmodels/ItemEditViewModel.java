@@ -3,6 +3,7 @@ package com.kderyabin.viewmodels;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardItemModel;
+import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
@@ -52,6 +53,7 @@ public class ItemEditViewModel implements ViewModel {
 
 
     public void initialize() {
+        // Participants list must initialized on previous step
         List<PersonModel> persons = scope.getBoardModel().getParticipants();
         participants.addAll(
                 persons.stream()

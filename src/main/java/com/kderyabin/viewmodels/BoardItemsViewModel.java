@@ -37,9 +37,8 @@ public class BoardItemsViewModel implements ViewModel {
     public void initialize() {
         scope.setItemModel(null);
         model = scope.getBoardModel();
-        if(model.getParticipants().size() == 0) {
-            model = storageManager.loadParticipants(scope.getBoardModel());
-        }
+        // refresh participants list
+        model = storageManager.loadParticipants(scope.getBoardModel());
         LOG.info("Participants size:" + model.getParticipants().size());
         model = storageManager.loadItems(model);
         LOG.info("Board lines found:" + model.getItems().size());

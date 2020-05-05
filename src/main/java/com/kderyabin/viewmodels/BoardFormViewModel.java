@@ -68,8 +68,7 @@ public class BoardFormViewModel implements ViewModel {
             storageManager.loadParticipants(model);
             if (!model.getParticipants().isEmpty()) {
                 participants.addAll(
-                        model.getParticipants()
-                                .stream()
+                        model.getParticipants().stream()
                                 .map(PersonListItemViewModel::new)
                                 .collect(Collectors.toList())
                 );
@@ -263,7 +262,7 @@ public class BoardFormViewModel implements ViewModel {
     public void save() throws ViewNotFoundException {
         try {
             validate();
-
+            boolean isCreationMode = model.getId() == null;
             model.setName(getName());
             model.setDescription(getDescription());
             LOG.info("before removing " +  model.getParticipants().size());
@@ -274,12 +273,12 @@ public class BoardFormViewModel implements ViewModel {
             );
             LOG.info("after updated participants " +  model.getParticipants().size());
 
-            model = storageManager.save(model, true, false);
+            model = storageManager.save(model, true);
             scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
             if (null != navigation) {
-                navigation.navigate("board-item");
+                navigation.navigate( isCreationMode ? "board-item" : "board-items");
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());

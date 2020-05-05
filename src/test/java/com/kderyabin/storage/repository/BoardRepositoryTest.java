@@ -32,23 +32,14 @@ class BoardRepositoryTest {
     @Autowired
     private BoardItemRepository itemRepository;
 
-    PersonEntity personJack ;
-
-    @Transactional
-    @BeforeEach
-    void setUp() {
-
-        personJack = new PersonEntity("Jeremy");
-        personJack = personRepository.save(personJack);
-        LOG.info(">>>>>>>>>>>> END setUp");
-    }
-
     @Transactional
     @Test
     public void findAll() {
 
         PersonEntity person1 = new PersonEntity("John");
+        person1 = personRepository.save(person1);
         PersonEntity person2 = new PersonEntity("Anna");
+        person2 = personRepository.save(person2);
 
         BoardEntity board = new BoardEntity("Board 1");
         board.addParticipant(person1);
@@ -65,7 +56,8 @@ class BoardRepositoryTest {
     private Integer prepareRemovalTestData(){
         // Prepare initial data
         PersonEntity person = new PersonEntity("Jeremy");
-        //person = personRepository.save(person);
+        person = personRepository.save(person);
+
         BoardEntity board = new BoardEntity("Board 1");
         person.getBoards().add(board);
         board.addParticipant(person);
@@ -109,9 +101,9 @@ class BoardRepositoryTest {
         PersonEntity person1 = new PersonEntity("Jeremy");
         person1 = personRepository.save(person1);
         PersonEntity person2 = new PersonEntity("Sam");
+        person2 = personRepository.save(person2);
 
         BoardEntity board1 = new BoardEntity("Board 1");
-        board1.addParticipant(personJack);
         board1.addParticipant(person1);
         board1.addParticipant(person2);
         // 01 apr 2020 00:00:01
@@ -150,6 +142,6 @@ class BoardRepositoryTest {
         List<BoardEntity> result = prepareLoadRecentGetResults();
 
         assertEquals(1, result.size());
-        assertTrue(board2.equals(result.get(0)));
+        assertEquals(board2, result.get(0));
     }
 }

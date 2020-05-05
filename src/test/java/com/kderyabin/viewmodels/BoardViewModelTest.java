@@ -5,7 +5,6 @@ import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.StorageManager;
-import com.kderyabin.storage.repository.BoardRepository;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
@@ -63,7 +62,7 @@ class BoardViewModelTest {
         model.setId(1);
 
         StorageManager storageManager = Mockito.mock(StorageManager.class);
-        Mockito.when(storageManager.save(model, true, false)).thenReturn(model);
+        Mockito.when(storageManager.save(model, true)).thenReturn(model);
 
         BoardScope scope = new BoardScope();
 
