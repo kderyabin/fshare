@@ -13,7 +13,11 @@ import java.util.Set;
 @ToString
 @Entity
 @Table(name = "board")
-@NamedNativeQuery(name="BoardEntity.loadRecent",  query = "select b.* from board b order by b.update desc limit ?1", resultClass = BoardEntity.class)
+@NamedNativeQuery(
+        name="BoardEntity.loadRecent",
+        query = "select b.* from board b order by b.update desc limit ?1",
+        resultClass = BoardEntity.class
+)
 public class BoardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

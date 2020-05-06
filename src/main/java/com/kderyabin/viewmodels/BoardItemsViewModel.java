@@ -35,10 +35,12 @@ public class BoardItemsViewModel implements ViewModel {
     private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
 
     public void initialize() {
+        LOG.info("Initialize");
         scope.setItemModel(null);
         model = scope.getBoardModel();
+        LOG.info("Model in scope with ID:" + model.getId());
         // refresh participants list
-        model = storageManager.loadParticipants(scope.getBoardModel());
+        model = storageManager.loadParticipants(model);
         LOG.info("Participants size:" + model.getParticipants().size());
         model = storageManager.loadItems(model);
         LOG.info("Board lines found:" + model.getItems().size());
