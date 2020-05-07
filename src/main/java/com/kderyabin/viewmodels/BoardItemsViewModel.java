@@ -16,6 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -33,6 +37,7 @@ public class BoardItemsViewModel implements ViewModel {
 
     private StringProperty boardName  = new SimpleStringProperty("");
     private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
+    private Map<String, Double> chartData = new HashMap<>();
 
     public void initialize() {
         LOG.info("Initialize");
@@ -46,11 +51,24 @@ public class BoardItemsViewModel implements ViewModel {
         LOG.info("Board lines found:" + model.getItems().size());
         // Update model in the scope with the one with lines
         scope.setBoardModel(model);
-
         setBoardName(model.getName());
         if(model.getItems().size() > 0) {
             lines.addAll(
-                    model.getItems().stream().map(LinesListItemViewModel::new).collect(Collectors.toList())
+                    model.getItems()
+                            .stream()
+                            .map( item -> {
+                                String chartKey = item.getPerson().getName();
+                                Double amount = item.getAmount().doubleValue();
+                                if(!chartData.containsKey(chartKey)) {
+                                    chartData.put(chartKey, amount);
+                                } else {
+                                    Double sum = chartData.get(chartKey);
+                                    sum += amount;
+                                    chartData.put(chartKey, sum);
+                                }
+                                return new LinesListItemViewModel(item);
+                            })
+                            .collect(Collectors.toList())
             );
         }
     }
@@ -104,6 +122,14 @@ public class BoardItemsViewModel implements ViewModel {
     @Autowired
     public void setStorageManager(StorageManager storageManager) {
         this.storageManager = storageManager;
+    }
+
+    public Map<String, Double> getChartData() {
+        return chartData;
+    }
+
+    public void setChartData(Map<String, Double> chartData) {
+        this.chartData = chartData;
     }
 
     public void editItem(LinesListItemViewModel linesListItemViewModel) throws ViewNotFoundException {

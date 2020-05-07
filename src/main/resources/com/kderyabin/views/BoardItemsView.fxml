@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.chart.PieChart?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
@@ -30,6 +31,7 @@
         <center>
             <VBox styleClass="form-panel">
                 <Label text="%board_has_no_items" fx:id="noItemsWarning" managed="false" visible="false"/>
+                <PieChart fx:id="chart" />
                 <JFXListView VBox.vgrow="NEVER" fx:id="items"  styleClass="list-present"/>
             </VBox>
         </center>

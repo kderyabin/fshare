@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQuery;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.Objects;

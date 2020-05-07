@@ -6,6 +6,8 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +22,8 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
     public ListView<LinesListItemViewModel> items;
     @FXML
     public Label noItemsWarning;
+    @FXML
+    public PieChart chart;
 
     @InjectViewModel
     private BoardItemsViewModel viewModel;
@@ -28,10 +32,9 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
         boardName.textProperty().bind(viewModel.boardNameProperty());
         boolean hasItems = viewModel.getLines().size() > 0;
         if (!hasItems) {
-            items.setManaged(false);
-            items.setVisible(false);
-            noItemsWarning.setManaged(true);
-            noItemsWarning.setVisible(true);
+            hideElement(items);
+            hideElement(chart);
+            showElement(noItemsWarning);
         } else {
             items.setItems(viewModel.getLines());
             items.setCellFactory(CachedViewModelCellFactory.createForFxmlView(LinesListItemView.class));
@@ -42,7 +45,26 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
                     e.printStackTrace();
                 }
             });
+            initChart();
         }
+    }
+    private void initChart(){
+        if(viewModel.getChartData().size() > 0) {
+            viewModel.getChartData().forEach((name, amount) -> {
+                String label = name + " (" + amount + ")";
+                chart.getData().add( new PieChart.Data(label, amount));
+            });
+        }
+    }
+    private void hideElement(Node node){
+        // prevent size calculation
+        node.setManaged(false);
+        // hide
+        node.setVisible(false);
+    }
+    private void showElement(Node node){
+        node.setManaged(true);
+        node.setVisible(true);
     }
 
     public void addItem() throws Exception {

@@ -2,6 +2,7 @@ package com.kderyabin.services;
 
 import com.kderyabin.model.BoardItemModel;
 import com.kderyabin.model.BoardModel;
+import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.storage.entity.BoardEntity;
 import com.kderyabin.storage.entity.BoardItemEntity;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +33,24 @@ public class StorageManager {
     PersonRepository personRepository;
     BoardItemRepository itemRepository;
 
+    @Transactional
+    public List<BoardPersonTotal> getBoardPersonTotal(int boardId) {
+        List<BoardPersonTotal> result = new ArrayList<>();
+        itemRepository.getBoardPersonTotal(boardId).stream()
+                .forEach( row -> {
+                    BoardPersonTotal item = new BoardPersonTotal();
+                    item.setTotal((BigDecimal) row[0]);
+                    item.setPersonId( (Integer)row[1]);
+                    item.setPersonName((String) row[2]);
+                    item.setBoardId((Integer)row[3]);
+                    result.add(item);
+                });
+        return result;
+    }
+
+    @Transactional
     public List<BoardModel> getRecentBoards(int limit) {
+
         return boardRepository.loadRecent(limit)
                 .stream().map(this::getModel)
                 .collect(Collectors.toList());
@@ -229,12 +250,13 @@ public class StorageManager {
 
     @Transactional
     public BoardModel loadItems(BoardModel model) {
-        model.setItems(
-                itemRepository.findAllByBoardId(model.getId())
-                        .stream()
-                        .map(this::getModel)
-                        .collect(Collectors.toList())
-        );
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
+        if(!items.isEmpty()) {
+            model.setItems(items.stream()
+                    .map(this::getModel)
+                    .collect(Collectors.toList())
+            );
+        }
         return model;
     }
 

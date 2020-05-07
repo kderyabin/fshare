@@ -1,5 +1,6 @@
 package com.kderyabin.storage.entity;
 
+import com.kderyabin.model.BoardPersonTotal;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -10,7 +11,22 @@ import java.util.Objects;
 @ToString
 @Entity
 @Table(name = "item")
-@NamedQuery(name = "BoardItemEntity.findAllByBoardId", query = "select i from BoardItemEntity i where board_id = ?1")
+@NamedQuery(
+        name = "BoardItemEntity.findAllByBoardId",
+        query = "select i from BoardItemEntity i where board_id = ?1")
+@NamedNativeQuery(
+        name = "BoardItemEntity.getBoardPersonTotal",
+        query = "select " +
+                "SUM(i.amount) as total, " +
+                "i.person_id as personId, " +
+                "p.name as personName," +
+                "i.board_id as boardId  " +
+                "from item as i " +
+                "right join person AS p on i.person_id = p.id " +
+                "where i.board_id = ?1 " +
+                "group by i.person_id " +
+                "order by personName"
+)
 public class BoardItemEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
