@@ -37,7 +37,6 @@ public class BoardItemEntity {
     @JoinColumn(name = "board_id", foreignKey = @ForeignKey(name = "fk_board_id"))
     private BoardEntity board;
 
-
     public BoardItemEntity() {
     }
 

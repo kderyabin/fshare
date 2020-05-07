@@ -43,7 +43,6 @@ public class HomeViewModel implements ViewModel {
     public void initialize() {
         // reset every time we load home page
         scope.setBoardModel(null);
-        storageManager.setLazyMode(true);
         models = storageManager.getBoards();
         LOG.info("Loaded boards size: " + models.size());
         scope.setHasBoards(!models.isEmpty());
