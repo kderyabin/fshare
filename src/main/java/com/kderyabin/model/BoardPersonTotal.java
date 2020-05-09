@@ -18,4 +18,11 @@ public class BoardPersonTotal {
 
     public BoardPersonTotal() {
     }
+
+    public BoardPersonTotal(BigDecimal total, Integer personId, String personName, Integer boardId) {
+        this.total = total;
+        this.personId = personId;
+        this.personName = personName;
+        this.boardId = boardId;
+    }
 }
