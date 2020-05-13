@@ -42,7 +42,7 @@ public class StorageManager {
                             (BigDecimal) row[0],
                             (Integer)row[1],
                             (String) row[2],
-                            (Integer)row[3]
+                            boardId
                     );
                     result.add(item);
                 });

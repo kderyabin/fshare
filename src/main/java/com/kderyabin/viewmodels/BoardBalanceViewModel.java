@@ -62,8 +62,8 @@ public class BoardBalanceViewModel implements ViewModel {
             // Filter if there is an amount to refund
             data.forEach((personModel, decimal) -> {
                 if (decimal.compareTo(new BigDecimal("0")) > 0) {
-                    RefundmentModel model = new RefundmentModel();
 
+                    RefundmentModel model = new RefundmentModel();
                     model.setAmount(decimal.doubleValue());
                     model.setCreditor(personModel.getName());
                     model.setDebtor(debtor.getName());

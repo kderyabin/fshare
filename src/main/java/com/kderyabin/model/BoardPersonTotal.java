@@ -28,13 +28,13 @@ public class BoardPersonTotal {
     }
 
     public BoardPersonTotal(BigDecimal total, Integer boardId, PersonModel person) {
-        this.total = total;
+        this.total = total != null ? total : new BigDecimal("0") ;
         this.boardId = boardId;
         this.person = person;
     }
 
     public BoardPersonTotal(BigDecimal total, Integer personId, String personName, Integer boardId) {
-        this.total = total;
+        this.total = total != null ? total : new BigDecimal("0") ;
         person = new PersonModel(personId, personName);
         this.boardId = boardId;
     }

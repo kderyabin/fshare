@@ -121,7 +121,7 @@ public class BoardBalance {
                 BigDecimal friendBalance = balances.get(friend);
                 // Does the mate need to be payed back?
                 if (friendBalance.compareTo(BigDecimal.ZERO) > 0) {
-
+                    // @TODO: fix bad debt split
                     if (friendBalance.compareTo(balance.abs()) > 0) {
                         // The debt is less then amount payed by the mate so it can be sold partially
                         // Ex.: 60 + (-20) = 40

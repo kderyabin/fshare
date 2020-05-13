@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Map;
 
 
@@ -28,6 +27,8 @@ import java.util.Map;
 public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
 
     final private Logger LOG = LoggerFactory.getLogger(BoardBalanceView.class);
+
+    final private int rowHeight = 50;
     @FXML
     public Label boardName;
     @FXML
@@ -83,8 +84,7 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         statsTable.getColumns().addAll(participant, spent, average, balance);
 
         statsTable.getItems().addAll(viewModel.getParticipants());
-        Integer rowCount = statsTable.getItems().size() + 1;
-        statsTable.setPrefHeight(rowCount * 50 + rowCount - 1);
+        statsTable.setPrefHeight(getTableHeight(statsTable.getItems().size()));
     }
 
     private void initShares(){
@@ -102,6 +102,16 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         shareTables.getColumns().addAll( debtor, creditor, amount);
         shareTables.setItems(viewModel.getShareData());
 
+        statsTable.setPrefHeight(getTableHeight(statsTable.getItems().size()));
+    }
+
+    /**
+     * Calculate the height of the table
+     * @param rowCount
+     * @return
+     */
+    private int getTableHeight(int rowCount) {
+        return (++rowCount * rowHeight) + rowCount - 1;
     }
     public void addItem(ActionEvent actionEvent) throws ViewNotFoundException {
         viewModel.addItem();

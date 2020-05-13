@@ -21,9 +21,10 @@ import java.util.Objects;
                 "p.id as personId, " +
                 "p.name as personName," +
                 "i.board_id as boardId  " +
-                "from item as i " +
-                "left join person AS p on i.person_id = p.id " +
-                "where i.board_id = ?1 " +
+                "from person AS p " +
+                "join board_person as bp on bp.personid = p.id " +
+                "left join item as i on i.person_id = p.id  " +
+                "where bp.boardid = ?1 " +
                 "group by i.person_id " +
                 "order by personName"
 )
