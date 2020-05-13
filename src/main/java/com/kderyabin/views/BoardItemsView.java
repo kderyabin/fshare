@@ -1,10 +1,12 @@
 package com.kderyabin.views;
 
+import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.viewmodels.BoardItemsViewModel;
 import com.kderyabin.viewmodels.LinesListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
@@ -45,17 +47,11 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
                     e.printStackTrace();
                 }
             });
-            initChart();
+            chart.dataProperty().bind(viewModel.chartProperty());
         }
+
     }
-    private void initChart(){
-        if(viewModel.getChartData().size() > 0) {
-            viewModel.getChartData().forEach((name, amount) -> {
-                String label = name + " (" + amount + ")";
-                chart.getData().add( new PieChart.Data(label, amount));
-            });
-        }
-    }
+
     private void hideElement(Node node){
         // prevent size calculation
         node.setManaged(false);
@@ -73,5 +69,9 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
 
     public void goBack() throws Exception {
         viewModel.goBack();
+    }
+
+    public void viewBalance(ActionEvent actionEvent) throws ViewNotFoundException {
+        viewModel.goToBalance();
     }
 }

@@ -68,18 +68,4 @@ public class Main extends MvvmfxSpringApplication {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
-    /**
-     * Initialize views for navigation.
-     * @param contentArea Pane in which the content is displayed.
-     */
-//    private void registerNavigation(Pane contentArea) {
-//        NavigateService navigateService = context.getBean(NavigateService.class);
-//        navigateService.register("home", HomeView.class);
-//        navigateService.register("start", StartView.class);
-//        navigateService.register("board-form", BoardFormView.class);
-//        navigateService.register("board-items", BoardItemsView.class);
-//        navigateService.register("board-item", ItemEditView.class);
-//        navigateService.setContent(contentArea);
-//    }
 }

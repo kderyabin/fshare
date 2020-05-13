@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import com.jfoenix.controls.JFXListView?>
-<?import javafx.scene.chart.PieChart?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.chart.StackedBarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import com.sun.javafx.scene.control.skin.TableHeaderRow?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.kderyabin.views.BoardItemsView">
+            fx:controller="com.kderyabin.views.BoardBalanceView">
     <BorderPane>
         <top>
             <HBox styleClass="header">
@@ -23,8 +28,6 @@
                     </center>
                     <right>
                         <HBox BorderPane.alignment="CENTER">
-                            <JFXButton text="&#xe01d;" styleClass="header__btn-icon"
-                                       onAction="#viewBalance"/>
                             <JFXButton text="&#xe145;" styleClass="header__btn-icon"
                                        onAction="#addItem"/>
                         </HBox>
@@ -35,9 +38,16 @@
         </top>
         <center>
             <VBox styleClass="form-panel">
-                <Label text="%board_has_no_items" fx:id="noItemsWarning" managed="false" visible="false"/>
-                <PieChart fx:id="chart"/>
-                <JFXListView VBox.vgrow="NEVER" fx:id="items" styleClass="list-present"/>
+                <StackedBarChart title="Expenses" fx:id="expensesChart" styleClass="expenses-chart">
+                    <yAxis>
+                        <CategoryAxis label="Participants"/>
+                    </yAxis>
+                    <xAxis>
+                        <NumberAxis label="Amount"/>
+                    </xAxis>
+                </StackedBarChart>
+                <TableView fx:id="statsTable"/>
+                <TableView fx:id="shareTables"/>
             </VBox>
         </center>
     </BorderPane>

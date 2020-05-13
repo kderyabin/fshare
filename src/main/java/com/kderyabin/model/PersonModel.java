@@ -27,7 +27,10 @@ public class PersonModel {
     public PersonModel(String name) {
         this.name = name;
     }
-
+    public PersonModel(Integer id,  String name) {
+        this.id = id;
+        this.name = name;
+    }
     public boolean addBoard(BoardModel boardModel) {
         return boards.add(boardModel);
     }

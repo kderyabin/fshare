@@ -38,11 +38,12 @@ public class StorageManager {
         List<BoardPersonTotal> result = new ArrayList<>();
         itemRepository.getBoardPersonTotal(boardId).stream()
                 .forEach( row -> {
-                    BoardPersonTotal item = new BoardPersonTotal();
-                    item.setTotal((BigDecimal) row[0]);
-                    item.setPersonId( (Integer)row[1]);
-                    item.setPersonName((String) row[2]);
-                    item.setBoardId((Integer)row[3]);
+                    BoardPersonTotal item = new BoardPersonTotal(
+                            (BigDecimal) row[0],
+                            (Integer)row[1],
+                            (String) row[2],
+                            (Integer)row[3]
+                    );
                     result.add(item);
                 });
         return result;

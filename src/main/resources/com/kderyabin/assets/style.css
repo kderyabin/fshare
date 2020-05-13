@@ -149,3 +149,38 @@
     -fx-padding: 20px;
     -fx-font-size: 1.5em;
 }
+
+/*
+SnackedChart colors
+*/
+/* amount paid  */
+.expenses-chart .default-color0 {
+    -fx-bar-fill: mediumseagreen ;
+}
+/* average amount   */
+.expenses-chart .default-color1 {
+    -fx-bar-fill: tomato;
+}
+/* overpaid amount   */
+.expenses-chart .default-color2 {
+    -fx-bar-fill: skyblue ;
+}
+
+.table-view .column-header {
+    -fx-size: 50px;
+}
+.table-row-cell {
+    -fx-cell-size: 50px;
+
+}
+.table-row-cell:empty {
+   -fx-cell-size: 0px;
+}
+.table-cell LabeledText {
+    -fx-alignment: center;
+    -fx-width: 100%;
+}
+.table-cell .text {
+    -fx-alignment: center;
+    -fx-width: 100%;
+}

@@ -18,11 +18,11 @@ import java.util.Objects;
         name = "BoardItemEntity.getBoardPersonTotal",
         query = "select " +
                 "SUM(i.amount) as total, " +
-                "i.person_id as personId, " +
+                "p.id as personId, " +
                 "p.name as personName," +
                 "i.board_id as boardId  " +
                 "from item as i " +
-                "right join person AS p on i.person_id = p.id " +
+                "left join person AS p on i.person_id = p.id " +
                 "where i.board_id = ?1 " +
                 "group by i.person_id " +
                 "order by personName"

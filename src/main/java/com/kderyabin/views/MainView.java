@@ -65,6 +65,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
         navigation.register("board-form", BoardFormView.class);
         navigation.register("board-items", BoardItemsView.class);
         navigation.register("board-item", ItemEditView.class);
+        navigation.register("balance", BoardBalanceView.class);
     }
 
     @Override
