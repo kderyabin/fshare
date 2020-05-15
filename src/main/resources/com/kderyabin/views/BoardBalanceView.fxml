@@ -10,6 +10,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import com.sun.javafx.scene.control.skin.TableHeaderRow?>
+<?import javafx.scene.text.Text?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
@@ -27,7 +28,7 @@
                         <Label fx:id="boardName" text="New board" styleClass="header__title"/>
                     </center>
                     <right>
-                        <HBox BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER">
                             <JFXButton text="&#xe145;" styleClass="header__btn-icon"
                                        onAction="#addItem"/>
                         </HBox>
@@ -38,16 +39,23 @@
         </top>
         <center>
             <VBox styleClass="form-panel">
-                <StackedBarChart title="Expenses" fx:id="expensesChart" styleClass="expenses-chart">
+                <Label text="%no_data_to_display" fx:id="warningNoBalanceData" managed="false" visible="false"/>
+                <StackedBarChart title="%expenses" fx:id="expensesChart" styleClass="expenses-chart">
                     <yAxis>
-                        <CategoryAxis label="Participants"/>
+                        <CategoryAxis label="%participants"/>
                     </yAxis>
                     <xAxis>
-                        <NumberAxis label="Amount"/>
+                        <NumberAxis label="%amount"/>
                     </xAxis>
                 </StackedBarChart>
-                <TableView fx:id="statsTable"/>
-                <TableView fx:id="shareTables"/>
+                <VBox fx:id="statsPanel" alignment="CENTER">
+                    <Text text="%balance"/>
+                    <TableView fx:id="statsTable"/>
+                </VBox>
+                <VBox fx:id="sharePanel" alignment="CENTER">
+                    <Label text="%refundment"/>
+                    <TableView fx:id="shareTables"/>
+                </VBox>
             </VBox>
         </center>
     </BorderPane>

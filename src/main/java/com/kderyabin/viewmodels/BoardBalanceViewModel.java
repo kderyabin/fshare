@@ -3,34 +3,38 @@ package com.kderyabin.viewmodels;
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
-import com.kderyabin.model.PersonModel;
 import com.kderyabin.model.RefundmentModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.BoardBalance;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.StorageManager;
+import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.chart.XYChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Component
 @Scope("prototype")
 public class BoardBalanceViewModel implements ViewModel {
+
+    private final Logger LOG = LoggerFactory.getLogger(BoardBalanceViewModel.class);
 
     private NavigateServiceInterface navigation;
     private StorageManager storageManager;
@@ -41,17 +45,23 @@ public class BoardBalanceViewModel implements ViewModel {
     // Properties
     private StringProperty boardName;
     private Map<String,  XYChart.Series<Number, String>> chartData = new LinkedHashMap<>();
-    ObservableList<RefundmentModel> shareData = FXCollections.observableArrayList();
-
+    private ObservableList<RefundmentModel> shareData = FXCollections.observableArrayList();
+    /**
+     * Indicates id board has data to display.
+     */
+    private BooleanProperty balanceEmpty = new SimpleBooleanProperty(false);
 
     public void initialize(){
         board = boardScope.getBoardModel();
+        LOG.info("Balance for Board: " + board.getId());
         boardName = new SimpleStringProperty(board.getName());
         init();
     }
 
     public void init(){
         boardBalance.setData(storageManager.getBoardPersonTotal(board.getId()));
+        setBalanceEmpty(boardBalance.isEmpty());
+        LOG.info("Balance size: " + boardBalance.getData().size());
         boardBalance.shareBoardTotal();
         initChartData();
         initShareData();
@@ -173,4 +183,15 @@ public class BoardBalanceViewModel implements ViewModel {
         return boardBalance.getData();
     }
 
+    public boolean getBalanceEmpty() {
+        return balanceEmpty.get();
+    }
+
+    public BooleanProperty balanceEmptyProperty() {
+        return balanceEmpty;
+    }
+
+    public void setBalanceEmpty(boolean balanceEmpty) {
+        this.balanceEmpty.set(balanceEmpty);
+    }
 }

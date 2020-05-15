@@ -22,7 +22,7 @@
                         <Label fx:id="boardName" text="New board" styleClass="header__title"/>
                     </center>
                     <right>
-                        <HBox BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER">
                             <JFXButton text="&#xe01d;" styleClass="header__btn-icon"
                                        onAction="#viewBalance"/>
                             <JFXButton text="&#xe145;" styleClass="header__btn-icon"

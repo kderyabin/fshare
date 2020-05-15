@@ -20,12 +20,12 @@ import java.util.Objects;
                 "SUM(i.amount) as total, " +
                 "p.id as personId, " +
                 "p.name as personName," +
-                "i.board_id as boardId  " +
-                "from person AS p " +
-                "join board_person as bp on bp.personid = p.id " +
-                "left join item as i on i.person_id = p.id  " +
+                "bp.boardid as boardId  " +
+                "from board_person as bp  " +
+                "join person AS p on bp.personid = p.id " +
+                "left join item as i on i.person_id = p.id and i.board_id = bp.boardid " +
                 "where bp.boardid = ?1 " +
-                "group by i.person_id " +
+                "group by p.id " +
                 "order by personName"
 )
 public class BoardItemEntity {
