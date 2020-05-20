@@ -2,6 +2,7 @@ package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
+import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.StorageManager;
@@ -19,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -60,16 +59,30 @@ public class BoardItemsViewModel implements ViewModel {
                             .map(LinesListItemViewModel::new)
                             .collect(Collectors.toList())
             );
-           initDataChart();
+            initDataChart();
         }
+    }
+
+    /**
+     * Prepare labels for the chart.
+     *
+     * @param item BoardPersonTotal instance.
+     * @return Ready for display string.
+     */
+    private String getChartItemLabel(BoardPersonTotal item) {
+        return String.format(
+                "%s (%s %s)",
+                item.getPerson().getName(),
+                item.getTotal().doubleValue(),
+                model.getCurrencyCode()
+        );
     }
 
     public void initDataChart() {
         storageManager.getBoardPersonTotal(model.getId())
-                .forEach(item -> getChart().add(
-                        new PieChart.Data(
-                                item.getPerson().getName() + " (" + item.getTotal().doubleValue() + ")",
-                                item.getTotal().doubleValue())
+                .forEach(item -> getChart()
+                        .add(
+                                new PieChart.Data(getChartItemLabel(item), item.getTotal().doubleValue())
                         )
                 );
     }

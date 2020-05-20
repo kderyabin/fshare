@@ -5,15 +5,14 @@ import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
+import com.kderyabin.services.CurrencyService;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.SettingsService;
 import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.Currency;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,13 +39,16 @@ public class BoardFormViewModel implements ViewModel {
     private StorageManager storageManager;
     private BoardModel model;
     private BoardScope scope;
+    private SettingsService settingsService;
 
     /*
      * ViewModel properties for binding.
      */
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
+    private ObjectProperty<Currency> currency = new SimpleObjectProperty<>();
     private BooleanProperty isNewBoard = new SimpleBooleanProperty(true);
+    private ListProperty<Currency> currencies = new SimpleListProperty<>(FXCollections.observableArrayList());
     /**
      * List of participants attached to the board.
      */
@@ -77,23 +80,27 @@ public class BoardFormViewModel implements ViewModel {
                                 .collect(Collectors.toList())
                 );
             }
+            setCurrency(model.getCurrency());
         } else {
             model = new BoardModel();
+            setCurrency(settingsService.getCurrency());
         }
-        if(storageManager != null) {
+        if (storageManager != null) {
             persons.addAll(getPersonsList());
         }
+        currencies.addAll(CurrencyService.getAllCurrencies());
     }
 
     /**
      * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
      * Exclude already attached to the board participants.
+     *
      * @return
      */
-    private List<PersonListItemViewModel> getPersonsList(){
+    private List<PersonListItemViewModel> getPersonsList() {
         return storageManager.getPersons()
                 .stream()
-                .filter( p -> !model.getParticipants().contains(p))
+                .filter(p -> !model.getParticipants().contains(p))
                 .map(PersonListItemViewModel::new)
                 .collect(Collectors.toList());
     }
@@ -119,6 +126,7 @@ public class BoardFormViewModel implements ViewModel {
         personListUpdated = true;
         return participants.add(viewModel);
     }
+
     /**
      * Add new participant to the list.
      * Error from here is dispatch through notification center.
@@ -138,6 +146,7 @@ public class BoardFormViewModel implements ViewModel {
         personListUpdated = true;
         return participants.add(viewModel);
     }
+
     /**
      * @param viewModel View model passed from the View.
      * @return TRUE if removed FALSE if not or not found in the list.
@@ -188,7 +197,6 @@ public class BoardFormViewModel implements ViewModel {
      * @throws ViewNotFoundException See NavigationService.navigate()
      */
     public void goBack() throws ViewNotFoundException {
-        System.out.println("Scope has board: " + scope.isHasBoards());
         final String view = scope.isHasBoards() ? "home" : "start";
         navigation.navigate(view);
     }
@@ -202,20 +210,21 @@ public class BoardFormViewModel implements ViewModel {
             boolean isCreationMode = model.getId() == null;
             model.setName(getName());
             model.setDescription(getDescription());
-            LOG.info("before removing " +  model.getParticipants().size());
+            model.setCurrency(getCurrency());
+            LOG.info("before removing " + model.getParticipants().size());
             model.setParticipants(
                     participants.stream()
-                    .map(PersonListItemViewModel::getModel)
-                    .collect(Collectors.toList())
+                            .map(PersonListItemViewModel::getModel)
+                            .collect(Collectors.toList())
             );
-            LOG.info("after updated participants " +  model.getParticipants().size());
+            LOG.info("after updated participants " + model.getParticipants().size());
 
             model = storageManager.save(model, true);
             scope.setBoardModel(model);
             notificationCenter.publish(Notification.INFO, "msg.board_saved_success");
             // Can be null in unit tests.
             if (null != navigation) {
-                navigation.navigate( isCreationMode ? "board-item" : "board-items");
+                navigation.navigate(isCreationMode ? "board-item" : "board-items");
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
@@ -253,9 +262,19 @@ public class BoardFormViewModel implements ViewModel {
     public StorageManager getStorageManager() {
         return storageManager;
     }
+
     @Autowired
     public void setStorageManager(StorageManager storageManager) {
         this.storageManager = storageManager;
+    }
+
+    public SettingsService getSettingsService() {
+        return settingsService;
+    }
+
+    @Autowired
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 
     public String getName() {
@@ -308,5 +327,30 @@ public class BoardFormViewModel implements ViewModel {
 
     public void setIsNewBoard(boolean isNewBoard) {
         this.isNewBoard.set(isNewBoard);
+    }
+
+
+    public Currency getCurrency() {
+        return currency.get();
+    }
+
+    public ObjectProperty<Currency> currencyProperty() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency.set(currency);
+    }
+
+    public ObservableList<Currency> getCurrencies() {
+        return currencies.get();
+    }
+
+    public ListProperty<Currency> currenciesProperty() {
+        return currencies;
+    }
+
+    public void setCurrencies(ObservableList<Currency> currencies) {
+        this.currencies.set(currencies);
     }
 }

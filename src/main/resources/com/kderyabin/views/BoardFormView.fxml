@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import javafx.geometry.Insets?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import com.jfoenix.controls.JFXListView?>
-<?import com.jfoenix.controls.JFXComboBox?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
@@ -34,19 +30,22 @@
 
             <VBox styleClass="form-panel">
 
-                <Label text="Name"/>
+                <Label text="%name"/>
                 <TextField fx:id="name"/>
 
-                <Label text="Description"/>
+                <Label text="%currency"/>
+                <JFXComboBox fx:id="currencyList"/>
+
+                <Label text="%description"/>
                 <TextArea fx:id="description" maxHeight="100"/>
 
-                <Label text="Participants"/>
+                <Label text="%participants"/>
 
                 <Label text="%board_has_no_participants" fx:id="noParticipantsLabel" managed="false" visible="false"/>
                 <JFXListView VBox.vgrow="NEVER" fx:id="participantsList"/>
 
                 <HBox VBox.vgrow="ALWAYS">
-                    <VBox  HBox.hgrow="ALWAYS" styleClass="person-choice-box">
+                    <VBox HBox.hgrow="ALWAYS" styleClass="person-choice-box">
                         <Label text="%add_new_participant"/>
                         <TextField HBox.hgrow="ALWAYS" promptText="%participant_name" fx:id="person"/>
                     </VBox>
@@ -59,7 +58,8 @@
                     </VBox>
                 </HBox>
                 <HBox alignment="CENTER">
-                    <JFXButton text="%button.add_participant" styleClass="button-raised-large" onAction="#addParticipant"/>
+                    <JFXButton text="%button.add_participant" styleClass="button-raised-large"
+                               onAction="#addParticipant"/>
                 </HBox>
             </VBox>
 

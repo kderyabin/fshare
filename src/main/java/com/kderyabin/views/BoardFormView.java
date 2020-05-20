@@ -1,6 +1,7 @@
 package com.kderyabin.views;
 
 import com.kderyabin.controls.ConfirmAlert;
+import com.kderyabin.services.CurrencyService;
 import com.kderyabin.util.GUIHelper;
 import com.kderyabin.viewmodels.BoardFormViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
@@ -20,6 +21,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.text.Format;
+import java.util.Currency;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -46,6 +50,8 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
     public VBox choiceListContainer;
     @FXML
     public Label boardLabel;
+    @FXML
+    public ComboBox<Currency> currencyList;
 
     @InjectViewModel
     private BoardFormViewModel viewModel;
@@ -59,9 +65,16 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         }
         name.textProperty().bindBidirectional(viewModel.nameProperty());
         description.textProperty().bindBidirectional(viewModel.descriptionProperty());
+        // Participants' list data and event handling
         participantsList.setItems(viewModel.participantsProperty());
         participantsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
         participantsList.addEventHandler(ActionEvent.ACTION, this::removeParticipant);
+        // Currencies' list and preselection
+        currencyList.setConverter(currencyStringConverter());
+        currencyList.itemsProperty().bind(viewModel.currenciesProperty());
+        // Bind selected item to the viewModel
+        currencyList.valueProperty().bindBidirectional(viewModel.currencyProperty());
+
         initParticipantsListDisplay();
         if(viewModel.getPersons().size() > 0) {
             personsChoice.setItems(viewModel.getPersons());
@@ -72,17 +85,6 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         }
     }
 
-    /**
-     * Dynamic board label.
-     * Update accordingly to user's input.
-     *
-     * @return Board name for existent board name or default placeholder for the new one.
-     */
-    private StringProperty getBoardNameOrDefault(){
-        return viewModel.getName().isEmpty()
-                ? new SimpleStringProperty(resources.getString("new_board"))
-                : viewModel.nameProperty();
-    }
     /**
      * Toggles display of participants list and the participants label.
      */
@@ -169,6 +171,24 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
                         .filter( item -> item.getName().equals(string))
                         .findFirst()
                         .orElse(null);
+            }
+        };
+    }
+
+    /**
+     * Prepare Currency objects for display in combobox
+     * @return Currency.getDisplayName
+     */
+    private StringConverter<Currency> currencyStringConverter() {
+        return new StringConverter<Currency>() {
+            @Override
+            public String toString(Currency object) {
+                return String.format( "%s (%s)", object.getDisplayName(Locale.getDefault()), object.getCurrencyCode());
+            }
+
+            @Override
+            public Currency fromString(String string) {
+                return null;
             }
         };
     }

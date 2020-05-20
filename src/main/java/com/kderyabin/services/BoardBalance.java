@@ -1,6 +1,5 @@
 package com.kderyabin.services;
 
-import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.model.PersonModel;
 import lombok.ToString;

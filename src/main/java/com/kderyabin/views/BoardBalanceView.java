@@ -115,8 +115,8 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         TableColumn<RefundmentModel, String> creditor = new TableColumn<>("Creditor");
         creditor.setCellValueFactory(new PropertyValueFactory<>("creditor"));
 
-        TableColumn<RefundmentModel, Double> amount = new TableColumn<>("Amount");
-        amount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        TableColumn<RefundmentModel, String> amount = new TableColumn<>("Amount");
+        amount.setCellValueFactory(new PropertyValueFactory<>("displayAmount"));
 
         shareTables.getColumns().addAll(debtor, creditor, amount);
         shareTables.setItems(viewModel.getShareData());

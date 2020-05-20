@@ -22,10 +22,13 @@ public class LinesListItemView implements FxmlView<LinesListItemViewModel> {
     public Label person;
     @FXML
     public Label amount;
+    @FXML
+    public Label currency;
 
     public void initialize() {
         title.textProperty().bind(viewModel.titleProperty());
         amount.textProperty().bind(viewModel.amountProperty());
         person.textProperty().bind(viewModel.personProperty());
+        currency.textProperty().bind(viewModel.currencyProperty());
     }
 }

@@ -30,6 +30,9 @@ public class BoardEntity {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "currency", length = 3)
+    private String currency;
+
     @Column(name = "creation", nullable = false)
     private Timestamp creation = new Timestamp(System.currentTimeMillis());
 
@@ -92,6 +95,14 @@ public class BoardEntity {
 
     public void setUpdate(Timestamp update) {
         this.update = update;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public Set<PersonEntity> getParticipants() {
@@ -163,7 +174,8 @@ public class BoardEntity {
                 Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(creation, that.creation) &&
-                Objects.equals(update, that.update);
+                Objects.equals(update, that.update) &&
+                Objects.equals(currency, that.currency);
     }
 
     @Override

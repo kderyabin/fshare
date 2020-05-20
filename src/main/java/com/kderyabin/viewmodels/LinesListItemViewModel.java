@@ -12,6 +12,7 @@ public class LinesListItemViewModel implements ViewModel {
     private StringProperty title = new SimpleStringProperty("");
     private StringProperty person = new SimpleStringProperty("");
     private StringProperty amount = new SimpleStringProperty("");
+    private StringProperty currency = new SimpleStringProperty("");
 
 
     public LinesListItemViewModel() {
@@ -22,6 +23,7 @@ public class LinesListItemViewModel implements ViewModel {
         setTitle(model.getTitle());
         setPerson(model.getPerson().getName());
         setAmount(model.getAmount().toString());
+        setCurrency(model.getBoard().getCurrencyCode());
     }
 
     public BoardItemModel getModel() {
@@ -66,5 +68,17 @@ public class LinesListItemViewModel implements ViewModel {
 
     public void setAmount(String amount) {
         this.amount.set(amount);
+    }
+
+    public String getCurrency() {
+        return currency.get();
+    }
+
+    public StringProperty currencyProperty() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency.set(currency);
     }
 }

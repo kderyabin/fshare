@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,7 @@ public class BoardBalanceViewModel implements ViewModel {
     }
 
     public void initShareData(){
+        final Currency currency = board.getCurrency();
         boardBalance.getShare().forEach( (debtor, data) -> {
             // Filter if there is an amount to refund
             data.forEach((personModel, decimal) -> {
@@ -77,6 +79,7 @@ public class BoardBalanceViewModel implements ViewModel {
                     model.setAmount(decimal.doubleValue());
                     model.setCreditor(personModel.getName());
                     model.setDebtor(debtor.getName());
+                    model.setCurrency(currency);
 
                     shareData.add(model);
                 }
@@ -89,7 +92,7 @@ public class BoardBalanceViewModel implements ViewModel {
     public void initChartData(){
         ObservableMap<String,  XYChart.Series<Number, String>> k;
         if(boardBalance.getShare().size() > 0) {
-            // Prepare balances for display in a chart
+            // Prepare balances for display in the chart
             XYChart.Series<Number, String> debtData = new XYChart.Series<>();
             XYChart.Series<Number, String> paidData = new XYChart.Series<>();
             XYChart.Series<Number, String> overpaidData = new XYChart.Series<>();

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.math.BigDecimal;
+import java.util.Currency;
 
 @ToString
 @Getter
@@ -14,4 +14,9 @@ public class RefundmentModel {
     private String debtor;
     private String creditor;
     private Double amount;
+    private Currency currency;
+
+    public String getDisplayAmount() {
+        return amount + " " + currency.getCurrencyCode();
+    }
 }

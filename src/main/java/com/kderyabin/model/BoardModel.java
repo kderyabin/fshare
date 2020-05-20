@@ -5,9 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @ToString
 @Getter
@@ -19,6 +17,8 @@ public class BoardModel {
     private String name;
 
     private String description;
+
+    private Currency currency;
 
     private Timestamp creation = new Timestamp(System.currentTimeMillis());
 
@@ -51,6 +51,22 @@ public class BoardModel {
         items.remove(item);
     }
 
+
+    public String getCurrencyCode() {
+        return currency.getCurrencyCode();
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+    public void setCurrency(String code) {
+        try{
+            currency = Currency.getInstance(code);
+        } catch (Throwable e) {
+            currency = Currency.getInstance(Locale.getDefault());
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -60,12 +76,13 @@ public class BoardModel {
                 Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(creation, that.creation) &&
-                Objects.equals(update, that.update);
+                Objects.equals(update, that.update) &&
+                Objects.equals(currency, that.currency);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, creation, update);
+        return Objects.hash(id, name, description, creation, update, currency);
     }
 
 }

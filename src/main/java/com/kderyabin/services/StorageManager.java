@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -42,7 +40,7 @@ public class StorageManager {
                             (BigDecimal) row[0],
                             (Integer)row[1],
                             (String) row[2],
-                            boardId
+                            (Integer) row[3]
                     );
                     result.add(item);
                 });
@@ -189,6 +187,7 @@ public class StorageManager {
         entity.setDescription(model.getDescription());
         entity.setCreation(model.getCreation());
         entity.setUpdate(model.getUpdate());
+        entity.setCurrency(model.getCurrencyCode());
         return entity;
     }
 
@@ -199,6 +198,7 @@ public class StorageManager {
         model.setDescription(entity.getDescription());
         model.setCreation(entity.getCreation());
         model.setUpdate(entity.getUpdate());
+        model.setCurrency(entity.getCurrency());
 
         return model;
     }
@@ -254,12 +254,14 @@ public class StorageManager {
         List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
         if(!items.isEmpty()) {
             model.setItems(items.stream()
-                    .map(this::getModel)
+                    .map( e -> {
+                        BoardItemModel i = getModel(e);
+                        i.setBoard(model);
+                        return i;
+                    })
                     .collect(Collectors.toList())
             );
         }
         return model;
     }
-
-
 }
