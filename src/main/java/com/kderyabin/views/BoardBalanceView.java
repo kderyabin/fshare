@@ -3,12 +3,12 @@ package com.kderyabin.views;
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.model.RefundmentModel;
+import com.kderyabin.util.GUIHelper;
 import com.kderyabin.viewmodels.BoardBalanceViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
@@ -71,7 +71,7 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
             data.forEach((s, series) -> expensesChart.getData().add(series));
             return;
         }
-        renderVisible(expensesChart, false);
+        GUIHelper.renderVisible(expensesChart, false);
     }
 
     /**
@@ -80,7 +80,7 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
     private void initStats() {
         // Hide container if there is no data to display
         if( viewModel.getBalanceEmpty()) {
-            renderVisible(statsPanel, false);
+            GUIHelper.renderVisible(statsPanel, false);
             return;
         }
         statsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -105,7 +105,7 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
 
     private void initShares() {
         if (viewModel.getShareData().size() == 0) {
-            renderVisible(sharePanel, false);
+            GUIHelper.renderVisible(sharePanel, false);
         }
         shareTables.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -141,23 +141,5 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
 
     public void goBack(ActionEvent actionEvent) throws ViewNotFoundException {
         viewModel.goBack();
-    }
-
-    /**
-     * Renders a node visible or not visible.
-     *
-     * @param node    Element to hide/show
-     * @param visible TRUE to set visible FALSE to hide
-     */
-    private void renderVisible(Node node, boolean visible) {
-        if (!visible) {
-            // prevent size calculation
-            node.setManaged(false);
-            // hide
-            node.setVisible(false);
-            return;
-        }
-        node.setManaged(true);
-        node.setVisible(true);
     }
 }

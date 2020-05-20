@@ -10,6 +10,8 @@ import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -43,6 +45,7 @@ public class BoardFormViewModel implements ViewModel {
      */
     private StringProperty name = new SimpleStringProperty("");
     private StringProperty description = new SimpleStringProperty("");
+    private BooleanProperty isNewBoard = new SimpleBooleanProperty(true);
     /**
      * List of participants attached to the board.
      */
@@ -62,6 +65,7 @@ public class BoardFormViewModel implements ViewModel {
     public void initialize() {
         if (scope != null && scope.getBoardModel() != null) {
             model = scope.getBoardModel();
+            isNewBoard.set(false);
             setName(model.getName());
             setDescription(model.getDescription());
             LOG.info("Loading participants");
@@ -92,73 +96,6 @@ public class BoardFormViewModel implements ViewModel {
                 .filter( p -> !model.getParticipants().contains(p))
                 .map(PersonListItemViewModel::new)
                 .collect(Collectors.toList());
-    }
-
-    @Autowired
-    public void setNavigation(NavigateServiceInterface navigation) {
-        this.navigation = navigation;
-    }
-
-    @Autowired
-    public void setNotificationCenter(NotificationCenter notificationCenter) {
-        this.notificationCenter = notificationCenter;
-    }
-
-    public BoardScope getScope() {
-        return scope;
-    }
-
-    @Autowired
-    public void setScope(BoardScope scope) {
-        this.scope = scope;
-    }
-
-    public StorageManager getStorageManager() {
-        return storageManager;
-    }
-    @Autowired
-    public void setStorageManager(StorageManager storageManager) {
-        this.storageManager = storageManager;
-    }
-
-    public String getName() {
-        return name.get();
-    }
-
-    public StringProperty nameProperty() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name.set(name);
-    }
-
-    public String getDescription() {
-        return description.get();
-    }
-
-    public StringProperty descriptionProperty() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description.set(description);
-    }
-
-    public ObservableList<PersonListItemViewModel> participantsProperty() {
-        return participants;
-    }
-
-    public ObservableList<PersonListItemViewModel> getParticipants() {
-        return participants;
-    }
-
-    public ObservableList<PersonListItemViewModel> getPersons() {
-        return persons;
-    }
-
-    public void setPersons(ObservableList<PersonListItemViewModel> persons) {
-        this.persons = persons;
     }
 
     /**
@@ -287,7 +224,89 @@ public class BoardFormViewModel implements ViewModel {
         }
     }
 
+    /*
+     * Getter / Setters
+     */
     public void setModel(BoardModel model) {
         this.model = model;
+    }
+
+    @Autowired
+    public void setNavigation(NavigateServiceInterface navigation) {
+        this.navigation = navigation;
+    }
+
+    @Autowired
+    public void setNotificationCenter(NotificationCenter notificationCenter) {
+        this.notificationCenter = notificationCenter;
+    }
+
+    public BoardScope getScope() {
+        return scope;
+    }
+
+    @Autowired
+    public void setScope(BoardScope scope) {
+        this.scope = scope;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
+
+    public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public String getDescription() {
+        return description.get();
+    }
+
+    public StringProperty descriptionProperty() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description.set(description);
+    }
+
+    public ObservableList<PersonListItemViewModel> participantsProperty() {
+        return participants;
+    }
+
+    public ObservableList<PersonListItemViewModel> getParticipants() {
+        return participants;
+    }
+
+    public ObservableList<PersonListItemViewModel> getPersons() {
+        return persons;
+    }
+
+    public void setPersons(ObservableList<PersonListItemViewModel> persons) {
+        this.persons = persons;
+    }
+
+    public boolean isIsNewBoard() {
+        return isNewBoard.get();
+    }
+
+    public BooleanProperty isNewBoardProperty() {
+        return isNewBoard;
+    }
+
+    public void setIsNewBoard(boolean isNewBoard) {
+        this.isNewBoard.set(isNewBoard);
     }
 }

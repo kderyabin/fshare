@@ -1,12 +1,15 @@
 package com.kderyabin.views;
 
 import com.kderyabin.controls.ConfirmAlert;
+import com.kderyabin.util.GUIHelper;
 import com.kderyabin.viewmodels.BoardFormViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -41,14 +44,19 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
     public VBox choiceLabelContainer;
     @FXML
     public VBox choiceListContainer;
+    @FXML
+    public Label boardLabel;
 
     @InjectViewModel
     private BoardFormViewModel viewModel;
     @InjectResourceBundle
     private ResourceBundle resources;
 
-    public void initialize() {
 
+    public void initialize() {
+        if (!viewModel.isIsNewBoard()) {
+            boardLabel.textProperty().bind(viewModel.nameProperty());
+        }
         name.textProperty().bindBidirectional(viewModel.nameProperty());
         description.textProperty().bindBidirectional(viewModel.descriptionProperty());
         participantsList.setItems(viewModel.participantsProperty());
@@ -59,28 +67,33 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
             personsChoice.setItems(viewModel.getPersons());
             personsChoice.setConverter(getPersonsComboConverter());
         } else {
-            choiceLabelContainer.setVisible(false);
-            choiceLabelContainer.setManaged(false);
-            choiceListContainer.setVisible(false);
-            choiceListContainer.setManaged(false);
+            GUIHelper.renderVisible(choiceLabelContainer, false);
+            GUIHelper.renderVisible(choiceListContainer, false);
         }
     }
 
+    /**
+     * Dynamic board label.
+     * Update accordingly to user's input.
+     *
+     * @return Board name for existent board name or default placeholder for the new one.
+     */
+    private StringProperty getBoardNameOrDefault(){
+        return viewModel.getName().isEmpty()
+                ? new SimpleStringProperty(resources.getString("new_board"))
+                : viewModel.nameProperty();
+    }
     /**
      * Toggles display of participants list and the participants label.
      */
     private void initParticipantsListDisplay(){
         final int count =  participantsList.getItems().size();
         if (count == 0) {
-            participantsList.setManaged(false);
-            participantsList.setVisible(false);
-            noParticipantsLabel.setManaged(true);
-            noParticipantsLabel.setVisible(true);
+            GUIHelper.renderVisible(participantsList, false);
+            GUIHelper.renderVisible(noParticipantsLabel, true);
         } else if( count == 1){
-            participantsList.setManaged(true);
-            participantsList.setVisible(true);
-            noParticipantsLabel.setManaged(false);
-            noParticipantsLabel.setVisible(false);
+            GUIHelper.renderVisible(participantsList, true);
+            GUIHelper.renderVisible(noParticipantsLabel, false);
         }
     }
 

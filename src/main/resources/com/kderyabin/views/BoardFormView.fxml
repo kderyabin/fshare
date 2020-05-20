@@ -21,7 +21,7 @@
                                    BorderPane.alignment="CENTER" onAction="#goBack"/>
                     </left>
                     <center>
-                        <Label text="New board" styleClass="header__title"/>
+                        <Label fx:id="boardLabel" text="%new_board" styleClass="header__title"/>
                     </center>
                     <right>
                         <JFXButton text="&#xe5ca;" styleClass="header__btn-icon"

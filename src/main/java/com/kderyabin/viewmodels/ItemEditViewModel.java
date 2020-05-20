@@ -45,6 +45,7 @@ public class ItemEditViewModel implements ViewModel {
     private BoardScope scope;
 
     // Properties
+    private StringProperty boardName = new SimpleStringProperty("");
     private StringProperty title = new SimpleStringProperty("");
     private StringProperty amount = new SimpleStringProperty("");
     private ObjectProperty<LocalDate> date = new SimpleObjectProperty<>(LocalDate.now());
@@ -53,7 +54,8 @@ public class ItemEditViewModel implements ViewModel {
 
 
     public void initialize() {
-        // Participants list must initialized on previous step
+        boardName.set(scope.getBoardModel().getName());
+        // Participants list must be initialized on previous step
         List<PersonModel> persons = scope.getBoardModel().getParticipants();
         participants.addAll(
                 persons.stream()
@@ -238,5 +240,17 @@ public class ItemEditViewModel implements ViewModel {
     @Autowired
     public void setStorageManager(StorageManager storageManager) {
         this.storageManager = storageManager;
+    }
+
+    public String getBoardName() {
+        return boardName.get();
+    }
+
+    public StringProperty boardNameProperty() {
+        return boardName;
+    }
+
+    public void setBoardName(String boardName) {
+        this.boardName.set(boardName);
     }
 }

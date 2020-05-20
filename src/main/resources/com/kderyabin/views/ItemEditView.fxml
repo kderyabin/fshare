@@ -18,7 +18,7 @@
                                BorderPane.alignment="CENTER" onAction="#goBack"/>
                 </left>
                 <center>
-                    <Label text="New board" styleClass="header__title"/>
+                    <Label fx:id="itemLabel" text="%new_entry" styleClass="header__title"/>
                 </center>
                 <right>
                     <JFXButton fx:id="saveBtn" text="&#xe5ca;" styleClass="header__btn-icon"
