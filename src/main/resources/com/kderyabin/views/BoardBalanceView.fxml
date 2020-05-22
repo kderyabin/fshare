@@ -49,11 +49,17 @@
                     </xAxis>
                 </StackedBarChart>
                 <VBox fx:id="statsPanel" alignment="CENTER">
-                    <Text text="%balance"/>
+                    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-spacing: 5px">
+                        <Text text="%balance"/>
+                        <Text fx:id="balanceCurrency"/>
+                    </HBox>
                     <TableView fx:id="statsTable"/>
                 </VBox>
                 <VBox fx:id="sharePanel" alignment="CENTER">
-                    <Label text="%refundment"/>
+                    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-spacing: 5px">
+                        <Label text="%refundment"/>
+                        <Text fx:id="refundmentCurrency"/>
+                    </HBox>
                     <TableView fx:id="shareTables"/>
                 </VBox>
             </VBox>

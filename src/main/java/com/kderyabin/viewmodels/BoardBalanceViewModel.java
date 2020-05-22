@@ -45,6 +45,7 @@ public class BoardBalanceViewModel implements ViewModel {
 
     // Properties
     private StringProperty boardName;
+    private StringProperty currency = new SimpleStringProperty("");
     private Map<String,  XYChart.Series<Number, String>> chartData = new LinkedHashMap<>();
     private ObservableList<RefundmentModel> shareData = FXCollections.observableArrayList();
     /**
@@ -56,6 +57,7 @@ public class BoardBalanceViewModel implements ViewModel {
         board = boardScope.getBoardModel();
         LOG.info("Balance for Board: " + board.getId());
         boardName = new SimpleStringProperty(board.getName());
+        setCurrency(board.getCurrencyCode());
         init();
     }
 
@@ -196,5 +198,17 @@ public class BoardBalanceViewModel implements ViewModel {
 
     public void setBalanceEmpty(boolean balanceEmpty) {
         this.balanceEmpty.set(balanceEmpty);
+    }
+
+    public String getCurrency() {
+        return currency.get();
+    }
+
+    public StringProperty currencyProperty() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency.set(currency);
     }
 }

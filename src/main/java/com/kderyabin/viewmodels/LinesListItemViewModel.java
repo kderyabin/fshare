@@ -5,6 +5,8 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.text.DateFormat;
+
 public class LinesListItemViewModel implements ViewModel {
 
     private BoardItemModel model;
@@ -13,7 +15,7 @@ public class LinesListItemViewModel implements ViewModel {
     private StringProperty person = new SimpleStringProperty("");
     private StringProperty amount = new SimpleStringProperty("");
     private StringProperty currency = new SimpleStringProperty("");
-
+    private StringProperty date = new SimpleStringProperty("");
 
     public LinesListItemViewModel() {
     }
@@ -24,6 +26,8 @@ public class LinesListItemViewModel implements ViewModel {
         setPerson(model.getPerson().getName());
         setAmount(model.getAmount().toString());
         setCurrency(model.getBoard().getCurrencyCode());
+        DateFormat df = DateFormat.getDateInstance(DateFormat.DEFAULT);
+        setDate(df.format(model.getDate()));
     }
 
     public BoardItemModel getModel() {
@@ -80,5 +84,17 @@ public class LinesListItemViewModel implements ViewModel {
 
     public void setCurrency(String currency) {
         this.currency.set(currency);
+    }
+
+    public String getDate() {
+        return date.get();
+    }
+
+    public StringProperty dateProperty() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date.set(date);
     }
 }

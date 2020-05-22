@@ -141,7 +141,13 @@
 .list-item-title {
     -fx-font-weight:  bold;
 }
-
+.list-item-info {
+    -fx-font-style: italic;
+}
+.list-item-currency {
+    -fx-spacing: 5px;
+    -fx-font-weight:  bold;
+}
 .person-choice-box {
     -fx-height:100px;
 }

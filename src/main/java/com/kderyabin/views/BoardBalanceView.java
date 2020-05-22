@@ -6,6 +6,7 @@ import com.kderyabin.model.RefundmentModel;
 import com.kderyabin.util.GUIHelper;
 import com.kderyabin.viewmodels.BoardBalanceViewModel;
 import de.saxsys.mvvmfx.FxmlView;
+import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,12 +17,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
 
 @Component
@@ -44,11 +47,25 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
     public VBox statsPanel;
     @FXML
     public VBox sharePanel;
+    @FXML
+    public Text balanceCurrency;
+    @FXML
+    public Text refundmentCurrency;
     @InjectViewModel
     private BoardBalanceViewModel viewModel;
+    @InjectResourceBundle
+    private ResourceBundle resource;
 
     public void initialize() {
         boardName.textProperty().bind(viewModel.boardNameProperty());
+        balanceCurrency.textProperty().set(
+                String.format("(%s : %s)",
+                    resource.getString("currency"),
+                    viewModel.getCurrency()
+                )
+        );
+        // Same currency and label for refundement table
+        refundmentCurrency.textProperty().bind(balanceCurrency.textProperty());
         // Display warning message if there is no data to display
         warningNoBalanceData.visibleProperty().bind(viewModel.balanceEmptyProperty());
         warningNoBalanceData.managedProperty().bind(viewModel.balanceEmptyProperty());
@@ -115,8 +132,8 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         TableColumn<RefundmentModel, String> creditor = new TableColumn<>("Creditor");
         creditor.setCellValueFactory(new PropertyValueFactory<>("creditor"));
 
-        TableColumn<RefundmentModel, String> amount = new TableColumn<>("Amount");
-        amount.setCellValueFactory(new PropertyValueFactory<>("displayAmount"));
+        TableColumn<RefundmentModel, Double> amount = new TableColumn<>("Amount");
+        amount.setCellValueFactory(new PropertyValueFactory<>("amount"));
 
         shareTables.getColumns().addAll(debtor, creditor, amount);
         shareTables.setItems(viewModel.getShareData());
