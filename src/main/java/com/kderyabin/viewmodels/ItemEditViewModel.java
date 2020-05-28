@@ -3,7 +3,6 @@ package com.kderyabin.viewmodels;
 import com.kderyabin.error.ValidationException;
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardItemModel;
-import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class ItemEditViewModel implements ViewModel {
+public class ItemEditViewModel implements ViewModel, EditableInterface {
     private static Logger LOG = LoggerFactory.getLogger(ItemEditViewModel.class);
 
     private StorageManager storageManager;
@@ -122,7 +121,7 @@ public class ItemEditViewModel implements ViewModel {
     /**
      * Save board item and load next view.
      */
-    public void save() throws ViewNotFoundException {
+    public void save() {
         try {
             validate();
 
@@ -139,6 +138,8 @@ public class ItemEditViewModel implements ViewModel {
             }
         } catch (ValidationException e) {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
+        } catch (Exception e) {
+            notificationCenter.publish( Notification.INFO_DISMISS, "msg.generic_error");
         }
     }
 
@@ -252,5 +253,10 @@ public class ItemEditViewModel implements ViewModel {
 
     public void setBoardName(String boardName) {
         this.boardName.set(boardName);
+    }
+
+    @Override
+    public boolean isUpdated() {
+        return canGoBack();
     }
 }

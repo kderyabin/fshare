@@ -16,4 +16,5 @@ public interface NavigateServiceInterface {
     void navigate(String viewName) throws ViewNotFoundException;
     Pane getContent();
     void setContent(Pane content);
+    ViewModel getCurrentViewModel();
 }

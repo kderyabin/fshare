@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("prototype")
-public class BoardFormViewModel implements ViewModel {
+public class BoardFormViewModel implements ViewModel, EditableInterface {
 
     final private Logger LOG = LoggerFactory.getLogger(BoardFormViewModel.class);
     /*
@@ -90,7 +90,6 @@ public class BoardFormViewModel implements ViewModel {
         }
         currencies.addAll(CurrencyService.getAllCurrencies());
     }
-
     /**
      * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
      * Exclude already attached to the board participants.
@@ -158,6 +157,14 @@ public class BoardFormViewModel implements ViewModel {
     }
 
     /**
+     * See canGoBack() method for description.
+     * @return
+     */
+    @Override
+    public boolean isUpdated() {
+        return canGoBack();
+    }
+    /**
      * Checks if model data has been updated.
      *
      * @return TRUE if we can safely quit the scene FALSE if there are modifications to be saved.
@@ -204,7 +211,8 @@ public class BoardFormViewModel implements ViewModel {
     /**
      * Save board data and load next view.
      */
-    public void save() throws ViewNotFoundException {
+    @Override
+    public void save() {
         try {
             validate();
             boolean isCreationMode = model.getId() == null;
@@ -230,6 +238,8 @@ public class BoardFormViewModel implements ViewModel {
             notificationCenter.publish(Notification.INFO_DISMISS, e.getMessage());
         } catch (IllegalStateException e) {
             notificationCenter.publish(Notification.INFO_RAW_DISMISS, e.getMessage());
+        } catch (Exception e) {
+            notificationCenter.publish( Notification.INFO_DISMISS, "msg.generic_error");
         }
     }
 
@@ -353,4 +363,6 @@ public class BoardFormViewModel implements ViewModel {
     public void setCurrencies(ObservableList<Currency> currencies) {
         this.currencies.set(currencies);
     }
+
+
 }

@@ -6,13 +6,19 @@
          xmlns:fx="http://javafx.com/fxml"
          fx:controller="com.kderyabin.views.MenuView">
     <Menu mnemonicParsing="false" text="File">
-        <MenuItem mnemonicParsing="false" text="New" onAction="#createNewBoard"/>
-        <MenuItem mnemonicParsing="false" text="Open…"/>
-        <Menu mnemonicParsing="false" text="Open Recent"/>
+        <MenuItem mnemonicParsing="false" text="%new_board" onAction="#createNewBoard">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+            </accelerator>
+        </MenuItem>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Save"/>
+        <MenuItem mnemonicParsing="false" text="%save" onAction="#save">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+            </accelerator>
+        </MenuItem>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Preferences…"/>
+        <MenuItem mnemonicParsing="false" text="Preferences"/>
         <SeparatorMenuItem mnemonicParsing="false"/>
         <MenuItem mnemonicParsing="false" text="Exit" onAction="#exit">
             <accelerator>

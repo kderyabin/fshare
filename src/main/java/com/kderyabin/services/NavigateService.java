@@ -4,6 +4,7 @@ import com.kderyabin.error.ViewNotFoundException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.ViewTuple;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -34,8 +35,10 @@ public class NavigateService implements NavigateServiceInterface {
      */
     private String previous;
 
+    private ViewTuple current;
+
     /**
-     * Add view class to the map of navigable classes this making it available for navigation.
+     * Add view class to the map of navigable classes thus making it available for navigation.
      *
      * @param name  Some name to associate with the View.
      * @param clazz View class, something like MainView.class.
@@ -53,11 +56,13 @@ public class NavigateService implements NavigateServiceInterface {
         if (!list.containsKey(name)) {
             throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
-        return FluentViewLoader.fxmlView(list.get(name)).load().getView();
+        current = FluentViewLoader.fxmlView(list.get(name)).load();
+        return current.getView();
     }
 
     /**
-     * Method used to navigate between pages resets components of the content area.
+     * Method used to navigate between pages.
+     * It loads a new view and resets components of the content area.
      *
      * @param viewName See loadContent.
      * @throws ViewNotFoundException
@@ -77,6 +82,17 @@ public class NavigateService implements NavigateServiceInterface {
 
     public void setContent(Pane content) {
         this.content = content;
+    }
+
+    /**
+     * Get current viewModel if there is one.
+     * @return
+     */
+    public ViewModel getCurrentViewModel(){
+        if(current != null) {
+            return current.getViewModel();
+        }
+        return null;
     }
 }
 

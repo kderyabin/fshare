@@ -16,15 +16,26 @@ import org.springframework.stereotype.Service;
 public class BoardScope implements Scope {
 
     /**
-     * Board available in the current scope
+     * User selected board available in the current scope for updates.
      */
     private BoardModel boardModel;
     /**
-     * Common for the app.
+     * Common for the whole app.
+     * Set during the app bootstrap.
+     * Must be updated whenever board is removed.
      */
     private boolean hasBoards = false;
     /**
-     * Board item available for edition
+     * Board item available for edition.
+     * This property must be reset any time we (re)set a boardModel.
      */
     private BoardItemModel itemModel;
+
+    /**
+     * Resets some scoped data.
+     */
+    public void resetSelection(){
+        boardModel = null;
+        itemModel = null;
+    }
 }
