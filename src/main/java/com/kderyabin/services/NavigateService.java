@@ -5,10 +5,14 @@ import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,8 +22,7 @@ import java.util.Map;
 @Service
 public class NavigateService implements NavigateServiceInterface {
 
-    //private static NavigateService instance;
-
+    final private Logger LOG = LoggerFactory.getLogger(NavigateService.class);
     /**
      * list of views.
      */
@@ -54,7 +57,8 @@ public class NavigateService implements NavigateServiceInterface {
      */
     public Parent loadContent(String name) throws ViewNotFoundException {
         if (!list.containsKey(name)) {
-            throw new ViewNotFoundException("View is undefined for the name: " + name);
+            return null;
+//            throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
         current = FluentViewLoader.fxmlView(list.get(name)).load();
         return current.getView();
@@ -65,15 +69,23 @@ public class NavigateService implements NavigateServiceInterface {
      * It loads a new view and resets components of the content area.
      *
      * @param viewName See loadContent.
-     * @throws ViewNotFoundException
+     * @throws  ViewNotFoundException
      */
     @Override
     public void navigate(String viewName) throws ViewNotFoundException {
-        final Parent parent = loadContent(viewName);
-        previous = viewName;
-        ObservableList<Node> children = content.getChildren();
-        children.clear();
-        children.add(parent);
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                final Parent parent = loadContent(viewName);
+                Platform.runLater(() -> {
+                    ObservableList<Node> children = content.getChildren();
+                    children.clear();
+                    children.add(parent);
+                });
+                return null;
+            }
+        };
+        new Thread(task).start();
     }
 
     public Pane getContent() {

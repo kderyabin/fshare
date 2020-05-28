@@ -11,7 +11,7 @@ public interface EditableInterface {
     public boolean isUpdated();
 
     /**
-     * Save class data.
+     * Saves somewhere somehow classes' data.
      */
     public void save();
 }

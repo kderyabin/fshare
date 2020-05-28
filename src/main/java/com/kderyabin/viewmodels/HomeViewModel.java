@@ -5,7 +5,6 @@ import com.kderyabin.model.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.StorageManager;
-import com.kderyabin.storage.repository.BoardRepository;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
@@ -44,7 +43,6 @@ public class HomeViewModel implements ViewModel {
         // reset every time we load home page
         scope.setBoardModel(null);
         models = storageManager.getBoards();
-        LOG.info("Loaded boards size: " + models.size());
         scope.setHasBoards(!models.isEmpty());
         LOG.info(scope.toString());
         boardItems.addAll(
@@ -52,6 +50,53 @@ public class HomeViewModel implements ViewModel {
                         .collect(Collectors.toList())
         );
     }
+
+    public void edit(BoardListItemViewModel boardItemVM) {
+        scope.setBoardModel(boardItemVM.getModel());
+        if (navigation != null) {
+            try {
+                navigation.navigate("board-form");
+            } catch (ViewNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public boolean remove(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
+        BoardModel boardModel = boardItemVM.getModel();
+        try {
+            storageManager.removeBoard(boardModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            notificationCenter.publish(Notification.INFO, "msg.generic_error");
+            return false;
+        }
+        boardItems.remove(boardItemVM);
+        notificationCenter.publish(Notification.INFO, "msg.board_deleted_success");
+        if (boardItems.size() == 0) {
+            scope.setHasBoards(false);
+            navigation.navigate("start");
+        }
+        return true;
+    }
+
+    public void viewList(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
+        scope.setBoardModel(boardItemVM.getModel());
+        if (navigation != null) {
+            navigation.navigate("board-items");
+        }
+    }
+
+    public void addBoard() {
+        if (navigation != null) {
+            try {
+                navigation.navigate("board-form");
+            } catch (ViewNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     public List<BoardModel> getModels() {
         return models;
@@ -90,46 +135,10 @@ public class HomeViewModel implements ViewModel {
     public StorageManager getStorageManager() {
         return storageManager;
     }
+
     @Autowired
     public void setStorageManager(StorageManager storageManager) {
         this.storageManager = storageManager;
     }
 
-    public void edit(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
-        scope.setBoardModel(boardItemVM.getModel());
-        if (navigation != null) {
-            navigation.navigate("board-form");
-        }
-    }
-
-    public boolean remove(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
-        BoardModel boardModel = boardItemVM.getModel();
-        try {
-            storageManager.removeBoard(boardModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-            notificationCenter.publish(Notification.INFO, "msg.generic_error");
-            return false;
-        }
-        boardItems.remove(boardItemVM);
-        notificationCenter.publish(Notification.INFO, "msg.board_deleted_success");
-        if (boardItems.size() == 0) {
-            scope.setHasBoards(false);
-            navigation.navigate("start");
-        }
-        return true;
-    }
-
-    public void viewList(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
-        scope.setBoardModel(boardItemVM.getModel());
-        if (navigation != null) {
-            navigation.navigate("board-items");
-        }
-    }
-
-    public void addBoard() throws ViewNotFoundException {
-        if (navigation != null) {
-            navigation.navigate("board-form");
-        }
-    }
 }
