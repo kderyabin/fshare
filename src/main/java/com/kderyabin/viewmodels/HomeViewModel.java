@@ -1,6 +1,5 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
@@ -54,15 +53,11 @@ public class HomeViewModel implements ViewModel {
     public void edit(BoardListItemViewModel boardItemVM) {
         scope.setBoardModel(boardItemVM.getModel());
         if (navigation != null) {
-            try {
-                navigation.navigate("board-form");
-            } catch (ViewNotFoundException e) {
-                e.printStackTrace();
-            }
+            navigation.navigate("board-form");
         }
     }
 
-    public boolean remove(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
+    public boolean remove(BoardListItemViewModel boardItemVM) {
         BoardModel boardModel = boardItemVM.getModel();
         try {
             storageManager.removeBoard(boardModel);
@@ -80,7 +75,7 @@ public class HomeViewModel implements ViewModel {
         return true;
     }
 
-    public void viewList(BoardListItemViewModel boardItemVM) throws ViewNotFoundException {
+    public void viewList(BoardListItemViewModel boardItemVM) {
         scope.setBoardModel(boardItemVM.getModel());
         if (navigation != null) {
             navigation.navigate("board-items");
@@ -89,11 +84,7 @@ public class HomeViewModel implements ViewModel {
 
     public void addBoard() {
         if (navigation != null) {
-            try {
-                navigation.navigate("board-form");
-            } catch (ViewNotFoundException e) {
-                e.printStackTrace();
-            }
+            navigation.navigate("board-form");
         }
     }
 

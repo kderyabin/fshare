@@ -1,6 +1,5 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.model.RefundmentModel;
@@ -8,7 +7,6 @@ import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.BoardBalance;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.StorageManager;
-import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -123,11 +121,11 @@ public class BoardBalanceViewModel implements ViewModel {
         }
     }
 
-    public void goBack() throws ViewNotFoundException {
+    public void goBack() {
         navigation.navigate("board-items");
     }
 
-    public void addItem() throws ViewNotFoundException {
+    public void addItem() {
         navigation.navigate("board-item");
     }
 

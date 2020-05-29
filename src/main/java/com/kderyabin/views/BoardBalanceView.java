@@ -1,6 +1,5 @@
 package com.kderyabin.views;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.model.RefundmentModel;
 import com.kderyabin.util.GUIHelper;
@@ -152,11 +151,11 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         return (++rowCount * rowHeight) + rowCount - 1;
     }
 
-    public void addItem(ActionEvent actionEvent) throws ViewNotFoundException {
+    public void addItem(ActionEvent actionEvent) {
         viewModel.addItem();
     }
 
-    public void goBack(ActionEvent actionEvent) throws ViewNotFoundException {
+    public void goBack(ActionEvent actionEvent) {
         viewModel.goBack();
     }
 }

@@ -1,6 +1,5 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.services.NavigateServiceInterface;
 import de.saxsys.mvvmfx.ViewModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,8 @@ public class StartViewModel implements ViewModel {
 
     public void editBoard() {
         // TODO: check if we can go back
-        try {
-
+        if(navigation != null) {
             navigation.navigate("board-form");
-        } catch (ViewNotFoundException e) {
-            e.printStackTrace();
         }
     }
 }

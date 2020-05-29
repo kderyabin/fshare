@@ -1,8 +1,7 @@
 package com.kderyabin;
 
-import com.kderyabin.services.NavigateService;
 import com.kderyabin.viewmodels.MainViewModel;
-import com.kderyabin.views.*;
+import com.kderyabin.views.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
@@ -11,7 +10,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -50,8 +48,6 @@ public class Main extends MvvmfxSpringApplication {
 
         final ViewTuple<MainView, MainViewModel> tuple
                 = FluentViewLoader.fxmlView(MainView.class).load();
-
-//        registerNavigation(tuple.getCodeBehind().getContent());
 
         Parent root = tuple.getView();
         Rectangle2D bounds = Screen.getPrimary().getBounds();

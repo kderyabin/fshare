@@ -2,7 +2,6 @@ package com.kderyabin.views;
 
 import com.jfoenix.controls.JFXSnackbar;
 import com.jfoenix.controls.JFXSnackbarLayout;
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.util.Notification;
 import com.kderyabin.viewmodels.MainViewModel;
@@ -89,15 +88,11 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
             displayRawInfo(message);
         });
         registerNavigation();
-        try {
             if (viewModel.isHasBoards()) {
                 navigation.navigate("home");
             } else {
                 navigation.navigate("start");
             }
-        } catch (ViewNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public void displayInfo(String resourceKey) {

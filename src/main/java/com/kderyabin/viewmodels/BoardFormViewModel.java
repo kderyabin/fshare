@@ -1,7 +1,6 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ValidationException;
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
@@ -201,11 +200,12 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     /**
      * Load previous view.
      *
-     * @throws ViewNotFoundException See NavigationService.navigate()
      */
-    public void goBack() throws ViewNotFoundException {
+    public void goBack() {
         final String view = scope.isHasBoards() ? "home" : "start";
-        navigation.navigate(view);
+        if(navigation != null) {
+            navigation.navigate(view);
+        }
     }
 
     /**

@@ -1,6 +1,5 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import de.saxsys.mvvmfx.ViewModel;
@@ -26,18 +25,17 @@ public class MenuViewModel implements ViewModel {
     }
 
     public void createNewBoard() {
-        try {
-            // reset currently selected board
-            // otherwise the board form will be populated with its data.
-            scope.resetSelection();
+        // reset currently selected board
+        // otherwise the board form will be populated with its data.
+        scope.resetSelection();
+        if (navigation != null) {
             navigation.navigate("board-form");
-        } catch (ViewNotFoundException e) {
-            e.printStackTrace();
         }
     }
 
     /**
      * Checks whether current viewModel implements EditableInterface
+     *
      * @return Instance of EditableInterface.
      */
     private EditableInterface getCurrentEditable() {
@@ -86,7 +84,7 @@ public class MenuViewModel implements ViewModel {
      */
     public void save() {
         EditableInterface editable = getCurrentEditable();
-        if(editable != null) {
+        if (editable != null) {
             editable.save();
         }
     }

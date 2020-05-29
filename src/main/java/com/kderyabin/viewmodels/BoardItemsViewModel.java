@@ -1,6 +1,5 @@
 package com.kderyabin.viewmodels;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.scopes.BoardScope;
@@ -87,21 +86,29 @@ public class BoardItemsViewModel implements ViewModel {
                 );
     }
 
-    public void editItem(LinesListItemViewModel linesListItemViewModel) throws ViewNotFoundException {
+    public void editItem(LinesListItemViewModel linesListItemViewModel) {
         scope.setItemModel(linesListItemViewModel.getModel());
-        navigation.navigate("board-item");
+        if(navigation != null) {
+            navigation.navigate("board-item");
+        }
     }
 
-    public void addItem() throws ViewNotFoundException {
-        navigation.navigate("board-item");
+    public void addItem() {
+        if( navigation != null) {
+            navigation.navigate("board-item");
+        }
     }
 
-    public void goBack() throws ViewNotFoundException {
-        navigation.navigate("home");
+    public void goBack() {
+        if( navigation != null) {
+            navigation.navigate("home");
+        }
     }
 
-    public void goToBalance() throws ViewNotFoundException {
-        navigation.navigate("balance");
+    public void goToBalance() {
+        if( navigation != null) {
+            navigation.navigate("balance");
+        }
     }
 
     // Getters / Setters

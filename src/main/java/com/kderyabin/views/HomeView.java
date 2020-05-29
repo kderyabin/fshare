@@ -1,17 +1,19 @@
 package com.kderyabin.views;
 
 import com.kderyabin.controls.ConfirmAlert;
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
 import com.kderyabin.viewmodels.HomeViewModel;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.StageStyle;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -36,29 +38,38 @@ public class HomeView implements FxmlView<HomeViewModel> {
     private ResourceBundle resources;
 
     public void initialize() {
-        LOG.info(">>> Started initialisation");
-
+        LOG.debug(">>> Started initialisation");
         boardsList.setItems(viewModel.getBoardItems());
         boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
-        boardsList.addEventHandler(ActionEvent.ACTION, this::handleAction);
-
-        boardsList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                viewModel.viewList(newValue);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-        LOG.info(">>> Ended initialisation");
+        boardsList.addEventHandler(ActionEvent.ACTION, this::handleBtnClick);
+        boardsList.getSelectionModel().selectedItemProperty().addListener(this::handleItemClick);
+    }
+    /**
+     * Action to display board's details.
+     */
+    protected void handleItemClick(
+            ObservableValue<? extends BoardListItemViewModel> observable,
+            BoardListItemViewModel oldValue,
+            BoardListItemViewModel newValue
+    ) {
+        try {
+            viewModel.viewList(newValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void handleAction(ActionEvent event) {
+    /**
+     * Handle click on a button.
+     * @param event Event instance.
+     */
+    public void handleBtnClick(ActionEvent event) {
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
         try {
             switch (btn.getId()) {
                 case "editBtn":
-                   editAction(vm);
+                    editAction(vm);
                     break;
                 case "removeBtn":
                     removeAction(vm);
@@ -71,21 +82,34 @@ public class HomeView implements FxmlView<HomeViewModel> {
         }
     }
 
-    public void editAction(BoardListItemViewModel vm) throws ViewNotFoundException {
+    /**
+     * Action to trigger board edition.
+     * @param vm    Model.
+     */
+    public void editAction(BoardListItemViewModel vm) {
         viewModel.edit(vm);
     }
-    public void removeAction(BoardListItemViewModel vm) throws ViewNotFoundException {
+
+    /**
+     * Remove board action.
+     * @param vm  Board
+     */
+    public void removeAction(BoardListItemViewModel vm)  {
         Alert alert = new ConfirmAlert(resources.getString("msg.confirm_delete_board"));
         Optional<ButtonType> option = alert.showAndWait();
-        if( !option.isPresent() || option.get() != ButtonType.OK){
+        if (!option.isPresent() || option.get() != ButtonType.OK) {
             return;
         }
-        if( viewModel.remove(vm)) {
-            // adjust list layout
+        if (viewModel.remove(vm)) {
+            // adjust list's display otherwise the empty line is displayed.
             boardsList.layout();
         }
     }
-    public void addAction() throws ViewNotFoundException {
+
+    /**
+     * Add new board action.
+     */
+    public void addAction(){
         viewModel.addBoard();
     }
 }

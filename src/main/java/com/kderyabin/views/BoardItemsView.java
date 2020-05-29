@@ -1,6 +1,5 @@
 package com.kderyabin.views;
 
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.viewmodels.BoardItemsViewModel;
 import com.kderyabin.viewmodels.LinesListItemViewModel;
 import de.saxsys.mvvmfx.FxmlView;
@@ -71,7 +70,7 @@ public class BoardItemsView implements FxmlView<BoardItemsViewModel> {
         viewModel.goBack();
     }
 
-    public void viewBalance(ActionEvent actionEvent) throws ViewNotFoundException {
+    public void viewBalance(ActionEvent actionEvent) {
         viewModel.goToBalance();
     }
 }

@@ -1,6 +1,5 @@
 package com.kderyabin.services;
 
-import com.kderyabin.error.ViewNotFoundException;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.scene.layout.Pane;
@@ -13,7 +12,7 @@ public interface NavigateServiceInterface {
      * @param clazz View class name, something like MainView.class.
      */
     void register(String name, Class<? extends FxmlView<? extends ViewModel>> clazz);
-    void navigate(String viewName) throws ViewNotFoundException;
+    void navigate(String viewName);
     Pane getContent();
     void setContent(Pane content);
     ViewModel getCurrentViewModel();

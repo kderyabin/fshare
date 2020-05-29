@@ -1,6 +1,5 @@
 package com.kderyabin.services;
 
-import com.kderyabin.error.ViewNotFoundException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
@@ -17,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 @Service
@@ -37,8 +38,18 @@ public class NavigateService implements NavigateServiceInterface {
      * Previous view's name.
      */
     private String previous;
-
+    /**
+     * Currently displayed ViewTuple.
+     */
     private ViewTuple current;
+    /**
+     * Tasks executor to load views in background and avoid GUI freezing.
+     */
+    private Executor executor;
+
+    public NavigateService() {
+        executor = Executors.newCachedThreadPool();
+    }
 
     /**
      * Add view class to the map of navigable classes thus making it available for navigation.
@@ -52,13 +63,13 @@ public class NavigateService implements NavigateServiceInterface {
 
     /**
      * Loads UI components.
-     *
+     * The view name must registered with this.registered() method.
      * @param name Name for the View class, something like "main".
      */
-    public Parent loadContent(String name) throws ViewNotFoundException {
+    public Parent loadContent(String name) {
         if (!list.containsKey(name)) {
+            LOG.info("View is undefined for the name: " + name);
             return null;
-//            throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
         current = FluentViewLoader.fxmlView(list.get(name)).load();
         return current.getView();
@@ -69,10 +80,10 @@ public class NavigateService implements NavigateServiceInterface {
      * It loads a new view and resets components of the content area.
      *
      * @param viewName See loadContent.
-     * @throws  ViewNotFoundException
      */
     @Override
-    public void navigate(String viewName) throws ViewNotFoundException {
+    public void navigate(String viewName) {
+        // Load in background.
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -85,7 +96,7 @@ public class NavigateService implements NavigateServiceInterface {
                 return null;
             }
         };
-        new Thread(task).start();
+        executor.execute(task);
     }
 
     public Pane getContent() {
@@ -98,7 +109,7 @@ public class NavigateService implements NavigateServiceInterface {
 
     /**
      * Get current viewModel if there is one.
-     * @return
+     * @return  The ViewModel associated with current view tuple.
      */
     public ViewModel getCurrentViewModel(){
         if(current != null) {
@@ -107,4 +118,3 @@ public class NavigateService implements NavigateServiceInterface {
         return null;
     }
 }
-

@@ -1,7 +1,6 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ValidationException;
-import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardItemModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
@@ -80,7 +79,7 @@ public class ItemEditViewModel implements ViewModel, EditableInterface {
         }
     }
 
-    public void goBack() throws ViewNotFoundException {
+    public void goBack() {
         if (navigation != null) {
             navigation.navigate("board-items");
         }
