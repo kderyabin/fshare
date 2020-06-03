@@ -1,7 +1,6 @@
 package com.kderyabin.views;
 
 import com.kderyabin.controls.ConfirmAlert;
-import com.kderyabin.services.CurrencyService;
 import com.kderyabin.util.GUIHelper;
 import com.kderyabin.viewmodels.BoardFormViewModel;
 import com.kderyabin.viewmodels.PersonListItemViewModel;
@@ -9,10 +8,11 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.text.Format;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.Optional;
@@ -41,8 +40,6 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
     @FXML
     public TextField person;
     @FXML
-    public Label noParticipantsLabel;
-    @FXML
     public ComboBox<PersonListItemViewModel> personsChoice;
     @FXML
     public VBox choiceLabelContainer;
@@ -52,6 +49,8 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
     public Label boardLabel;
     @FXML
     public ComboBox<Currency> currencyList;
+    @FXML
+    public Parent formPanel;
 
     @InjectViewModel
     private BoardFormViewModel viewModel;
@@ -60,43 +59,72 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
 
 
     public void initialize() {
+        LOG.info("Start initialize");
         if (!viewModel.isIsNewBoard()) {
             boardLabel.textProperty().bind(viewModel.nameProperty());
         }
         name.textProperty().bindBidirectional(viewModel.nameProperty());
         description.textProperty().bindBidirectional(viewModel.descriptionProperty());
         // Participants' list data and event handling
-        participantsList.setItems(viewModel.participantsProperty());
         participantsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(PersonListItemView.class));
         participantsList.addEventHandler(ActionEvent.ACTION, this::removeParticipant);
+        // listen to toggle participants list display
+        viewModel.participantsListEmptyProperty().addListener(this::participantsListListener);
+        participantsList.itemsProperty().bind(viewModel.participantsProperty());
+        initParticipantsListDisplay(viewModel.isParticipantsListEmpty());
+
         // Currencies' list and preselection
         currencyList.setConverter(currencyStringConverter());
         currencyList.itemsProperty().bind(viewModel.currenciesProperty());
         // Bind selected item to the viewModel
         currencyList.valueProperty().bindBidirectional(viewModel.currencyProperty());
 
-        initParticipantsListDisplay();
-        if(viewModel.getPersons().size() > 0) {
-            personsChoice.setItems(viewModel.getPersons());
-            personsChoice.setConverter(getPersonsComboConverter());
-        } else {
-            GUIHelper.renderVisible(choiceLabelContainer, false);
-            GUIHelper.renderVisible(choiceListContainer, false);
-        }
+        // List of all registered persons that can be added to the board.
+        personsChoice.setConverter(getPersonsComboConverter());
+        // listen to toggle persons list display
+        viewModel.personsListEmptyProperty().addListener(this::initPersonsListDisplay);
+        personsChoice.itemsProperty().bind(viewModel.personsProperty());
+        LOG.info("End initialize");
     }
 
     /**
-     * Toggles display of participants list and the participants label.
+     * Toggles display of persons list and related label.
+     * @param observable
+     * @param oldValue
+     * @param newValue
      */
-    private void initParticipantsListDisplay(){
-        final int count =  participantsList.getItems().size();
-        if (count == 0) {
-            GUIHelper.renderVisible(participantsList, false);
-            GUIHelper.renderVisible(noParticipantsLabel, true);
-        } else if( count == 1){
-            GUIHelper.renderVisible(participantsList, true);
-            GUIHelper.renderVisible(noParticipantsLabel, false);
+    protected void initPersonsListDisplay(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue){
+
+        if(newValue) {
+            // Persons list is empty -> hide elements related to persons display.
+            GUIHelper.renderVisible(choiceListContainer, false);
+            GUIHelper.renderVisible(choiceLabelContainer, false);
+
+            return;
         }
+        GUIHelper.renderVisible(choiceListContainer, true);
+        GUIHelper.renderVisible(choiceLabelContainer, true);
+    }
+    /**
+     * Toggles display of participants list and the participants label.
+     *
+     * @param observable
+     * @param oldValue
+     * @param newValue
+     */
+    protected void participantsListListener(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue){
+        initParticipantsListDisplay(newValue);
+    }
+    protected void initParticipantsListDisplay(Boolean newValue){
+        Platform.runLater(() -> {
+            if(newValue){
+                // Participants list is empty -> hide it.
+                GUIHelper.renderVisible(participantsList, false);
+                return;
+            }
+            GUIHelper.renderVisible(participantsList, true);
+            formPanel.layout();
+        });
     }
 
     public void goBack() throws Exception {
@@ -125,7 +153,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
                 person.setText("");
             }
         }
-        initParticipantsListDisplay();
+        // adjust the size of the element.
         participantsList.layout();
 
     }
@@ -140,7 +168,6 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
             Button btn = (Button) event.getTarget();
             PersonListItemViewModel vm = (PersonListItemViewModel) btn.getUserData();
             viewModel.removeParticipant(vm);
-            initParticipantsListDisplay();
             participantsList.layout();
         }
     }

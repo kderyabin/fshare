@@ -5,10 +5,7 @@ import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
-import com.kderyabin.services.CurrencyService;
-import com.kderyabin.services.NavigateServiceInterface;
-import com.kderyabin.services.SettingsService;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.services.*;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
@@ -20,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import java.util.Currency;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 
@@ -40,6 +37,9 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     private BoardModel model;
     private BoardScope scope;
     private SettingsService settingsService;
+    private RunService runService;
+
+
 
     /*
      * ViewModel properties for binding.
@@ -52,12 +52,17 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     /**
      * List of participants attached to the board.
      */
-    private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
+    //private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
+    private ListProperty<PersonListItemViewModel> participants =  new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    private BooleanProperty participantsListEmpty = new SimpleBooleanProperty(true);
     /**
      * The list of all participants created in the application.
      * Used to populate board's participants list.
      */
-    private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
+//    private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
+    private ListProperty<PersonListItemViewModel> persons =  new SimpleListProperty<>(FXCollections.observableArrayList());
+    private BooleanProperty personsListEmpty = new SimpleBooleanProperty(true);
 
     /**
      * Helper field.
@@ -66,29 +71,40 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     private boolean personListUpdated = false;
 
     public void initialize() {
+        LOG.info("Start initialize");
+        CompletableFuture.runAsync( () -> {
+            LOG.debug("Load persons");
+            persons.addAll(getPersonsList());
+            setPersonsListEmpty(persons.size() == 0);
+            LOG.debug("Found persons: " + persons.size());
+        }, getRunService().getExecutorService());
+        CompletableFuture.runAsync( () -> {
+            currencies.addAll(CurrencyService.getAllCurrencies());
+        }, getRunService().getExecutorService());
         if (scope != null && scope.getBoardModel() != null) {
             model = scope.getBoardModel();
-            isNewBoard.set(false);
+            CompletableFuture.runAsync( () -> {
+                LOG.debug("Load Participants");
+                storageManager.loadParticipants(model);
+                if (!model.getParticipants().isEmpty()) {
+                    setParticipantsListEmpty(false);
+                    participants.addAll(
+                            model.getParticipants().stream()
+                                    .map(PersonListItemViewModel::new)
+                                    .collect(Collectors.toList())
+                    );
+                }
+                LOG.debug("Loaded Participants: " + participants.size());
+            }, getRunService().getExecutorService());
             setName(model.getName());
             setDescription(model.getDescription());
-            LOG.info("Loading participants");
-            storageManager.loadParticipants(model);
-            if (!model.getParticipants().isEmpty()) {
-                participants.addAll(
-                        model.getParticipants().stream()
-                                .map(PersonListItemViewModel::new)
-                                .collect(Collectors.toList())
-                );
-            }
+            isNewBoard.set(false);
             setCurrency(model.getCurrency());
         } else {
             model = new BoardModel();
             setCurrency(settingsService.getCurrency());
         }
-        if (storageManager != null) {
-            persons.addAll(getPersonsList());
-        }
-        currencies.addAll(CurrencyService.getAllCurrencies());
+        LOG.info("End initialize");
     }
     /**
      * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
@@ -123,6 +139,7 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
 
         PersonListItemViewModel viewModel = new PersonListItemViewModel(personModel);
         personListUpdated = true;
+        setParticipantsListEmpty(false);
         return participants.add(viewModel);
     }
 
@@ -143,6 +160,7 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
         }
 
         personListUpdated = true;
+        setParticipantsListEmpty(false);
         return participants.add(viewModel);
     }
 
@@ -153,7 +171,9 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     public boolean removeParticipant(PersonListItemViewModel viewModel) {
 
         personListUpdated = true;
-        return participants.remove(viewModel);
+        boolean status = participants.remove(viewModel);
+        setParticipantsListEmpty(participants.size() == 0);
+        return status;
     }
 
     /**
@@ -286,6 +306,13 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     public void setSettingsService(SettingsService settingsService) {
         this.settingsService = settingsService;
     }
+    public RunService getRunService() {
+        return runService;
+    }
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
 
     public String getName() {
         return name.get();
@@ -309,22 +336,6 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
 
     public void setDescription(String description) {
         this.description.set(description);
-    }
-
-    public ObservableList<PersonListItemViewModel> participantsProperty() {
-        return participants;
-    }
-
-    public ObservableList<PersonListItemViewModel> getParticipants() {
-        return participants;
-    }
-
-    public ObservableList<PersonListItemViewModel> getPersons() {
-        return persons;
-    }
-
-    public void setPersons(ObservableList<PersonListItemViewModel> persons) {
-        this.persons = persons;
     }
 
     public boolean isIsNewBoard() {
@@ -364,5 +375,48 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
         this.currencies.set(currencies);
     }
 
+    public ObservableList<PersonListItemViewModel> getParticipants() {
+        return participants.get();
+    }
 
+    public ListProperty<PersonListItemViewModel> participantsProperty() {
+        return participants;
+    }
+
+
+    public boolean isParticipantsListEmpty() {
+        return participantsListEmpty.get();
+    }
+
+    public BooleanProperty participantsListEmptyProperty() {
+        return participantsListEmpty;
+    }
+
+    public void setParticipantsListEmpty(boolean participantsListEmpty) {
+        this.participantsListEmpty.set(participantsListEmpty);
+    }
+
+    public boolean isPersonsListEmpty() {
+        return personsListEmpty.get();
+    }
+
+    public BooleanProperty personsListEmptyProperty() {
+        return personsListEmpty;
+    }
+
+    public void setPersonsListEmpty(boolean personsListEmpty) {
+        this.personsListEmpty.set(personsListEmpty);
+    }
+
+    public ObservableList<PersonListItemViewModel> getPersons() {
+        return persons.get();
+    }
+
+    public ListProperty<PersonListItemViewModel> personsProperty() {
+        return persons;
+    }
+
+    public void setPersons(ObservableList<PersonListItemViewModel> persons) {
+        this.persons.set(persons);
+    }
 }

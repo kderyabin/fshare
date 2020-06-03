@@ -13,6 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -39,6 +40,8 @@ public class NavigateService implements NavigateServiceInterface {
     private String previous;
 
     private ViewTuple current;
+
+    private RunService runService;
 
     /**
      * Add view class to the map of navigable classes thus making it available for navigation.
@@ -85,7 +88,7 @@ public class NavigateService implements NavigateServiceInterface {
                 return null;
             }
         };
-        new Thread(task).start();
+        runService.getExecutorService().execute(task);
     }
 
     public Pane getContent() {
@@ -105,6 +108,14 @@ public class NavigateService implements NavigateServiceInterface {
             return current.getViewModel();
         }
         return null;
+    }
+
+    public RunService getRunService() {
+        return runService;
+    }
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
     }
 }
 

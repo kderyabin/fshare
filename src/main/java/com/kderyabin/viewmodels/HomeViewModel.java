@@ -4,6 +4,7 @@ import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.RunService;
 import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.InjectScope;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
@@ -34,21 +36,32 @@ public class HomeViewModel implements ViewModel {
     private StorageManager storageManager;
     @InjectScope
     BoardScope scope;
+    private RunService runService;
 
     List<BoardModel> models;
     private ObservableList<BoardListItemViewModel> boardItems = FXCollections.observableArrayList();
 
 
     public void initialize() {
-        // reset every time we load home page
+        // reset current board model in the scope every time we load the view.
         scope.setBoardModel(null);
+        CompletableFuture.runAsync(this::initData, runService.getExecutorService());
+    }
+
+    /**
+     * Loads data from DB
+     */
+    public void initData() {
         models = storageManager.getBoards();
+        if (models.size() > 0) {
+            boardItems.addAll(
+                    models.stream()
+                            .map(BoardListItemViewModel::new)
+                            .collect(Collectors.toList()
+                            )
+            );
+        }
         scope.setHasBoards(!models.isEmpty());
-        LOG.info(scope.toString());
-        boardItems.addAll(
-                getModels().stream().map(BoardListItemViewModel::new)
-                        .collect(Collectors.toList())
-        );
     }
 
     public void edit(BoardListItemViewModel boardItemVM) {
@@ -141,4 +154,11 @@ public class HomeViewModel implements ViewModel {
         this.storageManager = storageManager;
     }
 
+    public RunService getRunService() {
+        return runService;
+    }
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
 }

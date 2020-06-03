@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXRippler;
 import com.kderyabin.controls.ConfirmAlert;
 import com.kderyabin.error.ViewNotFoundException;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
@@ -52,6 +53,10 @@ public class HomeView implements FxmlView<HomeViewModel> {
         LOG.info(">>> Ended initialisation");
     }
 
+    /**
+     * Handles actions triggered by buttons attached to each list item.
+     * @param event Click event.
+     */
     public void handleAction(ActionEvent event) {
         Button btn = (Button) event.getTarget();
         BoardListItemViewModel vm = (BoardListItemViewModel) btn.getUserData();
