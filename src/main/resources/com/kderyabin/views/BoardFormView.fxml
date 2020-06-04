@@ -28,7 +28,7 @@
         </top>
         <center>
 
-            <VBox styleClass="form-panel">
+            <VBox fx:id="formPanel" styleClass="form-panel">
 
                 <Label text="%name"/>
                 <TextField fx:id="name"/>
@@ -41,7 +41,6 @@
 
                 <Label text="%participants"/>
 
-                <Label text="%board_has_no_participants" fx:id="noParticipantsLabel" managed="false" visible="false"/>
                 <JFXListView VBox.vgrow="NEVER" fx:id="participantsList"/>
 
                 <HBox VBox.vgrow="ALWAYS">

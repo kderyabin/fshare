@@ -40,7 +40,7 @@
         <center>
             <VBox styleClass="form-panel">
                 <Label text="%no_data_to_display" fx:id="warningNoBalanceData" managed="false" visible="false"/>
-                <StackedBarChart title="%expenses" fx:id="expensesChart" styleClass="expenses-chart">
+                <StackedBarChart title="%chartData" fx:id="expensesChart" styleClass="chartData-chart">
                     <yAxis>
                         <CategoryAxis label="%participants"/>
                     </yAxis>

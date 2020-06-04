@@ -1,9 +1,8 @@
 package com.kderyabin.storage.repository;
 
-import com.kderyabin.storage.entity.BoardItemEntity;
 import com.kderyabin.storage.entity.BoardEntity;
+import com.kderyabin.storage.entity.BoardItemEntity;
 import com.kderyabin.storage.entity.PersonEntity;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,11 +12,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @AutoConfigureTestEntityManager
@@ -44,10 +44,11 @@ class BoardRepositoryTest {
         BoardEntity board = new BoardEntity("Board 1");
         board.addParticipant(person1);
         board.addParticipant(person2);
+        board.setCurrency("EUR");
         repository.save(board);
 
         List<BoardEntity> list = repository.findAll();
-        assertEquals(1, list.size());
+        assertTrue(!list.isEmpty());
 
         List<PersonEntity> persons = new ArrayList<>(list.get(0).getParticipants());
         assertEquals(2, persons.size());
@@ -103,20 +104,20 @@ class BoardRepositoryTest {
         PersonEntity person2 = new PersonEntity("Sam");
         person2 = personRepository.save(person2);
 
+        Instant now = Instant.now();
         BoardEntity board1 = new BoardEntity("Board 1");
         board1.addParticipant(person1);
         board1.addParticipant(person2);
-        // 01 apr 2020 00:00:01
-        board1.setCreation(new Timestamp(1585692001000L));
-        board1.setUpdate(new Timestamp(1585692001000L));
+        board1.setCreation(Timestamp.from(now));
+        board1.setUpdate(Timestamp.from(now));
         repository.save(board1);
 
+        Instant in1year = now.plusSeconds(86400);
         BoardEntity board2 = new BoardEntity("Board 2");
         board2.addParticipant(person1);
         board2.addParticipant(person2);
-        // 24 apr 2020 00:00:01
-        board2.setCreation(new Timestamp(1587679201000L));
-        board2.setUpdate(new Timestamp(1587679201000L));
+        board2.setCreation(Timestamp.from(in1year));
+        board2.setUpdate(Timestamp.from(in1year));
 
         board2 = repository.save(board2);
 

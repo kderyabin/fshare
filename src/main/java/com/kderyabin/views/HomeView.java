@@ -1,5 +1,6 @@
 package com.kderyabin.views;
 
+import com.jfoenix.controls.JFXRippler;
 import com.kderyabin.controls.ConfirmAlert;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
 import com.kderyabin.viewmodels.HomeViewModel;
@@ -10,10 +11,8 @@ import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;

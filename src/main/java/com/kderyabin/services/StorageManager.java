@@ -35,10 +35,10 @@ public class StorageManager {
     public List<BoardPersonTotal> getBoardPersonTotal(int boardId) {
         List<BoardPersonTotal> result = new ArrayList<>();
         itemRepository.getBoardPersonTotal(boardId).stream()
-                .forEach( row -> {
+                .forEach(row -> {
                     BoardPersonTotal item = new BoardPersonTotal(
                             (BigDecimal) row[0],
-                            (Integer)row[1],
+                            (Integer) row[1],
                             (String) row[2],
                             (Integer) row[3]
                     );
@@ -66,11 +66,11 @@ public class StorageManager {
 
     @Transactional
     public BoardModel loadParticipants(BoardModel model) {
-        LOG.info("loadParticipants: Participants in model before fetching:" + model.getParticipants().size());
+        LOG.debug("loadParticipants: Participants in model before fetching:" + model.getParticipants().size());
         model.getParticipants().clear();
         personRepository.findAllByBoardId(model.getId())
                 .forEach(e -> model.addParticipant(getModel(e)));
-        LOG.info("loadParticipants: Participants in model after fetching:" + model.getParticipants().size());
+        LOG.debug("loadParticipants: Participants in model after fetching:" + model.getParticipants().size());
         return model;
     }
 
@@ -86,23 +86,27 @@ public class StorageManager {
 
     @Transactional
     public List<PersonModel> getPersons() {
-        return personRepository.findAll().stream().map(this::getModel).collect(Collectors.toList());
+        return personRepository
+                .findAll()
+                .stream()
+                .map(this::getModel)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public PersonModel save(PersonModel model){
-        LOG.info("Start PersonModel saving ");
+    public PersonModel save(PersonModel model) {
+        LOG.debug("Start PersonModel saving ");
         PersonEntity entity = getEntity(model);
         entity = personRepository.saveAndFlush(entity);
         model = getModel(entity);
-        LOG.info("End PersonModel saving");
+        LOG.debug("End PersonModel saving");
         return model;
     }
 
     @Transactional
     public BoardModel save(BoardModel model, boolean participants) {
-        LOG.info("Start board saving ");
-        LOG.info("Participants size:" + model.getParticipants().size());
+        LOG.debug("Start board saving ");
+        LOG.debug("Participants size:" + model.getParticipants().size());
         BoardEntity entity = getEntity(model);
         if (participants) {
             for (PersonModel person : model.getParticipants()) {
@@ -115,38 +119,39 @@ public class StorageManager {
                 // add to the board
                 entity.addParticipant(pe);
             }
-            LOG.info("Participants: " + model.getParticipants().toString());
+            LOG.debug("Participants: " + model.getParticipants().toString());
         }
 
         entity.initUpdateTime();
-        LOG.info("Entity: " + entity.toString());
+        LOG.debug("Entity: " + entity.toString());
         entity = boardRepository.saveAndFlush(entity);
         BoardModel result = getModel(entity);
-        if(participants) {
+        if (participants) {
             result.setParticipants(model.getParticipants());
         }
-        LOG.info("Entity saved ");
-        LOG.info("Participants in returned model: " + result.getParticipants().toString());
+        LOG.debug("Entity saved ");
+        LOG.debug("Participants in returned model: " + result.getParticipants().toString());
         return result;
     }
+
     @Transactional
     public void save(BoardItemModel model) {
-        LOG.info("BoardItemModel: save participants size: " + model.getBoard().getParticipants().size());
+        LOG.debug("BoardItemModel: save participants size: " + model.getBoard().getParticipants().size());
         BoardItemEntity entity = getEntity(model);
         // Reload the board
-        LOG.info("BoardItemModel: Reload the board: " + model.getBoard().getId());
+        LOG.debug("BoardItemModel: Reload the board: " + model.getBoard().getId());
         BoardEntity board = boardRepository.getOne(model.getBoard().getId());
         board.initUpdateTime();
         board = boardRepository.save(board);
         entity.setBoard(board);
         // reload participants
-        LOG.info("BoardItemModel: Reload the participant: " + model.getPerson().getId());
+        LOG.debug("BoardItemModel: Reload the participant: " + model.getPerson().getId());
         PersonEntity person = personRepository.getOne(model.getPerson().getId());
         entity.setPerson(person);
 
-        LOG.info(">>> Start BoardItemModel saving ");
+        LOG.debug(">>> Start BoardItemModel saving ");
         itemRepository.saveAndFlush(entity);
-        LOG.info(">>> Saved BoardItemModel ");
+        LOG.debug(">>> Saved BoardItemModel ");
     }
 
     public void removeBoard(BoardModel board) {
@@ -209,7 +214,7 @@ public class StorageManager {
         entity.setId(model.getId());
         entity.setName(model.getName());
 //        if(model.getBoards().size() > 0) {
-//            LOG.info("Boards found");
+//           LOG.debug("Boards found");
 //            model.getBoards().forEach(board -> entity.addBoard(getEntity(board)));
 //        }
 //        if (!lazyMode) {
@@ -252,9 +257,9 @@ public class StorageManager {
     @Transactional
     public BoardModel loadItems(BoardModel model) {
         List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
-        if(!items.isEmpty()) {
+        if (!items.isEmpty()) {
             model.setItems(items.stream()
-                    .map( e -> {
+                    .map(e -> {
                         BoardItemModel i = getModel(e);
                         i.setBoard(model);
                         return i;
@@ -263,5 +268,25 @@ public class StorageManager {
             );
         }
         return model;
+    }
+
+    /**
+     * Fetches board items.
+     *
+     * @param model Instance of BoardModel
+     * @return List of BoardItemModels
+     */
+    @Transactional
+    public List<BoardItemModel> getItems(BoardModel model) {
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
+        List<BoardItemModel> result = new ArrayList<>();
+        if (!items.isEmpty()) {
+            items.forEach(e -> {
+                BoardItemModel m = getModel(e);
+                m.setBoard(model);
+                result.add(m);
+            });
+        }
+        return result;
     }
 }

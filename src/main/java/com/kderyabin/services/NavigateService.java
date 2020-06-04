@@ -12,12 +12,11 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 
 @Service
@@ -42,14 +41,8 @@ public class NavigateService implements NavigateServiceInterface {
      * Currently displayed ViewTuple.
      */
     private ViewTuple current;
-    /**
-     * Tasks executor to load views in background and avoid GUI freezing.
-     */
-    private Executor executor;
 
-    public NavigateService() {
-        executor = Executors.newCachedThreadPool();
-    }
+    private RunService runService;
 
     /**
      * Add view class to the map of navigable classes thus making it available for navigation.
@@ -70,6 +63,7 @@ public class NavigateService implements NavigateServiceInterface {
         if (!list.containsKey(name)) {
             LOG.info("View is undefined for the name: " + name);
             return null;
+//            throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
         current = FluentViewLoader.fxmlView(list.get(name)).load();
         return current.getView();
@@ -80,6 +74,7 @@ public class NavigateService implements NavigateServiceInterface {
      * It loads a new view and resets components of the content area.
      *
      * @param viewName See loadContent.
+     * @throws  ViewNotFoundException
      */
     @Override
     public void navigate(String viewName) {
@@ -96,7 +91,7 @@ public class NavigateService implements NavigateServiceInterface {
                 return null;
             }
         };
-        executor.execute(task);
+        runService.getExecutorService().execute(task);
     }
 
     public Pane getContent() {
@@ -109,7 +104,7 @@ public class NavigateService implements NavigateServiceInterface {
 
     /**
      * Get current viewModel if there is one.
-     * @return  The ViewModel associated with current view tuple.
+     * @return
      */
     public ViewModel getCurrentViewModel(){
         if(current != null) {
@@ -117,4 +112,13 @@ public class NavigateService implements NavigateServiceInterface {
         }
         return null;
     }
+
+    public RunService getRunService() {
+        return runService;
+    }
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
 }
+

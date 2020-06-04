@@ -16,10 +16,7 @@ class CurrencyServiceTest {
     @Test
     public void getAllCurrencies() {
         List<Currency> result = CurrencyService.getAllCurrencies();
-
-        result.forEach( currency -> LOG.info(currency.getDisplayName() + " " + currency.getSymbol()));
-
         LOG.debug("Currencies: " + result.toString());
-        assertTrue(true);
+        assertFalse(result.isEmpty());
     }
 }

@@ -1,24 +1,27 @@
 package com.kderyabin.viewmodels;
 
+import com.kderyabin.model.BoardItemModel;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.RunService;
 import com.kderyabin.services.StorageManager;
 import de.saxsys.mvvmfx.ViewModel;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.chart.PieChart;
+import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,39 +32,61 @@ public class BoardItemsViewModel implements ViewModel {
     /*
      * Dependencies
      */
+    private RunService runService;
     private NavigateServiceInterface navigation;
     private BoardModel model;
     private BoardScope scope;
     private StorageManager storageManager;
 
     private StringProperty boardName = new SimpleStringProperty("");
-    private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
-    private ObjectProperty<ObservableList<PieChart.Data>> chart = new SimpleObjectProperty<>(FXCollections.observableArrayList());
+//    private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
+    private ListProperty<LinesListItemViewModel> lines = new SimpleListProperty<>(FXCollections.observableArrayList());
+    /**
+     * Status of items loading.
+     * Set to true when async loading is done.
+     */
+    private BooleanProperty linesLoaded = new SimpleBooleanProperty(false);
+    /**
+     * Expenses of every board participant to display in a chart.
+     */
+    private Map<String, Double> chartData = new HashMap<>();
+    /**
+     * Status of data chart loading.
+     * Set to true when async loading is done.
+     */
+    private BooleanProperty chartLoaded = new SimpleBooleanProperty(false);
 
     public void initialize() {
-        LOG.info("Initialize");
-        scope.setItemModel(null);
+        LOG.debug("Start Initialize");
         model = scope.getBoardModel();
-        LOG.info("Model in scope with ID:" + model.getId());
-        // refresh participants list
-        model = storageManager.loadParticipants(model);
-        LOG.info("Participants size:" + model.getParticipants().size());
-        model = storageManager.loadItems(model);
-        LOG.info("Board lines found:" + model.getItems().size());
-        // Update model in the scope with the one with lines
-        scope.setBoardModel(model);
-        setBoardName(model.getName());
-        if (model.getItems().size() > 0) {
+        // Load board items
+        CompletableFuture
+                .supplyAsync(() -> initLines(model), runService.getExecutorService())
+                .thenAccept(items -> model.setItems(items))
+                .thenRun(() -> setLinesLoaded(true));
+        /// Initialize chart data
+        CompletableFuture
+                .runAsync(() -> initDataChart(model), runService.getExecutorService())
+                .thenRun( () -> setChartLoaded(true));
+
+        scope.setItemModel(null);
+        // Load board participants
+        LOG.debug("End Initialize");
+    }
+
+    private List<BoardItemModel> initLines(BoardModel model){
+        LOG.debug("Init board lines");
+        List<BoardItemModel> itemModels = storageManager.getItems(model);
+        if (itemModels.size() > 0) {
             lines.addAll(
-                    model.getItems()
-                            .stream()
+                    itemModels.stream()
                             .map(LinesListItemViewModel::new)
                             .collect(Collectors.toList())
             );
-            initDataChart();
         }
+        LOG.debug("End Init board lines");
+        return itemModels;
     }
-
     /**
      * Prepare labels for the chart.
      *
@@ -77,13 +102,19 @@ public class BoardItemsViewModel implements ViewModel {
         );
     }
 
-    public void initDataChart() {
-        storageManager.getBoardPersonTotal(model.getId())
-                .forEach(item -> getChart()
-                        .add(
-                                new PieChart.Data(getChartItemLabel(item), item.getTotal().doubleValue())
-                        )
-                );
+    /**
+     * Loads chart data from DB and prepares it for the PieChart.Data.
+     * @param model BoardModel instance.
+     */
+    public void initDataChart(BoardModel model) {
+        LOG.debug("Init chart data");
+        List<BoardPersonTotal> list =  storageManager.getBoardPersonTotal(model.getId());
+        list.forEach(item -> {
+            String name = getChartItemLabel(item);
+            Double amount = item.getTotal().doubleValue();
+            chartData.put(name, amount);
+        });
+        LOG.debug("End Init chart data");
     }
 
     public void editItem(LinesListItemViewModel linesListItemViewModel) {
@@ -111,20 +142,9 @@ public class BoardItemsViewModel implements ViewModel {
         }
     }
 
-    // Getters / Setters
-
-    public ObservableList<PieChart.Data> getChart() {
-        return chart.get();
-    }
-
-    public ObjectProperty<ObservableList<PieChart.Data>> chartProperty() {
-        return chart;
-    }
-
-    public void setChart(ObservableList<PieChart.Data> chart) {
-        this.chart.set(chart);
-    }
-
+    /**
+     * Getters / Setters
+    */
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;
@@ -151,11 +171,23 @@ public class BoardItemsViewModel implements ViewModel {
     }
 
     public ObservableList<LinesListItemViewModel> getLines() {
+        return lines.get();
+    }
+
+    public ListProperty<LinesListItemViewModel> linesProperty() {
         return lines;
     }
 
     public void setLines(ObservableList<LinesListItemViewModel> lines) {
-        this.lines = lines;
+        this.lines.set(lines);
+    }
+
+    public Map<String, Double> getChartData() {
+        return chartData;
+    }
+
+    public void setChartData(Map<String, Double> chartData) {
+        this.chartData = chartData;
     }
 
     public BoardScope getScope() {
@@ -176,11 +208,36 @@ public class BoardItemsViewModel implements ViewModel {
         this.storageManager = storageManager;
     }
 
-//    public Map<String, Double> getChartData() {
-//        return chartData;
-//    }
-//
-//    public void setChartData(Map<String, Double> chartData) {
-//        this.chartData = chartData;
-//    }
+    public RunService getRunService() {
+        return runService;
+    }
+
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
+
+    public boolean getChartLoaded() {
+        return chartLoaded.get();
+    }
+
+    public BooleanProperty chartLoadedProperty() {
+        return chartLoaded;
+    }
+
+    public void setChartLoaded(boolean chartLoaded) {
+        this.chartLoaded.set(chartLoaded);
+    }
+
+    public boolean isLinesLoaded() {
+        return linesLoaded.get();
+    }
+
+    public BooleanProperty linesLoadedProperty() {
+        return linesLoaded;
+    }
+
+    public void setLinesLoaded(boolean linesLoaded) {
+        this.linesLoaded.set(linesLoaded);
+    }
 }

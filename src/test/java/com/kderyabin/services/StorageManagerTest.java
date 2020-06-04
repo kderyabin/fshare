@@ -32,6 +32,7 @@ class StorageManagerTest {
         person1 = storageManager.save(person1);
         // new board
         BoardModel model = new BoardModel("India");
+        model.setCurrency("EUR");
         // existing user
         model.addParticipant(person1);
         // new user

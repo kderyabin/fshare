@@ -4,6 +4,8 @@ import com.kderyabin.error.ValidationException;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.scopes.BoardScope;
+import com.kderyabin.services.RunService;
+import com.kderyabin.services.SettingsService;
 import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -12,19 +14,30 @@ import de.saxsys.mvvmfx.utils.notifications.NotificationTestHelper;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BoardViewModelTest {
+    final private Logger LOG = LoggerFactory.getLogger(BoardViewModelTest.class);
+    /**
+     * Required dependencies for the BoardFormViewModel.
+     */
+    private SettingsService settingsService = new SettingsService();
+    private RunService runService = new RunService(2);
 
     @Test
     void goBack() {
 
         BoardFormViewModel viewModel = new BoardFormViewModel();
-//        viewModel.setStorageManager(storageManager);
+        viewModel.setRunService(runService);
+        viewModel.setSettingsService(settingsService);
         viewModel.initialize();
 
         assertTrue(viewModel.canGoBack(), "Must be TRUE if there were no changes in model data");
@@ -40,6 +53,8 @@ class BoardViewModelTest {
     void saveWithError() throws Exception {
 
         BoardFormViewModel viewModel = new BoardFormViewModel();
+        viewModel.setRunService(runService);
+        viewModel.setSettingsService(settingsService);
         viewModel.initialize();
         NotificationCenter notificationCenter = MvvmFX.getNotificationCenter();
         NotificationTestHelper helper = new NotificationTestHelper();
@@ -56,10 +71,11 @@ class BoardViewModelTest {
         NotificationCenter notificationCenter = MvvmFX.getNotificationCenter();
         NotificationTestHelper helper = new NotificationTestHelper();
         notificationCenter.subscribe(Notification.INFO, helper);
-        
+
         BoardModel model = new BoardModel();
         model.setName("Board name");
         model.setId(1);
+        model.setCurrency("EUR");
 
         StorageManager storageManager = Mockito.mock(StorageManager.class);
         Mockito.when(storageManager.save(model, true)).thenReturn(model);
@@ -67,6 +83,8 @@ class BoardViewModelTest {
         BoardScope scope = new BoardScope();
 
         BoardFormViewModel viewModel = new BoardFormViewModel();
+        viewModel.setRunService(runService);
+        viewModel.setSettingsService(settingsService);
         viewModel.setNotificationCenter(notificationCenter);
         viewModel.setStorageManager(storageManager);
         viewModel.setScope(scope);
@@ -83,6 +101,8 @@ class BoardViewModelTest {
     @Test
     void validate() {
         BoardFormViewModel viewModel = new BoardFormViewModel();
+        viewModel.setRunService(runService);
+        viewModel.setSettingsService(settingsService);
         viewModel.initialize();
         viewModel.setName(" \t\n");
         assertThrows(ValidationException.class, viewModel::validate, "msg.board_name_required");
@@ -93,6 +113,9 @@ class BoardViewModelTest {
     @Test
     void addParticipantWithError() {
         BoardFormViewModel viewModel = new BoardFormViewModel();
+        // init dependencies
+        viewModel.setSettingsService(settingsService);
+        viewModel.setRunService(runService);
         NotificationCenter notificationCenter = MvvmFX.getNotificationCenter();
         NotificationTestHelper helper = new NotificationTestHelper();
         notificationCenter.subscribe(Notification.INFO_DISMISS, helper);
@@ -105,7 +128,8 @@ class BoardViewModelTest {
     }
 
     @Test
-    void removeParticipant() {
+    void removeParticipant() throws InterruptedException {
+        LOG.debug("Start removeParticipant test");
         // Prepare a data set
         PersonModel person = new PersonModel();
         person.setId(1);
@@ -115,22 +139,32 @@ class BoardViewModelTest {
         model.setName("Board name");
         model.setId(1);
         model.addParticipant(person);
+        model.setCurrency(settingsService.getCurrency());
 
         BoardScope boardScope = new BoardScope();
         boardScope.setBoardModel(model);
 
         List<PersonModel> persons = new ArrayList<>();
         persons.add(person);
+        // Mock DB access
         StorageManager storageManager = Mockito.mock(StorageManager.class);
         Mockito.when(storageManager.getPersons()).thenReturn(persons);
+        Mockito.when(storageManager.loadParticipants(model)).thenReturn(model);
 
         BoardFormViewModel viewModel = new BoardFormViewModel();
+        viewModel.setRunService(runService);
+        viewModel.setSettingsService(settingsService);
         viewModel.setStorageManager(storageManager);
         viewModel.setScope(boardScope);
         viewModel.initialize();
+        
+        // need to wait until threads are terminated to do an assertion.
+        ExecutorService executorService = runService.getExecutorService();
+        executorService.shutdown();
+        executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
 
         // Get generated list
-        ObservableList <PersonListItemViewModel> personListItemView = viewModel.getParticipants();
+        ObservableList<PersonListItemViewModel> personListItemView = viewModel.getParticipants();
         assertEquals(1, personListItemView.size());
         assertTrue(viewModel.removeParticipant(personListItemView.get(0)));
         assertEquals(0, personListItemView.size());
