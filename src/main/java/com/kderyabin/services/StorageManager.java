@@ -86,7 +86,11 @@ public class StorageManager {
 
     @Transactional
     public List<PersonModel> getPersons() {
-        return personRepository.findAll().stream().map(this::getModel).collect(Collectors.toList());
+        return personRepository
+                .findAll()
+                .stream()
+                .map(this::getModel)
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -264,5 +268,25 @@ public class StorageManager {
             );
         }
         return model;
+    }
+
+    /**
+     * Fetches board items.
+     *
+     * @param model Instance of BoardModel
+     * @return List of BoardItemModels
+     */
+    @Transactional
+    public List<BoardItemModel> getItems(BoardModel model) {
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
+        List<BoardItemModel> result = new ArrayList<>();
+        if (!items.isEmpty()) {
+            items.forEach(e -> {
+                BoardItemModel m = getModel(e);
+                m.setBoard(model);
+                result.add(m);
+            });
+        }
+        return result;
     }
 }

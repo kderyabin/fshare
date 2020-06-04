@@ -1,10 +1,12 @@
 package com.kderyabin.viewmodels;
 
 import com.kderyabin.error.ViewNotFoundException;
+import com.kderyabin.model.BoardItemModel;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.BoardPersonTotal;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.RunService;
 import com.kderyabin.services.StorageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.ObjectProperty;
@@ -20,6 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.FutureTask;
 import java.util.stream.Collectors;
 
 @Component
@@ -30,6 +35,7 @@ public class BoardItemsViewModel implements ViewModel {
     /*
      * Dependencies
      */
+    private RunService runService;
     private NavigateServiceInterface navigation;
     private BoardModel model;
     private BoardScope scope;
@@ -41,28 +47,51 @@ public class BoardItemsViewModel implements ViewModel {
 
     public void initialize() {
         LOG.info("Initialize");
-        scope.setItemModel(null);
         model = scope.getBoardModel();
-        LOG.info("Model in scope with ID:" + model.getId());
+        // Load board items
+        CompletableFuture.runAsync(() -> {
+            initLines(model);
+        }, runService.getExecutorService())
+                .thenApply(items -> model.setItems(items));
+        /// Initialize chart data
+        CompletableFuture.runAsync(() -> initDataChart(model), runService.getExecutorService());
+        scope.setItemModel(null);
+        LOG.debug("Model in scope with ID:" + model.getId());
         // refresh participants list
-        model = storageManager.loadParticipants(model);
-        LOG.info("Participants size:" + model.getParticipants().size());
-        model = storageManager.loadItems(model);
-        LOG.info("Board lines found:" + model.getItems().size());
+//        model = storageManager.loadParticipants(model);
+//        LOG.debug("Participants size:" + model.getParticipants().size());
+//        model = storageManager.loadItems(model);
+//        LOG.debug("Board lines found:" + model.getItems().size());
         // Update model in the scope with the one with lines
         scope.setBoardModel(model);
-        setBoardName(model.getName());
-        if (model.getItems().size() > 0) {
+//        setBoardName(model.getName());
+//        if (model.getItems().size() > 0) {
+//            lines.addAll(
+//                    model.getItems()
+//                            .stream()
+//                            .map(LinesListItemViewModel::new)
+//                            .collect(Collectors.toList())
+//            );
+//            initDataChart();
+//        }
+
+        // Load board participants
+        LOG.info("End Initialize");
+    }
+
+    private List<BoardItemModel> initLines(BoardModel model){
+        LOG.debug("Init board lines");
+        List<BoardItemModel> itemModels = storageManager.getItems(model);
+        if (itemModels.size() > 0) {
             lines.addAll(
-                    model.getItems()
-                            .stream()
+                    itemModels.stream()
                             .map(LinesListItemViewModel::new)
                             .collect(Collectors.toList())
             );
-            initDataChart();
         }
+        LOG.debug("End Init board lines");
+        return itemModels;
     }
-
     /**
      * Prepare labels for the chart.
      *
@@ -78,13 +107,12 @@ public class BoardItemsViewModel implements ViewModel {
         );
     }
 
-    public void initDataChart() {
+    public void initDataChart(BoardModel model) {
+        LOG.debug("Init chart data");
         storageManager.getBoardPersonTotal(model.getId())
-                .forEach(item -> getChart()
-                        .add(
-                                new PieChart.Data(getChartItemLabel(item), item.getTotal().doubleValue())
-                        )
+                .forEach(item -> getChart().add(new PieChart.Data(getChartItemLabel(item), item.getTotal().doubleValue()))
                 );
+        LOG.debug("End Init chart data");
     }
 
     public void editItem(LinesListItemViewModel linesListItemViewModel) throws ViewNotFoundException {
@@ -169,11 +197,12 @@ public class BoardItemsViewModel implements ViewModel {
         this.storageManager = storageManager;
     }
 
-//    public Map<String, Double> getChartData() {
-//        return chartData;
-//    }
-//
-//    public void setChartData(Map<String, Double> chartData) {
-//        this.chartData = chartData;
-//    }
+    public RunService getRunService() {
+        return runService;
+    }
+
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
 }
