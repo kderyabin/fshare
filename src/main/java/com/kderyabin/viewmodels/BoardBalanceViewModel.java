@@ -6,6 +6,7 @@ import com.kderyabin.model.RefundmentModel;
 import com.kderyabin.scopes.BoardScope;
 import com.kderyabin.services.BoardBalance;
 import com.kderyabin.services.NavigateServiceInterface;
+import com.kderyabin.services.RunService;
 import com.kderyabin.services.StorageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.BooleanProperty;
@@ -23,10 +24,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.Currency;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 @Component
@@ -34,41 +33,63 @@ import java.util.Map;
 public class BoardBalanceViewModel implements ViewModel {
 
     private final Logger LOG = LoggerFactory.getLogger(BoardBalanceViewModel.class);
-
+    /*
+     * Dependencies.
+     */
+    private RunService runService;
     private NavigateServiceInterface navigation;
     private StorageManager storageManager;
     private BoardScope boardScope;
-    private BoardBalance boardBalance = new BoardBalance();
     private BoardModel board;
 
     // Properties
-    private StringProperty boardName;
+    private BoardBalance boardBalance = new BoardBalance();
+    private StringProperty boardName ;
     private StringProperty currency = new SimpleStringProperty("");
     private Map<String,  XYChart.Series<Number, String>> chartData = new LinkedHashMap<>();
+    private Map<String,  Map<String,Number>> XYChartData = new LinkedHashMap<>();
     private ObservableList<RefundmentModel> shareData = FXCollections.observableArrayList();
     /**
-     * Indicates id board has data to display.
+     * Indicates that boardBalance is concurrently initialized.
+     */
+    private BooleanProperty balanceLoaded = new SimpleBooleanProperty(false);
+    /**
+     * Indicates that boardBalance is concurrently initialized.
+     */
+    private BooleanProperty chartLoaded = new SimpleBooleanProperty(false);
+    /**
+     * Indicates that boardBalance is concurrently initialized.
+     */
+    private BooleanProperty shareLoaded = new SimpleBooleanProperty(false);
+    /**
+     * Indicates if board has data to display.
      */
     private BooleanProperty balanceEmpty = new SimpleBooleanProperty(false);
 
     public void initialize(){
+        LOG.info("Initialize");
         board = boardScope.getBoardModel();
-        LOG.info("Balance for Board: " + board.getId());
+        // Launch after board balance concurrently loaded
+        CompletableFuture.runAsync(this::init, runService.getExecutorService());
+
         boardName = new SimpleStringProperty(board.getName());
         setCurrency(board.getCurrencyCode());
-        init();
+        //init();
+        LOG.info("End Initialize");
     }
 
     public void init(){
         boardBalance.setData(storageManager.getBoardPersonTotal(board.getId()));
         setBalanceEmpty(boardBalance.isEmpty());
-        LOG.info("Balance size: " + boardBalance.getData().size());
+        LOG.debug("Balance size: " + boardBalance.getData().size());
         boardBalance.shareBoardTotal();
+        setBalanceLoaded(true);
         initChartData();
         initShareData();
     }
 
     public void initShareData(){
+        LOG.debug("+++ Start initShareData");
         final Currency currency = board.getCurrency();
         boardBalance.getShare().forEach( (debtor, data) -> {
             // Filter if there is an amount to refund
@@ -85,42 +106,74 @@ public class BoardBalanceViewModel implements ViewModel {
                 }
             });
         });
+        setShareLoaded(true);
+        LOG.debug("+++ End initShareData");
     }
     /**
      * Prepare chart data
      */
+//    public void initChartData(){
+//        LOG.debug("--- Start initChartData");
+//        if(boardBalance.getShare().size() > 0) {
+//            // Prepare balances for display in the chart
+//            XYChart.Series<Number, String> debtData = new XYChart.Series<>();
+//            XYChart.Series<Number, String> paidData = new XYChart.Series<>();
+//            XYChart.Series<Number, String> overpaidData = new XYChart.Series<>();
+//            // loop through balances
+//            boardBalance.getBalancePerPerson().forEach( (person, balance) -> {
+//                BigDecimal paid, debt, overPaid;
+//
+//                if (balance.compareTo(BigDecimal.ZERO) < 0) {
+//                    // Negative balance: person owes moneys
+//                    // convert negative balance (money owed to other participants) into spend money
+//                    paid = boardBalance.getAverage().add(balance);
+//                    debt = boardBalance.getAverage().subtract(paid);
+//                    overPaid = new BigDecimal("0");
+//                } else {
+//                    paid = boardBalance.getAverage();
+//                    debt = new BigDecimal("0");
+//                    overPaid = balance;
+//                }
+//                paidData.getData().add(new XYChart.Data<>(paid, person.getName()));
+//                debtData.getData().add(new XYChart.Data<>(debt, person.getName()));
+//                overpaidData.getData().add(new XYChart.Data<>(overPaid, person.getName()));
+//            });
+//            chartData.put("paid", paidData);
+//            chartData.put("debt", debtData);
+//            chartData.put("overpaid", overpaidData);
+//        }
+//        setChartLoaded(true);
+//        LOG.debug("--- End initChartData");
+//    }
     public void initChartData(){
-        ObservableMap<String,  XYChart.Series<Number, String>> k;
-        if(boardBalance.getShare().size() > 0) {
+        LOG.debug("--- Start initXYChartData");
+        if(!boardBalance.isEmpty()) {
             // Prepare balances for display in the chart
-            XYChart.Series<Number, String> debtData = new XYChart.Series<>();
-            XYChart.Series<Number, String> paidData = new XYChart.Series<>();
-            XYChart.Series<Number, String> overpaidData = new XYChart.Series<>();
+            BigDecimal average = boardBalance.getAverage();
             // loop through balances
             boardBalance.getBalancePerPerson().forEach( (person, balance) -> {
-                BigDecimal paid, debt, overPaid;
-
+                BigDecimal paid, debt, overpaid;
                 if (balance.compareTo(BigDecimal.ZERO) < 0) {
                     // Negative balance: person owes moneys
                     // convert negative balance (money owed to other participants) into spend money
-                    paid = boardBalance.getAverage().add(balance);
-                    debt = boardBalance.getAverage().subtract(paid);
-                    overPaid = new BigDecimal("0");
+                    paid = average.add(balance);
+                    debt = average.subtract(paid);
+                    overpaid = new BigDecimal("0");
                 } else {
-                    paid = boardBalance.getAverage();
+                    paid = average;
                     debt = new BigDecimal("0");
-                    overPaid = balance;
+                    overpaid = balance;
                 }
-                paidData.getData().add(new XYChart.Data<>(paid, person.getName()));
-                debtData.getData().add(new XYChart.Data<>(debt, person.getName()));
-                overpaidData.getData().add(new XYChart.Data<>(overPaid, person.getName()));
+                Map<String, Number> personStats = new HashMap<>();
+                personStats.put("paid", paid);
+                personStats.put("debt", debt);
+                personStats.put("overpaid", overpaid);
+                XYChartData.put(person.getName(), personStats);
             });
-            chartData.put("paid", paidData);
-            chartData.put("debt", debtData);
-            chartData.put("overpaid", overpaidData);
         }
+        setChartLoaded(true);
+        LOG.debug("--- End initXYChartData");
     }
-
     public void goBack() {
         navigation.navigate("board-items");
     }
@@ -208,5 +261,57 @@ public class BoardBalanceViewModel implements ViewModel {
 
     public void setCurrency(String currency) {
         this.currency.set(currency);
+    }
+
+    public RunService getRunService() {
+        return runService;
+    }
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
+
+    public boolean isBalanceLoaded() {
+        return balanceLoaded.get();
+    }
+
+    public BooleanProperty balanceLoadedProperty() {
+        return balanceLoaded;
+    }
+
+    public void setBalanceLoaded(boolean balanceLoaded) {
+        this.balanceLoaded.set(balanceLoaded);
+    }
+
+    public boolean isChartLoaded() {
+        return chartLoaded.get();
+    }
+
+    public BooleanProperty chartLoadedProperty() {
+        return chartLoaded;
+    }
+
+    public void setChartLoaded(boolean chartLoaded) {
+        this.chartLoaded.set(chartLoaded);
+    }
+
+    public boolean isShareLoaded() {
+        return shareLoaded.get();
+    }
+
+    public BooleanProperty shareLoadedProperty() {
+        return shareLoaded;
+    }
+
+    public void setShareLoaded(boolean shareLoaded) {
+        this.shareLoaded.set(shareLoaded);
+    }
+
+    public Map<String, Map<String, Number>> getXYChartData() {
+        return XYChartData;
+    }
+
+    public void setXYChartData(Map<String, Map<String, Number>> XYChartData) {
+        this.XYChartData = XYChartData;
     }
 }

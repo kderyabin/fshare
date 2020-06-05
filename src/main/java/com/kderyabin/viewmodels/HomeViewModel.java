@@ -10,6 +10,8 @@ import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -38,19 +40,23 @@ public class HomeViewModel implements ViewModel {
     private RunService runService;
 
     List<BoardModel> models;
-    private ObservableList<BoardListItemViewModel> boardItems = FXCollections.observableArrayList();
+//    private ObservableList<BoardListItemViewModel> boardItems = FXCollections.observableArrayList();
+    private ListProperty<BoardListItemViewModel> boardItems = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 
     public void initialize() {
+        LOG.debug("Start initialize");
         // reset current board model in the scope every time we load the view.
         scope.setBoardModel(null);
         CompletableFuture.runAsync(this::initData, runService.getExecutorService());
+        LOG.debug("End initialize");
     }
 
     /**
      * Loads data from DB
      */
     public void initData() {
+        LOG.debug("Start initData");
         models = storageManager.getBoards();
         if (models.size() > 0) {
             boardItems.addAll(
@@ -61,6 +67,7 @@ public class HomeViewModel implements ViewModel {
             );
         }
         scope.setHasBoards(!models.isEmpty());
+        LOG.debug("End initData");
     }
 
     public void edit(BoardListItemViewModel boardItemVM) {
@@ -129,12 +136,24 @@ public class HomeViewModel implements ViewModel {
     }
 
     public ObservableList<BoardListItemViewModel> getBoardItems() {
+        return boardItems.get();
+    }
+
+    public ListProperty<BoardListItemViewModel> boardItemsProperty() {
         return boardItems;
     }
 
     public void setBoardItems(ObservableList<BoardListItemViewModel> boardItems) {
-        this.boardItems = boardItems;
+        this.boardItems.set(boardItems);
     }
+
+    //    public ObservableList<BoardListItemViewModel> getBoardItems() {
+//        return boardItems;
+//    }
+//
+//    public void setBoardItems(ObservableList<BoardListItemViewModel> boardItems) {
+//        this.boardItems = boardItems;
+//    }
 
     public StorageManager getStorageManager() {
         return storageManager;

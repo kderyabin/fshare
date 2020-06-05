@@ -169,7 +169,7 @@ SnackedChart colors
 .expenses-chart .default-color0 {
     -fx-bar-fill: mediumseagreen ;
 }
-/* average amount   */
+/* debt amount   */
 .expenses-chart .default-color1 {
     -fx-bar-fill: tomato;
 }

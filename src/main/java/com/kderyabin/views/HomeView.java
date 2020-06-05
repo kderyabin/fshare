@@ -1,6 +1,5 @@
 package com.kderyabin.views;
 
-import com.jfoenix.controls.JFXRippler;
 import com.kderyabin.controls.ConfirmAlert;
 import com.kderyabin.viewmodels.BoardListItemViewModel;
 import com.kderyabin.viewmodels.HomeViewModel;
@@ -8,11 +7,14 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectResourceBundle;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.viewlist.CachedViewModelCellFactory;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.stage.StageStyle;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -37,12 +39,16 @@ public class HomeView implements FxmlView<HomeViewModel> {
     private ResourceBundle resources;
 
     public void initialize() {
-        LOG.debug(">>> Started initialisation");
-        boardsList.setItems(viewModel.getBoardItems());
-        boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
-        boardsList.addEventHandler(ActionEvent.ACTION, this::handleBtnClick);
-        boardsList.getSelectionModel().selectedItemProperty().addListener(this::handleItemClick);
+//        Platform.runLater(() -> {
+            LOG.debug("Started initialize");
+            boardsList.setCellFactory(CachedViewModelCellFactory.createForFxmlView(BoardListItemView.class));
+            boardsList.addEventHandler(ActionEvent.ACTION, this::handleBtnClick);
+            boardsList.getSelectionModel().selectedItemProperty().addListener(this::handleItemClick);
+            boardsList.itemsProperty().bind(viewModel.boardItemsProperty());
+            LOG.debug("End initialize");
+//        });
     }
+
     /**
      * Action to display board's details.
      */
@@ -60,6 +66,7 @@ public class HomeView implements FxmlView<HomeViewModel> {
 
     /**
      * Handle click on a button.
+     *
      * @param event Event instance.
      */
     public void handleBtnClick(ActionEvent event) {
@@ -83,7 +90,8 @@ public class HomeView implements FxmlView<HomeViewModel> {
 
     /**
      * Action to trigger board edition.
-     * @param vm    Model.
+     *
+     * @param vm Model.
      */
     public void editAction(BoardListItemViewModel vm) {
         viewModel.edit(vm);
@@ -91,9 +99,10 @@ public class HomeView implements FxmlView<HomeViewModel> {
 
     /**
      * Remove board action.
-     * @param vm  Board
+     *
+     * @param vm Board
      */
-    public void removeAction(BoardListItemViewModel vm)  {
+    public void removeAction(BoardListItemViewModel vm) {
         Alert alert = new ConfirmAlert(resources.getString("msg.confirm_delete_board"));
         Optional<ButtonType> option = alert.showAndWait();
         if (!option.isPresent() || option.get() != ButtonType.OK) {
@@ -108,7 +117,7 @@ public class HomeView implements FxmlView<HomeViewModel> {
     /**
      * Add new board action.
      */
-    public void addAction(){
+    public void addAction() {
         viewModel.addBoard();
     }
 }

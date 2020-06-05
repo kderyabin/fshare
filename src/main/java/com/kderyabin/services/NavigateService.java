@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 
 @Service
@@ -74,24 +75,17 @@ public class NavigateService implements NavigateServiceInterface {
      * It loads a new view and resets components of the content area.
      *
      * @param viewName See loadContent.
-     * @throws  ViewNotFoundException
      */
     @Override
     public void navigate(String viewName) {
-        // Load in background.
-        Task<Void> task = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
+        CompletableFuture.runAsync(() -> {
                 final Parent parent = loadContent(viewName);
                 Platform.runLater(() -> {
                     ObservableList<Node> children = content.getChildren();
                     children.clear();
                     children.add(parent);
                 });
-                return null;
-            }
-        };
-        runService.getExecutorService().execute(task);
+        }, runService.getExecutorService());
     }
 
     public Pane getContent() {

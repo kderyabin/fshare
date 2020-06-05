@@ -23,7 +23,7 @@
                     </center>
                     <right>
                         <HBox alignment="CENTER">
-                            <JFXButton text="&#xe01d;" styleClass="header__btn-icon"
+                            <JFXButton fx:id="viewBalanceBtn" text="&#xe01d;" styleClass="header__btn-icon"
                                        onAction="#viewBalance"/>
                             <JFXButton text="&#xe145;" styleClass="header__btn-icon"
                                        onAction="#addItem"/>

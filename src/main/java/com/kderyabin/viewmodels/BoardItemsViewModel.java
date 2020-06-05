@@ -39,8 +39,12 @@ public class BoardItemsViewModel implements ViewModel {
     private StorageManager storageManager;
 
     private StringProperty boardName = new SimpleStringProperty("");
-//    private ObservableList<LinesListItemViewModel> lines = FXCollections.observableArrayList();
+    /**
+     * Items (lines) of the board.
+     */
     private ListProperty<LinesListItemViewModel> lines = new SimpleListProperty<>(FXCollections.observableArrayList());
+
+    private BooleanProperty boardEmpty = new SimpleBooleanProperty(false);
     /**
      * Status of items loading.
      * Set to true when async loading is done.
@@ -67,13 +71,22 @@ public class BoardItemsViewModel implements ViewModel {
         /// Initialize chart data
         CompletableFuture
                 .runAsync(() -> initDataChart(model), runService.getExecutorService())
-                .thenRun( () -> setChartLoaded(true));
+                .thenRun(() -> setChartLoaded(true));
+        if(model.getParticipants().size() == 0) {
+            CompletableFuture
+                    .runAsync(() -> initParticipants(model), runService.getExecutorService());
+        }
 
         scope.setItemModel(null);
         // Load board participants
         LOG.debug("End Initialize");
     }
 
+    private void initParticipants(BoardModel model){
+        LOG.debug("Start initParticipants");
+        storageManager.loadParticipants(model);
+        LOG.debug("End initParticipants");
+    }
     private List<BoardItemModel> initLines(BoardModel model){
         LOG.debug("Init board lines");
         List<BoardItemModel> itemModels = storageManager.getItems(model);
@@ -83,7 +96,9 @@ public class BoardItemsViewModel implements ViewModel {
                             .map(LinesListItemViewModel::new)
                             .collect(Collectors.toList())
             );
+
         }
+        setBoardEmpty(itemModels.isEmpty());
         LOG.debug("End Init board lines");
         return itemModels;
     }
@@ -239,5 +254,17 @@ public class BoardItemsViewModel implements ViewModel {
 
     public void setLinesLoaded(boolean linesLoaded) {
         this.linesLoaded.set(linesLoaded);
+    }
+
+    public boolean isBoardEmpty() {
+        return boardEmpty.get();
+    }
+
+    public BooleanProperty boardEmptyProperty() {
+        return boardEmpty;
+    }
+
+    public void setBoardEmpty(boolean boardEmpty) {
+        this.boardEmpty.set(boardEmpty);
     }
 }

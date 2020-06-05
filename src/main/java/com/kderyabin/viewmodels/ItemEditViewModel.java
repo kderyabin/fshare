@@ -52,6 +52,7 @@ public class ItemEditViewModel implements ViewModel, EditableInterface {
 
 
     public void initialize() {
+        LOG.debug("Start initialize");
         boardName.set(scope.getBoardModel().getName());
         // Participants list must be initialized on previous step
         List<PersonModel> persons = scope.getBoardModel().getParticipants();
@@ -77,6 +78,7 @@ public class ItemEditViewModel implements ViewModel, EditableInterface {
             model = new BoardItemModel();
             model.setBoard(scope.getBoardModel());
         }
+        LOG.debug("End initialize");
     }
 
     public void goBack() {
