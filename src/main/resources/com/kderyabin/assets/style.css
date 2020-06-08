@@ -152,6 +152,7 @@
 .list-item-currency {
     -fx-spacing: 5px;
     -fx-font-weight:  bold;
+    -fx-text-fill: text-color;
 }
 .person-choice-box {
     -fx-height:100px;

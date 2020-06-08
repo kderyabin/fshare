@@ -42,7 +42,7 @@ public class Main extends MvvmfxSpringApplication {
     @Override
     public void startMvvmfx(Stage primaryStage) {
         stage = primaryStage;
-        Locale.setDefault(Locale.ENGLISH);
+        //Locale.setDefault(Locale.ENGLISH);
         ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
 

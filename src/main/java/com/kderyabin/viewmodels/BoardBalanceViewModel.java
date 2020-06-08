@@ -295,7 +295,7 @@ public class BoardBalanceViewModel implements ViewModel {
         this.chartLoaded.set(chartLoaded);
     }
 
-    public boolean isShareLoaded() {
+    public boolean  isShareLoaded() {
         return shareLoaded.get();
     }
 

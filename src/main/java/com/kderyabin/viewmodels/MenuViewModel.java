@@ -22,6 +22,7 @@ public class MenuViewModel implements ViewModel {
 
     public void exit() {
         Platform.exit();
+        System.exit(0);
     }
 
     public void createNewBoard() {
