@@ -8,6 +8,4 @@
 /target/
 partagefx.iml
 /docs/**/*.vpp.lck
-/.vscode/
-/.settings/
-.factorypath
+/.dist/
