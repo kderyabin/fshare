@@ -95,12 +95,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.3.0</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -112,8 +106,9 @@
                 <version>3.0.0-M4</version>
             </plugin>
             <!--
-                spring-boot-maven-plugin manages proper packaging
+                spring-boot-maven-plugin manages proper application packaging
                 with configured spring dependencies
+                https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/maven-plugin/reference/html/
             -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>

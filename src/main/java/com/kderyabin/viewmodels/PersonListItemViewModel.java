@@ -5,6 +5,8 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.Objects;
+
 
 public class PersonListItemViewModel implements ViewModel {
     private StringProperty name = new SimpleStringProperty();
@@ -36,5 +38,18 @@ public class PersonListItemViewModel implements ViewModel {
 
     public void setName(String name) {
         this.name.set(name);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PersonListItemViewModel)) return false;
+        PersonListItemViewModel that = (PersonListItemViewModel) o;
+        return model.equals(that.model);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(model);
     }
 }

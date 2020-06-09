@@ -78,24 +78,27 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         currencyList.itemsProperty().bind(viewModel.currenciesProperty());
         // Bind selected item to the viewModel
         currencyList.valueProperty().bindBidirectional(viewModel.currencyProperty());
-
         // List of all registered persons that can be added to the board.
         personsChoice.setConverter(getPersonsComboConverter());
         // listen to toggle persons list display
-        viewModel.personsListEmptyProperty().addListener(this::initPersonsListDisplay);
+        if (viewModel.isPersonsListLoaded()) {
+            initPersonsListDisplay(viewModel.isPersonsListEmpty());
+        } else {
+            viewModel.personsListEmptyProperty().addListener((observable, oldValue, newValue) -> {
+                initPersonsListDisplay(newValue);
+            });
+        }
         personsChoice.itemsProperty().bind(viewModel.personsProperty());
         LOG.info("End initialize");
     }
 
     /**
      * Toggles display of persons list and related label.
-     * @param observable
-     * @param oldValue
-     * @param newValue
+     *
+     * @param listEmpty Boolean saying if list is empty.
      */
-    protected void initPersonsListDisplay(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue){
-
-        if(newValue) {
+    protected void initPersonsListDisplay(boolean listEmpty) {
+        if (listEmpty) {
             // Persons list is empty -> hide elements related to persons display.
             GUIHelper.renderVisible(choiceListContainer, false);
             GUIHelper.renderVisible(choiceLabelContainer, false);
@@ -105,6 +108,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         GUIHelper.renderVisible(choiceListContainer, true);
         GUIHelper.renderVisible(choiceLabelContainer, true);
     }
+
     /**
      * Toggles display of participants list and the participants label.
      *
@@ -112,19 +116,18 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
      * @param oldValue
      * @param newValue
      */
-    protected void participantsListListener(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue){
+    protected void participantsListListener(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         initParticipantsListDisplay(newValue);
     }
-    protected void initParticipantsListDisplay(Boolean newValue){
-        Platform.runLater(() -> {
-            if(newValue){
-                // Participants list is empty -> hide it.
-                GUIHelper.renderVisible(participantsList, false);
-                return;
-            }
-            GUIHelper.renderVisible(participantsList, true);
-            formPanel.layout();
-        });
+
+    protected void initParticipantsListDisplay(Boolean newValue) {
+        if (newValue) {
+            // Participants list is empty -> hide it.
+            GUIHelper.renderVisible(participantsList, false);
+            return;
+        }
+        GUIHelper.renderVisible(participantsList, true);
+        formPanel.layout();
     }
 
     public void goBack() throws Exception {
@@ -142,10 +145,10 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
      * Event handler adds participant to the board.
      */
     public void addParticipant() {
-        if(!personsChoice.getSelectionModel().isEmpty()) {
-            if(viewModel.addParticipant(personsChoice.getSelectionModel().getSelectedItem())) {
-               // reset the combobox
-               personsChoice.getSelectionModel().clearSelection();
+        if (!personsChoice.getSelectionModel().isEmpty()) {
+            if (viewModel.addParticipant(personsChoice.getSelectionModel().getSelectedItem())) {
+                // reset the combobox
+                personsChoice.getSelectionModel().clearSelection();
             }
         } else {
             if (viewModel.addParticipant(person.getText())) {
@@ -171,6 +174,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
             participantsList.layout();
         }
     }
+
     public void save() {
         try {
             viewModel.save();
@@ -181,9 +185,10 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
 
     /**
      * Converter to display a PersonListItemViewModel.
+     *
      * @return
      */
-    private StringConverter<PersonListItemViewModel> getPersonsComboConverter(){
+    private StringConverter<PersonListItemViewModel> getPersonsComboConverter() {
         return new StringConverter<PersonListItemViewModel>() {
             @Override
             public String toString(PersonListItemViewModel object) {
@@ -195,7 +200,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
                 return personsChoice
                         .getItems()
                         .stream()
-                        .filter( item -> item.getName().equals(string))
+                        .filter(item -> item.getName().equals(string))
                         .findFirst()
                         .orElse(null);
             }
@@ -204,13 +209,14 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
 
     /**
      * Prepare Currency objects for display in combobox
+     *
      * @return Currency.getDisplayName
      */
     private StringConverter<Currency> currencyStringConverter() {
         return new StringConverter<Currency>() {
             @Override
             public String toString(Currency object) {
-                return String.format( "%s (%s)", object.getDisplayName(Locale.getDefault()), object.getCurrencyCode());
+                return String.format("%s (%s)", object.getDisplayName(Locale.getDefault()), object.getCurrencyCode());
             }
 
             @Override

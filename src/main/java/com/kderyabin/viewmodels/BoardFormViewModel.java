@@ -9,6 +9,7 @@ import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -51,17 +52,22 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
     /**
      * List of participants attached to the board.
      */
-    //private ObservableList<PersonListItemViewModel> participants = FXCollections.observableArrayList();
     private ListProperty<PersonListItemViewModel> participants =  new SimpleListProperty<>(FXCollections.observableArrayList());
 
     private BooleanProperty participantsListEmpty = new SimpleBooleanProperty(true);
     /**
+     * Indicates if participants list is loaded.
+     * Note that even loaded the list can be empty.
+     */
+    private BooleanProperty participantsListLoaded = new SimpleBooleanProperty(false);
+    /**
      * The list of all participants created in the application.
+     * This list does not include board's participants.
      * Used to populate board's participants list.
      */
-//    private ObservableList<PersonListItemViewModel> persons = FXCollections.observableArrayList();
     private ListProperty<PersonListItemViewModel> persons =  new SimpleListProperty<>(FXCollections.observableArrayList());
     private BooleanProperty personsListEmpty = new SimpleBooleanProperty(true);
+    private BooleanProperty personsListLoaded = new SimpleBooleanProperty(false);
 
     /**
      * Helper field.
@@ -71,30 +77,18 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
 
     public void initialize() {
         LOG.info("Start initialize");
-        CompletableFuture.runAsync( () -> {
-            LOG.debug("Load persons");
-            persons.addAll(getPersonsList());
-            setPersonsListEmpty(persons.size() == 0);
-            LOG.debug("Found persons: " + persons.size());
-        }, getRunService().getExecutorService());
-        CompletableFuture.runAsync( () -> {
-            currencies.addAll(CurrencyService.getAllCurrencies());
-        }, getRunService().getExecutorService());
+        participantsListLoaded.addListener((observable, oldValue, newValue) -> this.syncPersonsWithParticipants());
+        personsListLoaded.addListener((observable, oldValue, newValue) -> this.syncPersonsWithParticipants());
+        CompletableFuture.runAsync( this::initPersonsList, getRunService().getExecutorService());
+        CompletableFuture.runAsync( this::initCurrencies, getRunService().getExecutorService());
         if (scope != null && scope.getBoardModel() != null) {
             model = scope.getBoardModel();
-            CompletableFuture.runAsync( () -> {
-                LOG.debug("Load Participants");
-                storageManager.loadParticipants(model);
-                if (!model.getParticipants().isEmpty()) {
-                    setParticipantsListEmpty(false);
-                    participants.addAll(
-                            model.getParticipants().stream()
-                                    .map(PersonListItemViewModel::new)
-                                    .collect(Collectors.toList())
-                    );
-                }
-                LOG.debug("Loaded Participants: " + participants.size());
-            }, getRunService().getExecutorService());
+            // Load participants if they are not initialized yet.
+            if(model.getParticipants().isEmpty()){
+                CompletableFuture.runAsync( this::initParticipants, getRunService().getExecutorService());
+            } else {
+                setParticipantsListLoaded(true);
+            }
             setName(model.getName());
             setDescription(model.getDescription());
             isNewBoard.set(false);
@@ -104,6 +98,50 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
             setCurrency(settingsService.getCurrency());
         }
         LOG.info("End initialize");
+    }
+
+    /**
+     * As participants and persons are loaded asynchronously this method synchronizes
+     * those 2 lists and removes participants from the persons list.
+     */
+    private void syncPersonsWithParticipants() {
+        if(isParticipantsListLoaded() && isPersonsListLoaded()) {
+            // Update persons list
+            LOG.debug("Start Syncing persons with participants: ");
+            getPersons().removeAll(getParticipants());
+            LOG.debug("End Syncing persons with participants: " + getPersons().size());
+        }
+    }
+
+
+    private void initParticipants(){
+        LOG.debug("Load Participants");
+        storageManager.loadParticipants(model);
+        if (!model.getParticipants().isEmpty()) {
+            setParticipantsListEmpty(false);
+            participants.addAll(
+                    model.getParticipants().stream()
+                            .map(PersonListItemViewModel::new)
+                            .collect(Collectors.toList())
+            );
+        }
+        setParticipantsListLoaded(true);
+        LOG.debug("End Load Participants");
+    }
+
+    private void initPersonsList(){
+        LOG.debug("Load persons");
+        persons.addAll(getPersonsList());
+        setPersonsListEmpty(persons.isEmpty());
+        LOG.debug("Found persons: " + persons.size());
+        setPersonsListLoaded(true);
+        LOG.debug("End Load persons");
+    }
+
+    private void initCurrencies(){
+        LOG.debug("Start currencies loading");
+        currencies.addAll(CurrencyService.getAllCurrencies());
+        LOG.debug("End currencies loading");
     }
     /**
      * Fetch participants from DB and convert them PersonListItemViewModel for display in a view.
@@ -418,5 +456,29 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
 
     public void setPersons(ObservableList<PersonListItemViewModel> persons) {
         this.persons.set(persons);
+    }
+
+    public boolean isPersonsListLoaded() {
+        return personsListLoaded.get();
+    }
+
+    public BooleanProperty personsListLoadedProperty() {
+        return personsListLoaded;
+    }
+
+    public void setPersonsListLoaded(boolean personsListLoaded) {
+        this.personsListLoaded.set(personsListLoaded);
+    }
+
+    public boolean isParticipantsListLoaded() {
+        return participantsListLoaded.get();
+    }
+
+    public BooleanProperty participantsListLoadedProperty() {
+        return participantsListLoaded;
+    }
+
+    public void setParticipantsListLoaded(boolean participantsListLoaded) {
+        this.participantsListLoaded.set(participantsListLoaded);
     }
 }
