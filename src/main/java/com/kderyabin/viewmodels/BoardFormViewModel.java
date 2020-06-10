@@ -140,7 +140,7 @@ public class BoardFormViewModel implements ViewModel, EditableInterface {
 
     private void initCurrencies(){
         LOG.debug("Start currencies loading");
-        currencies.addAll(CurrencyService.getAllCurrencies());
+        currencies.addAll(SettingsService.getAllCurrencies());
         LOG.debug("End currencies loading");
     }
     /**

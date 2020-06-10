@@ -74,7 +74,7 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         initParticipantsListDisplay(viewModel.isParticipantsListEmpty());
 
         // Currencies' list and preselection
-        currencyList.setConverter(currencyStringConverter());
+        currencyList.setConverter(GUIHelper.getCurrencyStringConverter());
         currencyList.itemsProperty().bind(viewModel.currenciesProperty());
         // Bind selected item to the viewModel
         currencyList.valueProperty().bindBidirectional(viewModel.currencyProperty());
@@ -207,22 +207,22 @@ public class BoardFormView implements FxmlView<BoardFormViewModel> {
         };
     }
 
-    /**
-     * Prepare Currency objects for display in combobox
-     *
-     * @return Currency.getDisplayName
-     */
-    private StringConverter<Currency> currencyStringConverter() {
-        return new StringConverter<Currency>() {
-            @Override
-            public String toString(Currency object) {
-                return String.format("%s (%s)", object.getDisplayName(Locale.getDefault()), object.getCurrencyCode());
-            }
-
-            @Override
-            public Currency fromString(String string) {
-                return null;
-            }
-        };
-    }
+//    /**
+//     * Prepare Currency objects for display in combobox
+//     *
+//     * @return Currency.getDisplayName
+//     */
+//    private StringConverter<Currency> currencyStringConverter() {
+//        return new StringConverter<Currency>() {
+//            @Override
+//            public String toString(Currency object) {
+//                return String.format("%s (%s)", object.getDisplayName(Locale.getDefault()), object.getCurrencyCode());
+//            }
+//
+//            @Override
+//            public Currency fromString(String string) {
+//                return null;
+//            }
+//        };
+//    }
 }

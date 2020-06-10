@@ -1,12 +1,12 @@
 package com.kderyabin.services;
 
+import com.kderyabin.views.*;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
@@ -46,7 +46,7 @@ public class NavigateService implements NavigateServiceInterface {
     private RunService runService;
 
     /**
-     * Add view class to the map of navigable classes thus making it available for navigation.
+     * Add view class to the map of navigable classes thus making it available for 
      *
      * @param name  Some name to associate with the View.
      * @param clazz View class, something like MainView.class.
@@ -55,6 +55,24 @@ public class NavigateService implements NavigateServiceInterface {
         list.put(name, clazz);
     }
 
+    public NavigateService(){
+        registerNavigation();
+    }
+
+
+    /**
+     * Initialize views for 
+     */
+    private void registerNavigation() {
+        register("main", MainView.class);
+        register("home", HomeView.class);
+        register("start", StartView.class);
+        register("board-form", BoardFormView.class);
+        register("board-items", BoardItemsView.class);
+        register("board-item", ItemEditView.class);
+        register("balance", BoardBalanceView.class);
+        register("settings", SettingsView.class);
+    }
     /**
      * Loads UI components.
      * The view name must registered with this.registered() method.
@@ -64,7 +82,6 @@ public class NavigateService implements NavigateServiceInterface {
         if (!list.containsKey(name)) {
             LOG.info("View is undefined for the name: " + name);
             return null;
-//            throw new ViewNotFoundException("View is undefined for the name: " + name);
         }
         current = FluentViewLoader.fxmlView(list.get(name)).load();
         return current.getView();

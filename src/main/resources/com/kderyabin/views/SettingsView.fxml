@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.GridPane?>
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.kderyabin.views.SettingsView">
+    <VBox styleClass="settings-panel">
+        <HBox>
+            <Text text="%settings"/>
+        </HBox>
+        <GridPane>
+            <Label text="%language" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+            <JFXComboBox fx:id="langList" promptText="%choose_from_the_list" GridPane.rowIndex="0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+
+            <Label text="%default_currency" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <JFXComboBox fx:id="currencyList" promptText="%choose_from_the_list" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+        </GridPane>
+    </VBox>
+</ScrollPane>

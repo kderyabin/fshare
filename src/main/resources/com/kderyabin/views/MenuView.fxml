@@ -5,7 +5,7 @@
 <MenuBar xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          fx:controller="com.kderyabin.views.MenuView">
-    <Menu mnemonicParsing="false" text="File">
+    <Menu mnemonicParsing="false" text="%file">
         <MenuItem mnemonicParsing="false" text="%new_board" onAction="#createNewBoard">
             <accelerator>
                 <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
@@ -18,15 +18,15 @@
             </accelerator>
         </MenuItem>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Preferences"/>
+        <MenuItem mnemonicParsing="false" text="%settings" onAction="#showSettings"/>
         <SeparatorMenuItem mnemonicParsing="false"/>
-        <MenuItem mnemonicParsing="false" text="Exit" onAction="#exit">
+        <MenuItem mnemonicParsing="false" text="%exit" onAction="#exit">
             <accelerator>
                 <KeyCodeCombination alt="DOWN" code="X" control="UP" meta="UP" shift="UP" shortcut="UP"/>
             </accelerator>
         </MenuItem>
     </Menu>
-    <Menu mnemonicParsing="false" text="Help">
-        <MenuItem mnemonicParsing="false" text="About"/>
+    <Menu mnemonicParsing="false" text="%help">
+        <MenuItem mnemonicParsing="false" text="%about"/>
     </Menu>
 </MenuBar>

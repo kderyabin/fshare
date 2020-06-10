@@ -54,18 +54,6 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
      */
     private JFXSnackbar openedSnackbar;
 
-    /**
-     * Initialize views for navigation.
-     */
-    private void registerNavigation() {
-        navigation.setContent(content);
-        navigation.register("home", HomeView.class);
-        navigation.register("start", StartView.class);
-        navigation.register("board-form", BoardFormView.class);
-        navigation.register("board-items", BoardItemsView.class);
-        navigation.register("board-item", ItemEditView.class);
-        navigation.register("balance", BoardBalanceView.class);
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,12 +75,12 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
             String message = (String) payload[0];
             displayRawInfo(message);
         });
-        registerNavigation();
-            if (viewModel.isHasBoards()) {
-                navigation.navigate("home");
-            } else {
-                navigation.navigate("start");
-            }
+        navigation.setContent(content);
+        if (viewModel.isHasBoards()) {
+            navigation.navigate("home");
+        } else {
+            navigation.navigate("start");
+        }
     }
 
     public void displayInfo(String resourceKey) {
@@ -118,6 +106,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
                 Duration.INDEFINITE, null)
         );
     }
+
     public void displayRawInfo(String message) {
         if (openedSnackbar != null && openedSnackbar.isVisible()) {
             openedSnackbar.close();
@@ -132,6 +121,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     public NavigateServiceInterface getNavigation() {
         return navigation;
     }
+
     @Autowired
     public void setNavigation(NavigateServiceInterface navigation) {
         this.navigation = navigation;

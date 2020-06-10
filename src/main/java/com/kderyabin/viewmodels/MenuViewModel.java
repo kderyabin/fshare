@@ -89,4 +89,11 @@ public class MenuViewModel implements ViewModel {
             editable.save();
         }
     }
+
+    public void showSettings() {
+
+        if(navigation != null) {
+            navigation.navigate("settings");
+        }
+    }
 }

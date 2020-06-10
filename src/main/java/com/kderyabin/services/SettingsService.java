@@ -1,20 +1,130 @@
 package com.kderyabin.services;
 
+import com.kderyabin.model.SettingModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Currency;
-import java.util.Locale;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * User settings
  */
 @Service
 public class SettingsService {
+
+    final private Logger LOG = LoggerFactory.getLogger(SettingsService.class);
+
+    /**
+     * Fallback currency in case something goes wrong with currency generation.
+     */
+    final private static Currency FALLBACK_CURRENCY = Currency.getInstance(Locale.getDefault());
+
+    final public static String CURRENCY_NAME = "currency";
+    final public static String LANG_NAME = "lang";
     /**
      * Default currency.
-     * Preset fro every board. Can be changed.
      */
     private Currency currency = Currency.getInstance(Locale.getDefault());
+    /**
+     * Language Locale without the country code.
+     */
+    private Locale language = new Locale(Locale.getDefault().getLanguage());
+
+    /**
+     * Application settings organized into a map for easy access.
+     */
+    private Map<String, SettingModel> models = new HashMap<>();
+
+    RunService runService;
+    StorageManager storageManager;
+
+
+    /**
+     * List of available languages
+     *
+     * @return
+     */
+    public List<Locale> getAvailableLanguages() {
+        List<Locale> list = new ArrayList<>();
+        list.add(Locale.ENGLISH);
+        list.add(Locale.FRENCH);
+
+        return list;
+    }
+
+    /**
+     * Loads user settings from DB.
+     */
+    public void load() {
+        LOG.info("Loading settings from DB");
+        CompletableFuture.runAsync(() -> {
+                    LOG.debug("Requesting DB");
+                    List<SettingModel> settings = storageManager.getSettings();
+                    if (!settings.isEmpty()) {
+                        settings.forEach(s -> {
+                            switch (s.getName()) {
+                                case CURRENCY_NAME:
+                                    setCurrency(getCurrencyFromCode(s.getValue()));
+                                    models.put(CURRENCY_NAME, s);
+                                    break;
+                                case LANG_NAME: {
+                                    setLanguage(s.getValue());
+                                    models.put(LANG_NAME, s);
+                                }
+                            }
+                        });
+                    }
+                    LOG.debug("End Loading settings from DB");
+                },
+                runService.getExecutorService()
+        );
+    }
+
+    public void save() {
+
+    }
+
+    /**
+     * Get Currency instance from currency code
+     *
+     * @param code Currency 3 letters code (the ISO 4217 code of the currency)
+     * @return Currency instance
+     */
+    public static Currency getCurrencyFromCode(String code) {
+        try {
+            return Currency.getInstance(code);
+        } catch (Exception e) {
+            // something went wrong. Return default currency.
+            return FALLBACK_CURRENCY;
+        }
+    }
+
+    /**
+     * @return A list of available currencies sorted by name
+     */
+    public static List<Currency> getAllCurrencies() {
+        Set<Currency> result = new HashSet<>();
+        Locale[] locs = Locale.getAvailableLocales();
+
+        for (Locale loc : locs) {
+            try {
+                Currency currency = Currency.getInstance(loc);
+
+                if (currency != null) {
+                    result.add(currency);
+                }
+            } catch (Exception exc) {
+                // Locale not found
+            }
+        }
+        List<Currency> list = new ArrayList<>(result);
+        list.sort(Comparator.comparing(Currency::getDisplayName));
+
+        return list;
+    }
 
     public Currency getCurrency() {
         return currency;
@@ -25,6 +135,49 @@ public class SettingsService {
     }
 
     public void setCurrency(String code) {
-        this.currency = Currency.getInstance(code);
+        this.currency = getCurrencyFromCode(code);
+    }
+
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
+
+    /**
+     * Construct a locale from a language code
+     *
+     * @param code An ISO 639-1 language code
+     */
+    public void setLanguage(String code) {
+        this.language = new Locale(code);
+    }
+
+    public RunService getRunService() {
+        return runService;
+    }
+
+    @Autowired
+    public void setRunService(RunService runService) {
+        this.runService = runService;
+    }
+
+    public StorageManager getStorageManager() {
+        return storageManager;
+    }
+
+    @Autowired
+    public void setStorageManager(StorageManager storageManager) {
+        this.storageManager = storageManager;
+    }
+
+    public Map<String, SettingModel> getModels() {
+        return models;
+    }
+
+    public void setModels(Map<String, SettingModel> models) {
+        this.models = models;
     }
 }

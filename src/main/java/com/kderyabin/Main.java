@@ -1,5 +1,6 @@
 package com.kderyabin;
 
+import com.kderyabin.services.SettingsService;
 import com.kderyabin.viewmodels.MainViewModel;
 import com.kderyabin.views.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -16,9 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 @SpringBootApplication
@@ -26,25 +25,19 @@ public class Main extends MvvmfxSpringApplication {
 
     private static Logger LOG = LoggerFactory.getLogger(Main.class);
 
-    private  ApplicationContext context;
+    private SettingsService settingsService;
 
     public static void main(String[] args) {
+        LOG.info("Application started");
         launch(args);
-    }
-
-    public static Stage stage ;
-
-    @Autowired
-    public void setContext(ApplicationContext context) {
-        this.context = context;
     }
 
     @Override
     public void startMvvmfx(Stage primaryStage) {
-        stage = primaryStage;
-        //Locale.setDefault(Locale.ENGLISH);
+        LOG.info("Start stage loading");
         ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
+        settingsService.load();
 
         final ViewTuple<MainView, MainViewModel> tuple
                 = FluentViewLoader.fxmlView(MainView.class).load();
@@ -58,10 +51,15 @@ public class Main extends MvvmfxSpringApplication {
         scene.getStylesheets().add(
                 this.getClass().getResource("assets/style.css").toExternalForm()
         );
-
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("assets/appIcon.png")));
         primaryStage.setTitle(resourceBundle.getString("window.title"));
         primaryStage.setScene(scene);
         primaryStage.show();
+        LOG.info("End stage loading");
+    }
+
+    @Autowired
+    public void setSettingsService(SettingsService settingsService) {
+        this.settingsService = settingsService;
     }
 }

@@ -1,15 +1,14 @@
 package com.kderyabin.services;
 
-import com.kderyabin.model.BoardItemModel;
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.model.BoardPersonTotal;
-import com.kderyabin.model.PersonModel;
+import com.kderyabin.model.*;
 import com.kderyabin.storage.entity.BoardEntity;
 import com.kderyabin.storage.entity.BoardItemEntity;
 import com.kderyabin.storage.entity.PersonEntity;
+import com.kderyabin.storage.entity.SettingEntity;
 import com.kderyabin.storage.repository.BoardItemRepository;
 import com.kderyabin.storage.repository.BoardRepository;
 import com.kderyabin.storage.repository.PersonRepository;
+import com.kderyabin.storage.repository.SettingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ public class StorageManager {
     BoardRepository boardRepository;
     PersonRepository personRepository;
     BoardItemRepository itemRepository;
+    SettingRepository settingRepository;
 
     @Transactional
     public List<BoardPersonTotal> getBoardPersonTotal(int boardId) {
@@ -154,36 +154,90 @@ public class StorageManager {
         LOG.debug(">>> Saved BoardItemModel ");
     }
 
+
+    @Transactional(readOnly = true)
+    public BoardModel loadItems(BoardModel model) {
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
+        if (!items.isEmpty()) {
+            model.setItems(items.stream()
+                    .map(e -> {
+                        BoardItemModel i = getModel(e);
+                        i.setBoard(model);
+                        return i;
+                    })
+                    .collect(Collectors.toList())
+            );
+        }
+        return model;
+    }
+
+    /**
+     * Fetches board items.
+     *
+     * @param model Instance of BoardModel
+     * @return List of BoardItemModels
+     */
+    @Transactional(readOnly = true)
+    public List<BoardItemModel> getItems(BoardModel model) {
+        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
+        List<BoardItemModel> result = new ArrayList<>();
+        if (!items.isEmpty()) {
+            items.forEach(e -> {
+                BoardItemModel m = getModel(e);
+                m.setBoard(model);
+                result.add(m);
+            });
+        }
+        return result;
+    }
+
+    /**
+     * Retrieves a list of SettingModel objects.
+     * @return list of stored settings.
+     */
+    @Transactional(readOnly = true)
+    public List<SettingModel> getSettings(){
+        List<SettingModel> result = new ArrayList<>();
+        List<SettingEntity> items = settingRepository.findAll();
+        if(!items.isEmpty()) {
+            result.addAll(items
+                    .stream()
+                    .map(this::getModel)
+                    .collect(Collectors.toList())
+            );
+        }
+
+        return result;
+    }
+
+    /**
+     * Saves a list of models in DB
+     * and returns a new list of models synced with DB.
+     * @param list List of SettingModel
+     * @return List of SettingModel or empty list in case of error.
+     */
+    @Transactional
+    public List<SettingModel> save(List<SettingModel> list) {
+        List<SettingEntity> entities, saved;
+        entities = list
+                .stream()
+                .map(this::getEntity)
+                .collect(Collectors.toList());
+
+        saved = settingRepository.saveAll(entities);
+        return saved
+                .stream()
+                .map(this::getModel)
+                .collect(Collectors.toList());
+
+    }
+
+    @Transactional
     public void removeBoard(BoardModel board) {
         boardRepository.deleteById(board.getId());
     }
 
-    public BoardRepository getBoardRepository() {
-        return boardRepository;
-    }
-
-    @Autowired
-    public void setBoardRepository(BoardRepository boardRepository) {
-        this.boardRepository = boardRepository;
-    }
-
-    public PersonRepository getPersonRepository() {
-        return personRepository;
-    }
-
-    @Autowired
-    public void setPersonRepository(PersonRepository personRepository) {
-        this.personRepository = personRepository;
-    }
-
-    public BoardItemRepository getItemRepository() {
-        return itemRepository;
-    }
-
-    @Autowired
-    public void setItemRepository(BoardItemRepository itemRepository) {
-        this.itemRepository = itemRepository;
-    }
+    // Converters
 
     public BoardEntity getEntity(BoardModel model) {
         BoardEntity entity = new BoardEntity();
@@ -213,14 +267,7 @@ public class StorageManager {
         PersonEntity entity = new PersonEntity();
         entity.setId(model.getId());
         entity.setName(model.getName());
-//        if(model.getBoards().size() > 0) {
-//           LOG.debug("Boards found");
-//            model.getBoards().forEach(board -> entity.addBoard(getEntity(board)));
-//        }
-//        if (!lazyMode) {
-//            model.getBoards().forEach(board -> entity.addBoard(getEntity(board)));
-//            model.getItems().forEach(item -> entity.addItem(getEntity(item)));
-//        }
+
         return entity;
     }
 
@@ -254,39 +301,59 @@ public class StorageManager {
         return target;
     }
 
-    @Transactional
-    public BoardModel loadItems(BoardModel model) {
-        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
-        if (!items.isEmpty()) {
-            model.setItems(items.stream()
-                    .map(e -> {
-                        BoardItemModel i = getModel(e);
-                        i.setBoard(model);
-                        return i;
-                    })
-                    .collect(Collectors.toList())
-            );
-        }
-        return model;
+    public SettingEntity getEntity(SettingModel source) {
+        SettingEntity target = new SettingEntity();
+        target.setId(source.getId());
+        target.setName(source.getName());
+        target.setValue(source.getValue());
+
+        return target;
     }
 
-    /**
-     * Fetches board items.
-     *
-     * @param model Instance of BoardModel
-     * @return List of BoardItemModels
-     */
-    @Transactional
-    public List<BoardItemModel> getItems(BoardModel model) {
-        List<BoardItemEntity> items = itemRepository.findAllByBoardId(model.getId());
-        List<BoardItemModel> result = new ArrayList<>();
-        if (!items.isEmpty()) {
-            items.forEach(e -> {
-                BoardItemModel m = getModel(e);
-                m.setBoard(model);
-                result.add(m);
-            });
-        }
-        return result;
+    public SettingModel getModel(SettingEntity source) {
+        SettingModel target = new SettingModel();
+        target.setId(source.getId());
+        target.setName(source.getName());
+        target.setValue(source.getValue());
+
+        return target;
     }
+
+    // Getters / Setters
+
+    public BoardRepository getBoardRepository() {
+        return boardRepository;
+    }
+
+    @Autowired
+    public void setBoardRepository(BoardRepository boardRepository) {
+        this.boardRepository = boardRepository;
+    }
+
+    public PersonRepository getPersonRepository() {
+        return personRepository;
+    }
+
+    @Autowired
+    public void setPersonRepository(PersonRepository personRepository) {
+        this.personRepository = personRepository;
+    }
+
+    public BoardItemRepository getItemRepository() {
+        return itemRepository;
+    }
+
+    @Autowired
+    public void setItemRepository(BoardItemRepository itemRepository) {
+        this.itemRepository = itemRepository;
+    }
+
+    public SettingRepository getSettingRepository() {
+        return settingRepository;
+    }
+    @Autowired
+    public void setSettingRepository(SettingRepository settingRepository) {
+        this.settingRepository = settingRepository;
+    }
+
 }
