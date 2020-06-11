@@ -39,4 +39,12 @@ public class SettingsView implements FxmlView<SettingsViewModel> {
         // Auto update selected language in viewModel
         langList.valueProperty().bindBidirectional(viewModel.langProperty());
     }
+
+    public void save() {
+        viewModel.save();
+    }
+
+    public void quit() {
+        viewModel.quit();
+    }
 }

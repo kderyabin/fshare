@@ -2,13 +2,15 @@
 
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="com.kderyabin.views.MainView"
            fx:id="root">
     <VBox>
-        <fx:include source="MenuView.fxml" VBox.vgrow="NEVER"/>
-        <VBox fx:id="content" styleClass="content-area">
-        </VBox>
+        <HBox fx:id="menuContainer" VBox.vgrow="NEVER">
+            <fx:include source="MenuView.fxml" />
+        </HBox>
+        <VBox fx:id="content" styleClass="content-area"/>
     </VBox>
 </StackPane>

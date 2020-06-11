@@ -16,4 +16,7 @@ public interface NavigateServiceInterface {
     Pane getContent();
     void setContent(Pane content);
     ViewModel getCurrentViewModel();
+
+    void setMenuContainer(Pane menuContainer);
+    void reloadMenu();
 }

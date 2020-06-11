@@ -11,6 +11,7 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
     public Pane content;
     @FXML
     public Pane root;
+    @FXML
+    public Pane menuContainer;
 
 
     @InjectViewModel
@@ -76,6 +79,7 @@ public class MainView implements FxmlView<MainViewModel>, Initializable {
             displayRawInfo(message);
         });
         navigation.setContent(content);
+        navigation.setMenuContainer(menuContainer);
         if (viewModel.isHasBoards()) {
             navigation.navigate("home");
         } else {

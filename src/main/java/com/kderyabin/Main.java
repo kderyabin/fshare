@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 @SpringBootApplication
@@ -35,9 +36,10 @@ public class Main extends MvvmfxSpringApplication {
     @Override
     public void startMvvmfx(Stage primaryStage) {
         LOG.info("Start stage loading");
+        settingsService.load();
+        Locale.setDefault(settingsService.getLanguage());
         ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
-        settingsService.load();
 
         final ViewTuple<MainView, MainViewModel> tuple
                 = FluentViewLoader.fxmlView(MainView.class).load();

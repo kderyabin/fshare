@@ -3,6 +3,7 @@ package com.kderyabin.storage.repository;
 import com.kderyabin.storage.entity.BoardEntity;
 import com.kderyabin.storage.entity.BoardItemEntity;
 import com.kderyabin.storage.entity.PersonEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,13 @@ class BoardRepositoryTest {
     private PersonRepository personRepository;
     @Autowired
     private BoardItemRepository itemRepository;
+
+    @BeforeEach
+    void setUp() {
+        repository.deleteAll();
+        personRepository.deleteAll();
+        itemRepository.deleteAll();
+    }
 
     @Transactional
     @Test

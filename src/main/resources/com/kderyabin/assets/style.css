@@ -11,12 +11,14 @@
     src: url('fonts/MaterialIcons-Regular.ttf');
 }
 .root {
-    /*-fx-font-family: "Roboto Light";*/
     -fx-font-size: 12px;
+    -fx-text-fill: text-color;
+    /* variables */
     primary:  rgb(77,102,204);
     text-on-primary: WHITE;
     text-color: #333333;
-    -fx-text-fill: text-color;
+    secondary: lightgrey;
+    page-bgr-color: #f4f4f4;
 }
 
 .icon {
@@ -32,6 +34,11 @@
     -fx-font-family: "Segoe Script", cursive;
     -fx-font-size: 42px;
 }
+.button-primary {
+    -fx-background-color: primary;
+    -fx-text-fill: text-on-primary;
+}
+
 .button-raised{
     -fx-padding: 0.7em 0.5em;
     -fx-font-size: 14px;
@@ -78,6 +85,20 @@
     -fx-spacing: 20px;
     -fx-padding: 50 100 50 100;
 }
+.settings-panel {
+    -fx-padding: 50 100 50 100;
+    -fx-alignment: center;
+}
+.settings-content {
+    -fx-vgap: 20px;
+    -fx-hgap: 20px;
+    -fx-background-color: WHITE;
+    -fx-padding: 10px;
+}
+.settings-title {
+    -fx-font-size: 2em;
+    -fx-text-fill: secondary;
+}
 /**
 * HBox container for the item title
 */
@@ -117,17 +138,17 @@
 }
 
 .jfx-snackbar-toast {
-    -fx-text-fill: WHITE;
+    -fx-text-fill: text-on-primary;
+    -fx-font-size: 1.2em;;
 }
 
 .jfx-snackbar-action {
-    -fx-text-fill: #ff4081;
+    -fx-text-fill: text-on-primary;
 }
 
 
 .list-present{
-     -fx-background-color:  #f4f4f4; /* same color as the page background */
-
+    -fx-background-color:  page-bgr-color; /* same color as the page background */
 }
 .list-present .list-cell {
     -fx-padding: 20px 10px;

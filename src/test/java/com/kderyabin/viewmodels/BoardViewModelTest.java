@@ -135,21 +135,35 @@ class BoardViewModelTest {
         person.setId(1);
         person.setName("John");
 
+        PersonModel person2 = new PersonModel();
+        person2.setId(2);
+        person2.setName("Anna");
+
+        // Board model for the scope
+        // Board participants are not initialized
         BoardModel model = new BoardModel();
         model.setName("Board name");
         model.setId(1);
-        model.addParticipant(person);
         model.setCurrency(settingsService.getCurrency());
 
         BoardScope boardScope = new BoardScope();
         boardScope.setBoardModel(model);
 
+        // Mocked board model as it should be returned after call to storageManager.loadParticipants() method
+        // with loaded participants
+        BoardModel modelMock = new BoardModel( model.getName());
+        modelMock.setId( model.getId());
+        modelMock.setCurrency(model.getCurrency());
+        modelMock.addParticipant(person);
+
         List<PersonModel> persons = new ArrayList<>();
         persons.add(person);
+        persons.add(person2);
+
         // Mock DB access
         StorageManager storageManager = Mockito.mock(StorageManager.class);
         Mockito.when(storageManager.getPersons()).thenReturn(persons);
-        Mockito.when(storageManager.loadParticipants(model)).thenReturn(model);
+        Mockito.when(storageManager.loadParticipants(model)).thenReturn(modelMock);
 
         BoardFormViewModel viewModel = new BoardFormViewModel();
         viewModel.setRunService(runService);
@@ -163,9 +177,15 @@ class BoardViewModelTest {
         executorService.shutdown();
         executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
 
+        LOG.info("Participants");
+        LOG.info(viewModel.getParticipants().toString());
+        LOG.info("Persons");
+        LOG.info(viewModel.getPersons().toString());
+
         // Get generated list
         ObservableList<PersonListItemViewModel> personListItemView = viewModel.getParticipants();
         assertEquals(1, personListItemView.size());
+        assertEquals(2, viewModel.getPersons().size());
         assertTrue(viewModel.removeParticipant(personListItemView.get(0)));
         assertEquals(0, personListItemView.size());
     }

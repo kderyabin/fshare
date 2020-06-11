@@ -33,11 +33,6 @@ public class SettingsService {
      */
     private Locale language = new Locale(Locale.getDefault().getLanguage());
 
-    /**
-     * Application settings organized into a map for easy access.
-     */
-    private Map<String, SettingModel> models = new HashMap<>();
-
     RunService runService;
     StorageManager storageManager;
 
@@ -60,32 +55,23 @@ public class SettingsService {
      */
     public void load() {
         LOG.info("Loading settings from DB");
-        CompletableFuture.runAsync(() -> {
-                    LOG.debug("Requesting DB");
-                    List<SettingModel> settings = storageManager.getSettings();
-                    if (!settings.isEmpty()) {
-                        settings.forEach(s -> {
-                            switch (s.getName()) {
-                                case CURRENCY_NAME:
-                                    setCurrency(getCurrencyFromCode(s.getValue()));
-                                    models.put(CURRENCY_NAME, s);
-                                    break;
-                                case LANG_NAME: {
-                                    setLanguage(s.getValue());
-                                    models.put(LANG_NAME, s);
-                                }
-                            }
-                        });
+        LOG.debug("Requesting DB");
+        List<SettingModel> settings = storageManager.getSettings();
+        if (!settings.isEmpty()) {
+            settings.forEach(s -> {
+                switch (s.getName()) {
+                    case CURRENCY_NAME:
+                        setCurrency(getCurrencyFromCode(s.getValue()));
+                        break;
+                    case LANG_NAME: {
+                        setLanguage(s.getValue());
                     }
-                    LOG.debug("End Loading settings from DB");
-                },
-                runService.getExecutorService()
-        );
+                }
+            });
+        }
+        LOG.debug("End Loading settings from DB");
     }
 
-    public void save() {
-
-    }
 
     /**
      * Get Currency instance from currency code
@@ -173,11 +159,4 @@ public class SettingsService {
         this.storageManager = storageManager;
     }
 
-    public Map<String, SettingModel> getModels() {
-        return models;
-    }
-
-    public void setModels(Map<String, SettingModel> models) {
-        this.models = models;
-    }
 }

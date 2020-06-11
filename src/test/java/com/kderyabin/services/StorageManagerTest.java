@@ -3,6 +3,8 @@ package com.kderyabin.services;
 import com.kderyabin.model.BoardModel;
 import com.kderyabin.model.PersonModel;
 import com.kderyabin.model.SettingModel;
+import com.kderyabin.storage.repository.SettingRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,9 @@ class StorageManagerTest {
 
     @Autowired
     StorageManager storageManager;
+
+    @Autowired
+    SettingRepository settingRepository;
 
     @Test
     void savePersonModel() {
@@ -62,6 +67,7 @@ class StorageManagerTest {
 
     @Test
     void saveSettings() {
+        settingRepository.deleteAll();
         // prepare data
         SettingModel currency = new SettingModel("currency", "EUR");
         SettingModel language = new SettingModel("lang", "fr");
@@ -113,6 +119,8 @@ class StorageManagerTest {
 
     @Test
     void getSettings() {
+        settingRepository.deleteAll();
+
         SettingModel currency = new SettingModel("currency", "EUR");
         SettingModel language = new SettingModel("lang", "fr");
 

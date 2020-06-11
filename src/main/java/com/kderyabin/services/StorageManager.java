@@ -232,6 +232,7 @@ public class StorageManager {
 
     }
 
+
     @Transactional
     public void removeBoard(BoardModel board) {
         boardRepository.deleteById(board.getId());

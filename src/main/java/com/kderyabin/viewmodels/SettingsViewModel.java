@@ -6,6 +6,7 @@ import com.kderyabin.services.RunService;
 import com.kderyabin.services.SettingsService;
 import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
+import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;
 import javafx.beans.property.ListProperty;
@@ -54,6 +55,7 @@ public class SettingsViewModel implements ViewModel {
      * List of registered settings.
      */
     private List<SettingModel> settings = new ArrayList<>();
+    private Map<String, SettingModel> models = new HashMap<>();
 
     /**
      * Current default language.
@@ -61,52 +63,109 @@ public class SettingsViewModel implements ViewModel {
     private ObjectProperty<Locale> lang = new SimpleObjectProperty<>();
 
     public void initialize() {
+        LOG.debug("Start initialize");
         currencies.addAll(SettingsService.getAllCurrencies());
         langs.addAll(settingsService.getAvailableLanguages());
         setCurrency(settingsService.getCurrency());
         setLang(settingsService.getLanguage());
         CompletableFuture.runAsync(this::loadSettings, runService.getExecutorService());
+        LOG.debug("End initialize");
     }
 
     /**
-     * Load settings from DB
+     * Loads settings from DB
      */
     private void loadSettings() {
+        LOG.debug("Start settings loading from DB");
         settings = storageManager.getSettings();
-        LOG.debug("End Loading settings from DB");
+        // Put in a map for easy access
+        if (!settings.isEmpty()) {
+            settings.forEach(s -> models.put( s.getName(), s));
+        }
+        LOG.debug("End settings Loading from DB");
     }
 
-    public void save() {
-        // Get existing ot create a new one
-        SettingModel currency = settings
-                .stream()
-                .filter(s -> s.getName().equals(SettingsService.CURRENCY_NAME))
-                .findFirst()
-                .orElse(new SettingModel(SettingsService.CURRENCY_NAME, ""));
-        currency.setValue(getCurrency().getCurrencyCode());
-        // Get existing ot create a new one
-        SettingModel language = settings
-                .stream()
-                .filter(s->s.getName().equals(SettingsService.LANG_NAME))
-                .findFirst()
-                .orElse(new SettingModel(SettingsService.LANG_NAME, ""));
-        language.setValue(getLang().getLanguage());
-        try{
-            storageManager.save(Arrays.asList(currency, language));
-            notificationCenter.publish(Notification.INFO, "msg.settings_saved_success");
-            // Update application settings
-            settingsService.setLanguage(getLang());
-            settingsService.setCurrency(getCurrency());
-            // And application language
-            Locale.setDefault(getLang());
-            // Can be null in unit tests.
-            if (null != navigation) {
-                // @TODO: reload the stage content
-            }
-        } catch (Exception e) {
-            notificationCenter.publish( Notification.INFO_DISMISS, "msg.generic_error");
+    /**
+     * Quits settings screen without saving.
+     */
+    public void quit() {
+        if (null != navigation) {
+            navigation.navigate("home");
         }
     }
+    /**
+     * Saves in DB updated settings and redirects to home page.
+     */
+    public void save() {
+        LOG.debug("Start saving");
+        ArrayList<SettingModel> updatable = getUpdatedSettings();
+        if(updatable.size() > 0) {
+            // Can throw exception in case of unique constraint violation
+            try{
+                storageManager.save(updatable);
+                notificationCenter.publish(Notification.INFO, "msg.settings_saved_success");
+                // Update application settings
+                settingsService.setLanguage(getLang());
+                settingsService.setCurrency(getCurrency());
+                // And application language
+                Locale.setDefault(getLang());
+                // Reload bundle
+                ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
+                MvvmFX.setGlobalResourceBundle(resourceBundle);
+                // Can be null in unit tests.
+                if (null != navigation) {
+                    navigation.reloadMenu();
+                    navigation.navigate("home");
+                }
+            } catch (Exception e) {
+                LOG.info("Exception thrown: " + e.getMessage());
+                notificationCenter.publish( Notification.INFO_DISMISS, "msg.generic_error");
+            }
+        } else {
+            // nothing to do
+            quit();
+        }
+    }
+
+    /**
+     * Prepares data for saving.
+     * @return List of updated or new settings to register in DB.
+     */
+    public ArrayList<SettingModel> getUpdatedSettings() {
+        ArrayList<SettingModel> updatable = new ArrayList<>();
+
+        // Currency
+        String currencyValue = getCurrency().getCurrencyCode();
+        SettingModel currencyModel = models.get(SettingsService.CURRENCY_NAME);
+        if(currencyModel == null) {
+            // Create if does not exists
+            currencyModel = new SettingModel(SettingsService.CURRENCY_NAME, currencyValue);
+            updatable.add(currencyModel);
+        } else if( !currencyModel.getValue().equals(currencyValue)) {
+            // Update if value has changed
+            currencyModel.setValue(currencyValue);
+            updatable.add(currencyModel);
+        }
+
+        // Language
+        String langValue = getLang().getLanguage();
+        SettingModel langModel = models.get(SettingsService.LANG_NAME);
+        if(langModel == null) {
+            // Create if does not exists
+            langModel = new SettingModel(SettingsService.LANG_NAME, langValue);
+            updatable.add(langModel);
+        } else if( !langModel.getValue().equals(langValue)) {
+            // Update if value has changed
+            langModel.setValue(langValue);
+            updatable.add(langModel);
+        }
+        if( updatable.size() > 1 ) {
+            LOG.debug(langModel.toString());
+        }
+
+        return updatable;
+    }
+
 
     // Getters / Setters
 
@@ -180,6 +239,5 @@ public class SettingsViewModel implements ViewModel {
     public void setLang(Locale lang) {
         this.lang.set(lang);
     }
-
 
 }
