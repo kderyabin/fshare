@@ -35,7 +35,7 @@ class BoardBalanceTest {
         data.add(traveller3);
         data.add(traveller4);
         BoardBalance balance = new BoardBalance();
-        balance.setData(data);
+        balance.setTotals(data);
         balance.shareBoardTotal();
         Map<PersonModel, Map<PersonModel, BigDecimal>> result = balance.getShare();
 
@@ -61,7 +61,7 @@ class BoardBalanceTest {
         data.add(traveller3);
 
         BoardBalance balance = new BoardBalance();
-        balance.setData(data);
+        balance.setTotals(data);
         balance.shareBoardTotal();
         Map<PersonModel, Map<PersonModel, BigDecimal>> result = balance.getShare();
 
@@ -94,7 +94,7 @@ class BoardBalanceTest {
         data.add(traveller3);
 
         BoardBalance balance = new BoardBalance();
-        balance.setData(data);
+        balance.setTotals(data);
         balance.shareBoardTotal();
         Map<PersonModel, Map<PersonModel, BigDecimal>> result = balance.getShare();
 

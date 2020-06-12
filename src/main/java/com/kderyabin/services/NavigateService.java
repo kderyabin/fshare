@@ -19,7 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-
+/**
+ * Default implementation of {@link NavigateServiceInterface} which allows navigation
+ * by loading asynchronously requested view into the content display area.
+ */
 @Service
 public class NavigateService implements NavigateServiceInterface {
 
@@ -40,34 +43,33 @@ public class NavigateService implements NavigateServiceInterface {
     private Pane content;
 
     /**
-     * Previous view's name.
-     */
-    private String previous;
-    /**
      * Currently displayed ViewTuple.
      */
-    private ViewTuple current;
+    private ViewTuple<? extends FxmlView<? extends ViewModel>,? extends ViewModel> current;
 
+    /**
+     * Thread pool managing service.
+     */
     private RunService runService;
 
     /**
-     * Add view class to the map of navigable classes thus making it available for
-     *
-     * @param name  Some name to associate with the View.
-     * @param clazz View class, something like MainView.class.
+     * Constructor.
+     * Registers default navigation.
+     */
+    public NavigateService() {
+        registerNavigation();
+    }
+
+    /**
+     * @see NavigateServiceInterface for description.
      */
     @Override
     public void register(String name, Class<? extends FxmlView<? extends ViewModel>> clazz) {
         list.put(name, clazz);
     }
 
-    public NavigateService() {
-        registerNavigation();
-    }
-
-
     /**
-     * Initialize views for
+     * Initializes views for navigation.
      */
     private void registerNavigation() {
         register("home", HomeView.class);
@@ -82,9 +84,10 @@ public class NavigateService implements NavigateServiceInterface {
 
     /**
      * Loads UI components.
-     * The view name must registered with this.registered() method.
+     * The view name must registered with NavigateService.register() method.
      *
-     * @param name Name for the View class, something like "main".
+     * @param name Name for the View class, something like "main", "home", et...
+     * @return View to display
      */
     public Parent loadContent(String name) {
         if (!list.containsKey(name)) {
@@ -96,10 +99,7 @@ public class NavigateService implements NavigateServiceInterface {
     }
 
     /**
-     * Method used to navigate between pages.
-     * It loads a new view and resets components of the content area.
-     *
-     * @param viewName See loadContent.
+     * @see NavigateServiceInterface#navigate(String)
      */
     @Override
     public void navigate(String viewName) {
@@ -113,11 +113,18 @@ public class NavigateService implements NavigateServiceInterface {
         }, runService.getExecutorService());
     }
 
+    /**
+     * @see NavigateServiceInterface#getContent()
+     */
     @Override
     public Pane getContent() {
         return content;
     }
 
+    /**
+     *
+     * @see NavigateServiceInterface#setContent(Pane)
+     */
     @Override
     public void setContent(Pane content) {
         this.content = content;
@@ -129,7 +136,7 @@ public class NavigateService implements NavigateServiceInterface {
     }
 
     /**
-     * Reloads menu
+     * @see NavigateServiceInterface#reloadMenu()
      */
     @Override
     public void reloadMenu() {
@@ -148,9 +155,7 @@ public class NavigateService implements NavigateServiceInterface {
     }
 
     /**
-     * Get current viewModel if there is one.
-     *
-     * @return
+     * @see NavigateServiceInterface#getCurrentViewModel()
      */
     @Override
     public ViewModel getCurrentViewModel() {
@@ -160,10 +165,20 @@ public class NavigateService implements NavigateServiceInterface {
         return null;
     }
 
+    /**
+     * Getter.
+     * @see RunService
+     * @return  RunService
+     */
     public RunService getRunService() {
         return runService;
     }
 
+    /**
+     * Setter.
+     * @see RunService
+     * @param runService Instance of RunService
+     */
     @Autowired
     public void setRunService(RunService runService) {
         this.runService = runService;

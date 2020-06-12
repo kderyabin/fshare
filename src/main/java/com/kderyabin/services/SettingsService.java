@@ -38,9 +38,9 @@ public class SettingsService {
 
 
     /**
-     * List of available languages
+     * Returns list of available application languages
      *
-     * @return
+     * @return List of available application languages.
      */
     public List<Locale> getAvailableLanguages() {
         List<Locale> list = new ArrayList<>();

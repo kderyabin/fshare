@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+/**
+ *
+ */
 @ToString
 @Service
 @Scope("prototype")
@@ -21,45 +24,43 @@ public class BoardBalance {
     /**
      * List of totals per participants
      */
-    private List<BoardPersonTotal> data = new ArrayList<>();
+    private List<BoardPersonTotal> totals = new ArrayList<>();
 
     /**
-     * Total amount for the board.
+     * Total amount of the board.
      */
     private BigDecimal total;
     /**
-     * Fare amount per person derived from total of the board.
+     * Average amount of the board derived from total amount.
      */
     private BigDecimal average;
 
     /**
-     * Amount per person to be payed to any other participant.
-     * key -> PersonModel
-     * value -> map where the key is a PersonModel to whome money are owned and the value is an amount
+     * Map containing a list of participants and amount owed to any other participant
+     * The key of the map is a participant (PersonModel) and a value is another map
+     * where the key is a participant (PersonModel) to whom money are owned and the value is an amount.
      */
-    Map<PersonModel, Map<PersonModel, BigDecimal>> share = new HashMap<>();
+    private Map<PersonModel, Map<PersonModel, BigDecimal>> share = new HashMap<>();
 
     /**
-     * To initialize the BoardBalance call in the following order
-     * setData()
-     * init()
+     * Calculates a total amount of the board.
      */
-    public BoardBalance() {
-    }
-
     public void calculateTotal() {
-        total = data.stream().map(BoardPersonTotal::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public void calculateAverage() {
-        average = total.divide(BigDecimal.valueOf(data.size()), 2, RoundingMode.CEILING);
+        total = totals.stream().map(BoardPersonTotal::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     /**
-     * Pushes board average and total into this.data entries
+     *
+     */
+    public void calculateAverage() {
+        average = total.divide(BigDecimal.valueOf(totals.size()), 2, RoundingMode.CEILING);
+    }
+
+    /**
+     * Pushes board average and total into this.totals entries
      */
     private void populateParticipants() {
-        for (BoardPersonTotal person : data) {
+        for (BoardPersonTotal person : totals) {
             BigDecimal balance = person.getTotal().subtract(average);
             person.setBalance(balance);
             person.setBoardAverage(average);
@@ -70,7 +71,7 @@ public class BoardBalance {
     }
 
     public void init() {
-        if (data.size() > 0) {
+        if (totals.size() > 0) {
             calculateTotal();
             calculateAverage();
             if(!isEmpty()) {
@@ -87,7 +88,7 @@ public class BoardBalance {
     public Map<PersonModel, BigDecimal> getBalancePerPerson() {
 
         Map<PersonModel, BigDecimal> balances = new LinkedHashMap<>();
-        data.stream().parallel().forEach( person -> balances.put(person.getPerson(), person.getBalance()));
+        totals.stream().parallel().forEach(person -> balances.put(person.getPerson(), person.getBalance()));
         return balances;
     }
 
@@ -109,14 +110,14 @@ public class BoardBalance {
             return;
         }
         // share amounts between participants
-        for (BoardPersonTotal person : data) {
+        for (BoardPersonTotal person : totals) {
 
             BigDecimal personBalance = balances.get(person.getPerson());
             // Negative balance means person owns money.
             // So we are going to dispatch owed amount between participants having payed too much.
             Map<PersonModel, BigDecimal> line = new HashMap<>();
             share.put(person.getPerson(), line);
-            for (BoardPersonTotal otherParticipant : data) {
+            for (BoardPersonTotal otherParticipant : totals) {
                 PersonModel friend = otherParticipant.getPerson();
                 // skip if current person does not owes money or it's the same person
                 if (personBalance.compareTo(BigDecimal.ZERO) >= 0 || friend.equals(person.getPerson())) {
@@ -156,12 +157,12 @@ public class BoardBalance {
         LOG.debug(">>> balances end" + balances.toString());
     }
 
-    public List<BoardPersonTotal> getData() {
-        return data;
+    public List<BoardPersonTotal> getTotals() {
+        return totals;
     }
 
-    public void setData(List<BoardPersonTotal> data) {
-        this.data = data;
+    public void setTotals(List<BoardPersonTotal> totals) {
+        this.totals = totals;
         init();
     }
 

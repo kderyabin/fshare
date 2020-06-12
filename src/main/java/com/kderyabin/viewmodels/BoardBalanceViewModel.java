@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.chart.XYChart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,9 +78,9 @@ public class BoardBalanceViewModel implements ViewModel {
     }
 
     public void init(){
-        boardBalance.setData(storageManager.getBoardPersonTotal(board.getId()));
+        boardBalance.setTotals(storageManager.getBoardPersonTotal(board.getId()));
         setBalanceEmpty(boardBalance.isEmpty());
-        LOG.debug("Balance size: " + boardBalance.getData().size());
+        LOG.debug("Balance size: " + boardBalance.getTotals().size());
         boardBalance.shareBoardTotal();
         setBalanceLoaded(true);
         initChartData();
@@ -134,9 +133,9 @@ public class BoardBalanceViewModel implements ViewModel {
 //                    debt = new BigDecimal("0");
 //                    overPaid = balance;
 //                }
-//                paidData.getData().add(new XYChart.Data<>(paid, person.getName()));
-//                debtData.getData().add(new XYChart.Data<>(debt, person.getName()));
-//                overpaidData.getData().add(new XYChart.Data<>(overPaid, person.getName()));
+//                paidData.getTotals().add(new XYChart.Data<>(paid, person.getName()));
+//                debtData.getTotals().add(new XYChart.Data<>(debt, person.getName()));
+//                overpaidData.getTotals().add(new XYChart.Data<>(overPaid, person.getName()));
 //            });
 //            chartData.put("paid", paidData);
 //            chartData.put("debt", debtData);
@@ -236,7 +235,7 @@ public class BoardBalanceViewModel implements ViewModel {
     }
 
     public List<BoardPersonTotal> getParticipants(){
-        return boardBalance.getData();
+        return boardBalance.getTotals();
     }
 
     public boolean getBalanceEmpty() {
