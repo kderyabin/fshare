@@ -9,3 +9,4 @@
 partagefx.iml
 /docs/**/*.vpp.lck
 /dist/
+/docs/diagrams/PartageFX.vpp.bak*
