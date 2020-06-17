@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import javafx.scene.chart.PieChart?>
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.kderyabin.mvvm.board.details.BoardItemsView">
+    <BorderPane>
+        <top>
+            <HBox styleClass="header">
+                <BorderPane HBox.hgrow="ALWAYS">
+                    <left>
+                        <JFXButton text="&#xe5c4;" styleClass="header__btn-icon"
+                                   BorderPane.alignment="CENTER" onAction="#goBack"/>
+                    </left>
+                    <center>
+                        <Label fx:id="boardName" text="New board" styleClass="header__title"/>
+                    </center>
+                    <right>
+                        <HBox alignment="CENTER">
+                            <JFXButton fx:id="viewBalanceBtn" text="&#xe01d;" styleClass="header__btn-icon"
+                                       onAction="#viewBalance"/>
+                            <JFXButton text="&#xe145;" styleClass="header__btn-icon"
+                                       onAction="#addItem"/>
+                        </HBox>
+
+                    </right>
+                </BorderPane>
+            </HBox>
+        </top>
+        <center>
+            <VBox styleClass="form-panel">
+                <Label text="%board_has_no_items" fx:id="noItemsWarning" managed="false" visible="false"/>
+                <PieChart fx:id="chart"/>
+                <JFXListView VBox.vgrow="NEVER" fx:id="items" styleClass="list-present"/>
+            </VBox>
+        </center>
+    </BorderPane>
+</ScrollPane>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.kderyabin.mvvm.settings.SettingsView">
+    <HBox styleClass="settings-panel">
+        <GridPane styleClass="settings-content" HBox.hgrow="NEVER">
+            <HBox GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2" >
+                <Label text="%settings" styleClass="settings-title"/>
+            </HBox>
+
+            <Label text="%language" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+            <JFXComboBox fx:id="langList" promptText="%choose_from_the_list" GridPane.rowIndex="1" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+
+            <Label text="%default_currency" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <JFXComboBox fx:id="currencyList" promptText="%choose_from_the_list" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.halignment="RIGHT"/>
+
+            <HBox GridPane.rowIndex="3" GridPane.columnIndex="1" spacing="20" alignment="CENTER_RIGHT">
+                <JFXButton onAction="#quit" text="%quit" />
+                <JFXButton styleClass="button-primary" onAction="#save" text="%save" />
+            </HBox>
+        </GridPane>
+    </HBox>
+</ScrollPane>

@@ -1,6 +1,13 @@
 package com.kderyabin.services;
 
-import com.kderyabin.views.*;
+import com.kderyabin.mvvm.board.balance.BoardBalanceView;
+import com.kderyabin.mvvm.board.details.BoardItemsView;
+import com.kderyabin.mvvm.board.edit.BoardEditView;
+import com.kderyabin.mvvm.home.HomeView;
+import com.kderyabin.mvvm.boardItem.edit.ItemEditView;
+import com.kderyabin.mvvm.menu.MenuView;
+import com.kderyabin.mvvm.settings.SettingsView;
+import com.kderyabin.mvvm.start.StartView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewModel;
@@ -74,7 +81,7 @@ public class NavigateService implements NavigateServiceInterface {
     private void registerNavigation() {
         register("home", HomeView.class);
         register("start", StartView.class);
-        register("board-form", BoardFormView.class);
+        register("board-form", BoardEditView.class);
         register("board-items", BoardItemsView.class);
         register("board-item", ItemEditView.class);
         register("balance", BoardBalanceView.class);

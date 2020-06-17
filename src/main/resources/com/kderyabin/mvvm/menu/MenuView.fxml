@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.HBox?>
+
+<MenuBar xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:controller="com.kderyabin.mvvm.menu.MenuView" HBox.hgrow="ALWAYS">
+    <Menu mnemonicParsing="false" text="%file">
+        <MenuItem mnemonicParsing="false" text="%new_board" onAction="#createNewBoard">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+            </accelerator>
+        </MenuItem>
+
+        <SeparatorMenuItem mnemonicParsing="false"/>
+        <MenuItem mnemonicParsing="false" text="%save" onAction="#save">
+            <accelerator>
+                <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+            </accelerator>
+        </MenuItem>
+
+        <SeparatorMenuItem mnemonicParsing="false"/>
+        <MenuItem mnemonicParsing="false" text="%settings" onAction="#showSettings"/>
+
+        <SeparatorMenuItem mnemonicParsing="false"/>
+        <MenuItem mnemonicParsing="false" text="%exit" onAction="#exit">
+            <accelerator>
+                <KeyCodeCombination alt="DOWN" code="X" control="UP" meta="UP" shift="UP" shortcut="UP"/>
+            </accelerator>
+        </MenuItem>
+    </Menu>
+    <Menu mnemonicParsing="false" text="%help">
+        <MenuItem mnemonicParsing="false" text="%about"/>
+    </Menu>
+</MenuBar>
+

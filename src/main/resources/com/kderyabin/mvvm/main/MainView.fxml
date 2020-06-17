@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.kderyabin.mvvm.main.MainView"
+           fx:id="root">
+    <VBox>
+        <HBox fx:id="menuContainer" VBox.vgrow="NEVER">
+            <fx:include source="../menu/MenuView.fxml" />
+        </HBox>
+        <VBox fx:id="content" styleClass="content-area"/>
+    </VBox>
+</StackPane>

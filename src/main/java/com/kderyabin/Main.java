@@ -1,8 +1,8 @@
 package com.kderyabin;
 
 import com.kderyabin.services.SettingsService;
-import com.kderyabin.viewmodels.MainViewModel;
-import com.kderyabin.views.MainView;
+import com.kderyabin.mvvm.main.MainViewModel;
+import com.kderyabin.mvvm.main.MainView;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;

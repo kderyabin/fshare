@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Rectangle2D?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<ScrollPane hbarPolicy="NEVER"
+            fitToWidth="true"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.kderyabin.mvvm.start.StartView">
+
+<BorderPane>
+    <top>
+        <Label text="%start" BorderPane.alignment="CENTER" styleClass="invite"/>
+    </top>
+    <center>
+        <JFXButton text="%add_board" contentDisplay="CENTER" onMouseClicked="#addBoard"
+                   styleClass="button-raised-large"/>
+    </center>
+    <bottom>
+        <ImageView fitWidth="600.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+            <viewport>
+                <Rectangle2D/>
+            </viewport>
+            <Image url="@../../assets/team-1721x1160.png"/>
+        </ImageView>
+    </bottom>
+</BorderPane>
+</ScrollPane>

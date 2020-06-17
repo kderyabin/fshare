@@ -105,7 +105,7 @@ public class BoardBalance {
      */
     public void shareBoardTotal() {
         Map<PersonModel, BigDecimal> balances = getBalancePerPerson();
-        LOG.debug(">>> balances start" + balances.toString());
+        LOG.debug(">>> balances mvvm" + balances.toString());
         if (isEmpty()) {
             return;
         }
