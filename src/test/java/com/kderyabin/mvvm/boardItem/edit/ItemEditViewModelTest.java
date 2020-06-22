@@ -1,12 +1,12 @@
 package com.kderyabin.mvvm.boardItem.edit;
 
 import com.kderyabin.error.ValidationException;
-import com.kderyabin.model.BoardItemModel;
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.model.PersonModel;
+import com.kderyabin.partagecore.model.BoardItemModel;
+import com.kderyabin.partagecore.model.BoardModel;
+import com.kderyabin.partagecore.model.PersonModel;
 import com.kderyabin.mvvm.participant.list.PersonListItemViewModel;
 import com.kderyabin.services.BoardScope;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.utils.notifications.NotificationCenter;

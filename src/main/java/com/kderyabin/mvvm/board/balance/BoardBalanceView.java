@@ -1,7 +1,7 @@
 package com.kderyabin.mvvm.board.balance;
 
-import com.kderyabin.model.BoardPersonTotal;
-import com.kderyabin.model.RefundmentModel;
+import com.kderyabin.partagecore.model.BoardPersonTotal;
+import com.kderyabin.partagecore.model.RefundmentModel;
 import com.kderyabin.util.GUIHelper;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectResourceBundle;

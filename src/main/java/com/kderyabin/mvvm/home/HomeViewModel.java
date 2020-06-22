@@ -1,10 +1,10 @@
 package com.kderyabin.mvvm.home;
 
-import com.kderyabin.model.BoardModel;
+import com.kderyabin.partagecore.model.BoardModel;
 import com.kderyabin.services.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.RunService;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.util.Notification;
 import com.kderyabin.mvvm.home.list.BoardListItemViewModel;
 import de.saxsys.mvvmfx.InjectScope;

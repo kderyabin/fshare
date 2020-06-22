@@ -1,13 +1,13 @@
 package com.kderyabin.services;
 
-import com.kderyabin.model.SettingModel;
+import com.kderyabin.partagecore.model.SettingModel;
+import com.kderyabin.partagecore.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * User settings

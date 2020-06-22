@@ -1,10 +1,10 @@
 package com.kderyabin.mvvm.settings;
 
-import com.kderyabin.model.SettingModel;
+import com.kderyabin.partagecore.model.SettingModel;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.RunService;
 import com.kderyabin.services.SettingsService;
-import com.kderyabin.services.StorageManager;
 import com.kderyabin.util.Notification;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;

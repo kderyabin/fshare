@@ -1,12 +1,12 @@
 package com.kderyabin.mvvm.board.details;
 
-import com.kderyabin.model.BoardItemModel;
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.model.BoardPersonTotal;
+import com.kderyabin.partagecore.model.BoardItemModel;
+import com.kderyabin.partagecore.model.BoardModel;
+import com.kderyabin.partagecore.model.BoardPersonTotal;
 import com.kderyabin.services.BoardScope;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.RunService;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.mvvm.board.details.list.LinesListItemViewModel;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.*;

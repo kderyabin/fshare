@@ -1,7 +1,7 @@
 package com.kderyabin.mvvm.main;
 
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.partagecore.model.BoardModel;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.services.BoardScope;
 import de.saxsys.mvvmfx.InjectScope;
 import de.saxsys.mvvmfx.ScopeProvider;

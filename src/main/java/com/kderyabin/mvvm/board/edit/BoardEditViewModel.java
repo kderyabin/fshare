@@ -1,8 +1,9 @@
 package com.kderyabin.mvvm.board.edit;
 
 import com.kderyabin.error.ValidationException;
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.model.PersonModel;
+import com.kderyabin.partagecore.model.BoardModel;
+import com.kderyabin.partagecore.model.PersonModel;
+import com.kderyabin.partagecore.storage.StorageManager;
 import com.kderyabin.services.BoardScope;
 import com.kderyabin.services.*;
 import com.kderyabin.util.Notification;

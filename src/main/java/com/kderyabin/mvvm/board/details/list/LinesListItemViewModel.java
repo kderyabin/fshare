@@ -1,6 +1,6 @@
 package com.kderyabin.mvvm.board.details.list;
 
-import com.kderyabin.model.BoardItemModel;
+import com.kderyabin.partagecore.model.BoardItemModel;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

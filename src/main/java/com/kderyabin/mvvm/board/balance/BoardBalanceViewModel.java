@@ -1,13 +1,13 @@
 package com.kderyabin.mvvm.board.balance;
 
-import com.kderyabin.model.BoardModel;
-import com.kderyabin.model.BoardPersonTotal;
-import com.kderyabin.model.RefundmentModel;
+import com.kderyabin.partagecore.model.BoardModel;
+import com.kderyabin.partagecore.model.BoardPersonTotal;
+import com.kderyabin.partagecore.model.RefundmentModel;
 import com.kderyabin.services.BoardScope;
 import com.kderyabin.services.BoardBalance;
 import com.kderyabin.services.NavigateServiceInterface;
 import com.kderyabin.services.RunService;
-import com.kderyabin.services.StorageManager;
+import com.kderyabin.partagecore.storage.StorageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

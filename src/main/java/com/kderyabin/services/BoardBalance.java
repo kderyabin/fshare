@@ -1,7 +1,7 @@
 package com.kderyabin.services;
 
-import com.kderyabin.model.BoardPersonTotal;
-import com.kderyabin.model.PersonModel;
+import com.kderyabin.partagecore.model.BoardPersonTotal;
+import com.kderyabin.partagecore.model.PersonModel;
 import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

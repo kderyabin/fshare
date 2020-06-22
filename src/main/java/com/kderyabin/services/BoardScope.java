@@ -1,7 +1,7 @@
 package com.kderyabin.services;
 
-import com.kderyabin.model.BoardItemModel;
-import com.kderyabin.model.BoardModel;
+import com.kderyabin.partagecore.model.BoardItemModel;
+import com.kderyabin.partagecore.model.BoardModel;
 import de.saxsys.mvvmfx.Scope;
 import lombok.Getter;
 import lombok.Setter;

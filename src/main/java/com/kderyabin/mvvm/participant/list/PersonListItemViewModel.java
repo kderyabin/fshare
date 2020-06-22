@@ -1,6 +1,6 @@
 package com.kderyabin.mvvm.participant.list;
 
-import com.kderyabin.model.PersonModel;
+import com.kderyabin.partagecore.model.PersonModel;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
