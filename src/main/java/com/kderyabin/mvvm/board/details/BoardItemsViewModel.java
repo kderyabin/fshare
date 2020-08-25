@@ -63,6 +63,7 @@ public class BoardItemsViewModel implements ViewModel {
     public void initialize() {
         LOG.debug("Start Initialize");
         model = scope.getBoardModel();
+        boardName.setValue(model.getName());
         // Load board items
         CompletableFuture
                 .supplyAsync(() -> initLines(model), runService.getExecutorService())

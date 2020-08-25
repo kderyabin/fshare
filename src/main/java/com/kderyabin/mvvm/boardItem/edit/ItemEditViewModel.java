@@ -118,6 +118,15 @@ public class ItemEditViewModel implements ViewModel, EditableInterface {
         }
         if (getAmount().trim().isEmpty()) {
             throw new ValidationException("msg.amount_is_required");
+        } else {
+            try{
+                BigDecimal amount = new BigDecimal(getAmount().trim());
+                if(amount.equals(BigDecimal.ZERO)) {
+                    throw new ValidationException("msg.amount_is_required");
+                }
+            } catch (NumberFormatException ex) {
+                throw new ValidationException("msg.amount_is_required");
+            }
         }
         if (getPerson() == null) {
             throw new ValidationException("msg.person_is_required");

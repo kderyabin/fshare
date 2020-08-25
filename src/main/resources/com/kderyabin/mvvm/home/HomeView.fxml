@@ -5,16 +5,17 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 <ScrollPane hbarPolicy="NEVER"
             fitToWidth="true"
             xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.kderyabin.mvvm.home.HomeView" >
-    <VBox>
+    <VBox alignment="CENTER">
             <HBox styleClass="header">
                 <BorderPane HBox.hgrow="ALWAYS">
                     <center>
-                        <Label text="Your boards" styleClass="header__title"/>
+                        <Label text="%title.your_boards" styleClass="header__title"/>
                     </center>
                     <right>
                         <JFXButton text="&#xe145;" styleClass="header__btn-icon"
@@ -22,7 +23,7 @@
                     </right>
                 </BorderPane>
             </HBox>
-            <VBox styleClass="form-panel" VBox.vgrow="ALWAYS" >
+            <VBox styleClass="form-panel">
                 <JFXListView fx:id="boardsList" styleClass="list-present" />
             </VBox>
     </VBox>

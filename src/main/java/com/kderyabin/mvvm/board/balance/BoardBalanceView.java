@@ -59,7 +59,7 @@ public class BoardBalanceView implements FxmlView<BoardBalanceViewModel> {
         LOG.info(">>> Start initialize");
         boardName.textProperty().bind(viewModel.boardNameProperty());
         balanceCurrency.textProperty().set(
-                String.format("(%s : %s)",
+                String.format("%s : %s",
                         resource.getString("currency"),
                         viewModel.getCurrency()
                 )

@@ -28,7 +28,6 @@
                             <JFXButton text="&#xe145;" styleClass="header__btn-icon"
                                        onAction="#addItem"/>
                         </HBox>
-
                     </right>
                 </BorderPane>
             </HBox>
@@ -44,16 +43,20 @@
                         <NumberAxis label="%amount"/>
                     </xAxis>
                 </StackedBarChart>
-                <VBox fx:id="statsPanel" alignment="CENTER">
-                    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-spacing: 5px">
-                        <Text text="%balance"/>
+                <VBox fx:id="statsPanel" alignment="CENTER_LEFT">
+                    <HBox styleClass="h3">
+                        <Text  text="%balance"/>
+                    </HBox>
+                    <HBox styleClass="h5">
                         <Text fx:id="balanceCurrency"/>
                     </HBox>
                     <TableView fx:id="statsTable"/>
                 </VBox>
                 <VBox fx:id="sharePanel" alignment="CENTER">
-                    <HBox alignment="CENTER" VBox.vgrow="ALWAYS" style="-fx-spacing: 5px">
+                    <HBox styleClass="h3">
                         <Label text="%refundment"/>
+                    </HBox>
+                    <HBox styleClass="h5">
                         <Text fx:id="refundmentCurrency"/>
                     </HBox>
                     <TableView fx:id="shareTables"/>

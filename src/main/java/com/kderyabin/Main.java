@@ -38,7 +38,7 @@ public class Main extends MvvmfxSpringApplication {
         LOG.info("Start stage loading");
         settingsService.load();
         Locale.setDefault(settingsService.getLanguage());
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("default");
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("messages");
         MvvmFX.setGlobalResourceBundle(resourceBundle);
 
         final ViewTuple<MainView, MainViewModel> tuple

@@ -42,7 +42,7 @@
             </DatePicker>
             <VBox>
                 <Label text="Payed by"/>
-                <JFXComboBox VBox.vgrow="NEVER" fx:id="participants" />
+                <ComboBox VBox.vgrow="ALWAYS" fx:id="participants"/>
             </VBox>
 
         </VBox>
